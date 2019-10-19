@@ -114,6 +114,7 @@ const efftype_id effect_under_op( "under_operation" );
 const efftype_id effect_pet( "pet" );
 const efftype_id effect_controlled( "controlled" );
 const efftype_id effect_saddled( "saddled" );
+const efftype_id effect_trying_to_sleep( "trying_to_sleep" );
 
 using namespace activity_handlers;
 
@@ -2977,7 +2978,7 @@ void activity_handlers::try_sleep_do_turn( player_activity *act, player *p )
 
 void activity_handlers::try_sleep_query( player_activity *act, player *p )
 {
-    if( p->get_value( "sleep_query" ) == "false" ) {
+    if( p->get_value( "sleep_query" ) == "false" || p->has_effect( effect_trying_to_sleep ) ) {
         return;
     }
     uilist sleep_query;

@@ -4061,7 +4061,7 @@ void Character::vomit()
     remove_effect( effect_pkill2 );
     remove_effect( effect_pkill3 );
     // Don't wake up when just retching
-    if( stomach.contains() > 0_ml ) {
+    if( stomach.contains() > 0_ml && !is_player() ) {
         wake_up();
     }
 }

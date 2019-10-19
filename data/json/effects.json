@@ -1780,5 +1780,9 @@
   {
     "type": "effect_type",
     "id": "has_prospectus"
+  },
+  {
+    "type": "effect_type",
+    "id": "trying_to_sleep"
   }
 ]

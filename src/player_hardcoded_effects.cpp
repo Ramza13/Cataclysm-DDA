@@ -83,6 +83,7 @@ const efftype_id effect_stunned( "stunned" );
 const efftype_id effect_tapeworm( "tapeworm" );
 const efftype_id effect_teleglow( "teleglow" );
 const efftype_id effect_tetanus( "tetanus" );
+const efftype_id effect_trying_to_sleep( "trying_to_sleep" );
 const efftype_id effect_valium( "valium" );
 const efftype_id effect_visuals( "visuals" );
 const efftype_id effect_weak_antibiotic( "weak_antibiotic" );
@@ -1246,7 +1247,7 @@ void player::hardcoded_effects( effect &it )
                                ( has_trait( trait_id( "HEAVYSLEEPER2" ) ) && dice( 6, 15 ) < volume ) ) {
                         // Secure the flag before wake_up() clears the effect
                         bool slept_through = has_effect( effect_slept_through_alarm );
-                        wake_up();
+                        wake_up( false );
                         if( slept_through ) {
                             add_msg_if_player( _( "Your internal chronometer finally wakes you up." ) );
                         } else {

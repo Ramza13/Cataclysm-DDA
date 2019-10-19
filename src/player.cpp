@@ -2811,33 +2811,6 @@ int player::get_num_crafting_helpers( int max ) const
     return std::min( max, static_cast<int>( helpers.size() ) );
 }
 
-void player::on_hurt( Creature *source, bool disturb /*= true*/ )
-{
-    if( has_trait( trait_ADRENALINE ) && !has_effect( effect_adrenaline ) &&
-        ( hp_cur[hp_head] < 25 || hp_cur[hp_torso] < 15 ) ) {
-        add_effect( effect_adrenaline, 20_minutes );
-    }
-
-    if( disturb ) {
-        if( has_effect( effect_sleep ) && !has_effect( effect_narcosis ) ) {
-            wake_up();
-        }
-        if( !is_npc() && !has_effect( effect_narcosis ) ) {
-            if( source != nullptr ) {
-                g->cancel_activity_or_ignore_query( distraction_type::attacked,
-                                                    string_format( _( "You were attacked by %s!" ),
-                                                            source->disp_name() ) );
-            } else {
-                g->cancel_activity_or_ignore_query( distraction_type::attacked, _( "You were hurt!" ) );
-            }
-        }
-    }
-
-    if( is_dead_state() ) {
-        set_killer( source );
-    }
-}
-
 bool player::immune_to( body_part bp, damage_unit dam ) const
 {
     if( has_trait( trait_DEBUG_NODMG ) || is_immune_damage( dam.type ) ) {
@@ -3096,30 +3069,6 @@ void player::set_painkiller( int npkill )
 int player::get_painkiller() const
 {
     return pkill;
-}
-
-void player::react_to_felt_pain( int intensity )
-{
-    if( intensity <= 0 ) {
-        return;
-    }
-    if( is_player() && intensity >= 2 ) {
-        g->cancel_activity_or_ignore_query( distraction_type::pain,  _( "Ouch, something hurts!" ) );
-    }
-    // Only a large pain burst will actually wake people while sleeping.
-    if( has_effect( effect_sleep ) && !has_effect( effect_narcosis ) ) {
-        int pain_thresh = rng( 3, 5 );
-
-        if( has_trait( trait_HEAVYSLEEPER ) ) {
-            pain_thresh += 2;
-        } else if( has_trait( trait_HEAVYSLEEPER2 ) ) {
-            pain_thresh += 5;
-        }
-
-        if( intensity >= pain_thresh ) {
-            wake_up();
-        }
-    }
 }
 
 int player::reduce_healing_effect( const efftype_id &eff_id, int remove_med, body_part hurt )
@@ -4385,7 +4334,7 @@ void player::cough( bool harmful, int loudness )
 
     if( has_effect( effect_sleep ) && !has_effect( effect_narcosis ) &&
         ( ( harmful && one_in( 3 ) ) || one_in( 10 ) ) ) {
-        wake_up();
+        wake_up( true );
     }
 }
 
@@ -5230,7 +5179,7 @@ void player::suffer()
             } else {
                 add_effect( effect_asthma, rng( 5_minutes, 20_minutes ) );
                 if( has_effect( effect_sleep ) ) {
-                    wake_up();
+                    wake_up( false );
                 } else {
                     if( !is_npc() ) {
                         g->cancel_activity_or_ignore_query( distraction_type::asthma,
@@ -5388,7 +5337,7 @@ void player::suffer()
 
                 //apply effects
                 if( has_effect( effect_sleep ) && !has_effect( effect_narcosis ) ) {
-                    wake_up();
+                    wake_up( false );
                 }
                 if( one_turn_in( 1_minutes ) ) {
                     mod_pain( 1 );
@@ -5432,7 +5381,7 @@ void player::suffer()
         if( !( weapon.has_flag( "RAIN_PROTECT" ) ) ) {
             add_msg_if_player( m_bad, _( "The sunlight burns your skin!" ) );
             if( has_effect( effect_sleep ) && !has_effect( effect_narcosis ) ) {
-                wake_up();
+                wake_up( false );
             }
             mod_pain( 1 );
             hurtall( 1, nullptr );

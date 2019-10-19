@@ -73,6 +73,7 @@ const efftype_id effect_alarm_clock( "alarm_clock" );
 const efftype_id effect_laserlocked( "laserlocked" );
 const efftype_id effect_relax_gas( "relax_gas" );
 const efftype_id effect_riding( "riding" );
+const efftype_id effect_trying_to_sleep( "trying_to_sleep" );
 
 static const bionic_id bio_remote( "bio_remote" );
 
@@ -967,7 +968,17 @@ static void sleep()
     }
 
     time_duration try_sleep_dur = 24_hours;
-    if( u.has_alarm_clock() ) {
+    as_m.reset();
+    as_m.text = _( "Attempt to sleep until you are no longer tired?" );
+    as_m.entries.emplace_back( 0, true,
+                               get_option<bool>( "FORCE_CAPITAL_YN" ) ? 'N' : 'n',
+                               _( "No, don't." ) );
+    as_m.entries.emplace_back( 1, true, get_option<bool>( "FORCE_CAPITAL_YN" ) ? 'Y' : 'y',
+                               _( "Yes." ) );
+    as_m.query();
+    if( as_m.ret == 1 ) {
+        u.add_effect( effect_trying_to_sleep, 24_hours );
+    } else if( u.has_alarm_clock() ) {
         /* Reuse menu to ask player whether they want to set an alarm. */
         bool can_hibernate = u.get_hunger() < -60 && u.has_active_mutation( trait_HIBERNATE );
 
