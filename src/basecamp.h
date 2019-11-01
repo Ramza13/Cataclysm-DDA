@@ -144,7 +144,7 @@ class basecamp
         void add_expansion( const std::string &terrain, const tripoint &new_pos );
         void add_expansion( const std::string &bldg, const tripoint &new_pos,
                             const point &dir );
-        void define_camp( npc &p, const std::string &camp_type = "default" );
+        void define_camp( const tripoint p, const std::string &camp_type = "default" );
 
         std::string expansion_tab( const point &dir ) const;
 
@@ -258,6 +258,7 @@ class basecamp
                             bool by_radio );
         std::string om_upgrade_description( const std::string &bldg, bool trunc = false ) const;
         void start_menial_labor();
+        void job_assignment_ui();
         void start_crafting( const std::string &cur_id, const point &cur_dir,
                              const std::string &type, const std::string &miss_id,
                              bool by_radio = false );
