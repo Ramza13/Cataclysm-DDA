@@ -901,12 +901,11 @@ static void sleep()
                                get_option<bool>( "FORCE_CAPITAL_YN" ) ? 'S' : 's',
                                _( "Yes, and save game before sleeping." ) );
     as_m.entries.emplace_back( 2, true,
+                               get_option<bool>( "FORCE_CAPITAL_YN" ) ? 'T' : 't',
+                               _( "Yes, and attempt to sleep until you are no longer tired." ) );
+    as_m.entries.emplace_back( 3, true,
                                get_option<bool>( "FORCE_CAPITAL_YN" ) ? 'N' : 'n',
                                _( "No." ) );
-    as_m.entries.emplace_back( 3, true,
-                               get_option<bool>( "FORCE_CAPITAL_YN" ) ? 'T' : 't',
-                               _( "Yes and attempt to sleep until you are no longer tired." ) );
-
 
     // List all active items, bionics or mutations so player can deactivate them
     std::vector<std::string> active;
@@ -968,13 +967,12 @@ static void sleep()
 
     if( as_m.ret == 1 ) {
         g->quicksave();
-    } else if( as_m.ret == 2 || as_m.ret < 0 ) {
-        return;
-
-    } else if( as_m.ret == 3 ) {
+    } else if( as_m.ret == 2 ) {
         u.add_effect( effect_trying_to_sleep, 24_hours );
+    } else if( as_m.ret == 3 || as_m.ret < 0 ) {
+        return;
     }
-    u.add_effect( effect_trying_to_sleep, 24_hours );
+
     time_duration try_sleep_dur = 24_hours;
     if( u.has_alarm_clock() ) {
         /* Reuse menu to ask player whether they want to set an alarm. */

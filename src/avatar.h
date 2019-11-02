@@ -133,7 +133,6 @@ class avatar : public player
         bool has_identified( const std::string &item_id ) const override;
 
         hint_rating rate_action_read( const item &it ) const;
-        /** wakes you up */
         void wake_up();
         // Grab furniture / vehicle
         void grab( object_type grab_type, const tripoint &grab_point = tripoint_zero );
