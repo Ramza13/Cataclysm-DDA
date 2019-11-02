@@ -923,7 +923,7 @@ void avatar::wake_up()
             }
         }
     }
-    Character::wake_up( );
+    Character::wake_up();
 }
 
 void avatar::vomit()

@@ -5203,11 +5203,11 @@ void Character::wake_up()
     }
     if( has_effect( effect_trying_to_sleep ) )  {
         if( get_fatigue() > TIRED ) {
-            add_msg_if_player("You continue trying to sleep.");
+            add_msg_if_player( "You continue trying to sleep." );
             try_to_sleep( get_effect( effect_trying_to_sleep ).get_duration() );
         } else {
             remove_effect( effect_trying_to_sleep );
-            add_msg_if_player("You're no longer tired enough to continue attemping to sleep.");
+            add_msg_if_player( "You're no longer tired enough to continue attemping to sleep." );
         }
     }
     recalc_sight_limits();
