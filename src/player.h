@@ -937,8 +937,6 @@ class player : public Character
         /** Note that we've read a book at least once. **/
         virtual bool has_identified( const std::string &item_id ) const = 0;
 
-        /** Handles sleep attempts by the player, starts ACT_TRY_SLEEP activity */
-        void try_to_sleep( const time_duration &dur = 30_minutes );
         /** Rate point's ability to serve as a bed. Only takes certain mutations into account, and not fatigue nor stimulants. */
         comfort_level base_comfort_value( const tripoint &p ) const;
         /** Rate point's ability to serve as a bed. Takes all mutations, fatigue and stimulants into account. */
@@ -949,7 +947,6 @@ class player : public Character
     private:
         /** last time we checked for sleep */
         time_point last_sleep_check = calendar::turn_zero;
-        bool bio_soporific_powered_at_last_sleep_check;
 
     public:
         /** Returns a value from 1.0 to 5.0 that acts as a multiplier

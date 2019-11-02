@@ -78,6 +78,7 @@ static const bionic_id bio_laser( "bio_laser" );
 static const bionic_id bio_lighter( "bio_lighter" );
 static const bionic_id bio_tools( "bio_tools" );
 static const bionic_id bio_ups( "bio_ups" );
+static const bionic_id bio_soporific( "bio_soporific" );
 
 const efftype_id effect_adrenaline( "adrenaline" );
 const efftype_id effect_alarm_clock( "alarm_clock" );
@@ -124,6 +125,7 @@ const efftype_id effect_slept_through_alarm( "slept_through_alarm" );
 const efftype_id effect_tied( "tied" );
 const efftype_id effect_took_prozac( "took_prozac" );
 const efftype_id effect_took_xanax( "took_xanax" );
+const efftype_id effect_trying_to_sleep( "trying_to_sleep" );
 const efftype_id effect_webbed( "webbed" );
 const efftype_id effect_winded( "winded" );
 
@@ -139,6 +141,7 @@ static const trait_id trait_BARK( "BARK" );
 static const trait_id trait_BIRD_EYE( "BIRD_EYE" );
 static const trait_id trait_CEPH_EYES( "CEPH_EYES" );
 static const trait_id trait_CEPH_VISION( "CEPH_VISION" );
+static const trait_id trait_CHLOROMORPH( "CHLOROMORPH" );
 static const trait_id trait_DEBUG_CLOAK( "DEBUG_CLOAK" );
 static const trait_id trait_DEBUG_NIGHTVISION( "DEBUG_NIGHTVISION" );
 static const trait_id trait_DEBUG_NODMG( "DEBUG_NODMG" );
@@ -181,6 +184,10 @@ static const trait_id trait_THRESH_CEPHALOPOD( "THRESH_CEPHALOPOD" );
 static const trait_id trait_THRESH_INSECT( "THRESH_INSECT" );
 static const trait_id trait_THRESH_PLANT( "THRESH_PLANT" );
 static const trait_id trait_THRESH_SPIDER( "THRESH_SPIDER" );
+static const trait_id trait_WATERSLEEP( "WATERSLEEP" );
+static const trait_id trait_WEB_WALKER( "WEB_WALKER" );
+static const trait_id trait_WEB_SPINNER( "WEB_SPINNER" );
+static const trait_id trait_WEB_WEAVER( "WEB_WEAVER" );
 static const trait_id trait_URSINE_EYE( "URSINE_EYE" );
 static const trait_id debug_nodmg( "DEBUG_NODMG" );
 
@@ -5061,6 +5068,129 @@ int Character::item_store_cost( const item &it, const item & /* container */, bo
     return item_handling_cost( it, penalties, base_cost ) / ( ( lvl + 10.0f ) / 10.0f );
 }
 
+void Character::try_to_sleep( const time_duration &dur )
+{
+    const optional_vpart_position vp = g->m.veh_at( pos() );
+    const trap &trap_at_pos = g->m.tr_at( pos() );
+    const ter_id ter_at_pos = g->m.ter( pos() );
+    const furn_id furn_at_pos = g->m.furn( pos() );
+    bool plantsleep = false;
+    bool fungaloid_cosplay = false;
+    bool websleep = false;
+    bool webforce = false;
+    bool websleeping = false;
+    bool in_shell = false;
+    bool watersleep = false;
+    if( has_trait( trait_CHLOROMORPH ) ) {
+        plantsleep = true;
+        if( ( ter_at_pos == t_dirt || ter_at_pos == t_pit ||
+              ter_at_pos == t_dirtmound || ter_at_pos == t_pit_shallow ||
+              ter_at_pos == t_grass ) && !vp &&
+            furn_at_pos == f_null ) {
+            add_msg_if_player( m_good, _( "You relax as your roots embrace the soil." ) );
+        } else if( vp ) {
+            add_msg_if_player( m_bad, _( "It's impossible to sleep in this wheeled pot!" ) );
+        } else if( furn_at_pos != f_null ) {
+            add_msg_if_player( m_bad,
+                               _( "The humans' furniture blocks your roots.  You can't get comfortable." ) );
+        } else { // Floor problems
+            add_msg_if_player( m_bad, _( "Your roots scrabble ineffectively at the unyielding surface." ) );
+        }
+    } else if( has_trait( trait_M_SKIN3 ) ) {
+        fungaloid_cosplay = true;
+        if( g->m.has_flag_ter_or_furn( "FUNGUS", pos() ) ) {
+            add_msg_if_player( m_good,
+                               _( "Our fibers meld with the ground beneath us.  The gills on our neck begin to seed the air with spores as our awareness fades." ) );
+        }
+    }
+    if( has_trait( trait_WEB_WALKER ) ) {
+        websleep = true;
+    }
+    // Not sure how one would get Arachnid w/o web-making, but Just In Case
+    if( has_trait( trait_THRESH_SPIDER ) && ( has_trait( trait_WEB_SPINNER ) ||
+            ( has_trait( trait_WEB_WEAVER ) ) ) ) {
+        webforce = true;
+    }
+    if( websleep || webforce ) {
+        int web = g->m.get_field_intensity( pos(), fd_web );
+        if( !webforce ) {
+            // At this point, it's kinda weird, but surprisingly comfy...
+            if( web >= 3 ) {
+                add_msg_if_player( m_good,
+                                   _( "These thick webs support your weight, and are strangely comfortable…" ) );
+                websleeping = true;
+            } else if( web > 0 ) {
+                add_msg_if_player( m_info,
+                                   _( "You try to sleep, but the webs get in the way.  You brush them aside." ) );
+                g->m.remove_field( pos(), fd_web );
+            }
+        } else {
+            // Here, you're just not comfortable outside a nice thick web.
+            if( web >= 3 ) {
+                add_msg_if_player( m_good, _( "You relax into your web." ) );
+                websleeping = true;
+            } else {
+                add_msg_if_player( m_bad,
+                                   _( "You try to sleep, but you feel exposed and your spinnerets keep twitching." ) );
+                add_msg_if_player( m_info, _( "Maybe a nice thick web would help you sleep." ) );
+            }
+        }
+    }
+    if( has_active_mutation( trait_SHELL2 ) ) {
+        // Your shell's interior is a comfortable place to sleep.
+        in_shell = true;
+    }
+    if( has_trait( trait_WATERSLEEP ) ) {
+        if( underwater ) {
+            add_msg_if_player( m_good,
+                               _( "You lay beneath the waves' embrace, gazing up through the water's surface…" ) );
+            watersleep = true;
+        } else if( g->m.has_flag_ter( "SWIMMABLE", pos() ) ) {
+            add_msg_if_player( m_good, _( "You settle into the water and begin to drowse…" ) );
+            watersleep = true;
+        }
+    }
+    if( !plantsleep && ( furn_at_pos.obj().comfort > static_cast<int>( comfort_level::neutral ) ||
+                         ter_at_pos == t_improvised_shelter ||
+                         trap_at_pos.comfort > static_cast<int>( comfort_level::neutral ) ||
+                         in_shell || websleeping || watersleep ||
+                         vp.part_with_feature( "SEAT", true ) ||
+                         vp.part_with_feature( "BED", true ) ) ) {
+        add_msg_if_player( m_good, _( "This is a comfortable place to sleep." ) );
+    } else if( !plantsleep && !fungaloid_cosplay && !watersleep ) {
+        if( !vp && ter_at_pos != t_floor ) {
+            add_msg_if_player( ter_at_pos.obj().movecost <= 2 ?
+                               _( "It's a little hard to get to sleep on this %s." ) :
+                               _( "It's hard to get to sleep on this %s." ),
+                               ter_at_pos.obj().name() );
+        } else if( vp ) {
+            if( vp->part_with_feature( VPFLAG_AISLE, true ) ) {
+                add_msg_if_player(
+                    //~ %1$s: vehicle name, %2$s: vehicle part name
+                    _( "It's a little hard to get to sleep on this %2$s in %1$s." ),
+                    vp->vehicle().disp_name(),
+                    vp->part_with_feature( VPFLAG_AISLE, true )->part().name( false ) );
+            } else {
+                add_msg_if_player(
+                    //~ %1$s: vehicle name
+                    _( "It's hard to get to sleep in %1$s." ),
+                    vp->vehicle().disp_name() );
+            }
+        }
+    }
+    add_msg_if_player( _( "You start trying to fall asleep." ) );
+    if( has_active_bionic( bio_soporific ) ) {
+        bio_soporific_powered_at_last_sleep_check = has_power();
+        if( bio_soporific_powered_at_last_sleep_check ) {
+            // The actual bonus is applied in sleep_spot( p ).
+            add_msg_if_player( m_good, _( "Your soporific inducer starts working its magic." ) );
+        } else {
+            add_msg_if_player( m_bad, _( "Your soporific inducer doesn't have enough power to operate." ) );
+        }
+    }
+    assign_activity( activity_id( "ACT_TRY_SLEEP" ), to_moves<int>( dur ) );
+}
+
 void Character::wake_up()
 {
     remove_effect( effect_sleep );
@@ -5070,6 +5200,13 @@ void Character::wake_up()
     // We just set it for later removal (also happening in player::process_effects(), so no side effects) with a duration of 0 turns.
     if( has_effect( effect_alarm_clock ) ) {
         get_effect( effect_alarm_clock ).set_duration( 0_turns );
+    }
+    if( has_effect( effect_trying_to_sleep ) )  {
+        if( get_fatigue() > TIRED ) {
+            try_to_sleep( get_effect( effect_trying_to_sleep ).get_duration() );
+        } else {
+            remove_effect( effect_trying_to_sleep );
+        }
     }
     recalc_sight_limits();
 }
@@ -5214,7 +5351,7 @@ void Character::vomit()
     remove_effect( effect_pkill2 );
     remove_effect( effect_pkill3 );
     // Don't wake up when just retching
-    if( stomach.contains() > 0_ml && !is_player() ) {
+    if( stomach.contains() > 0_ml ) {
         wake_up();
     }
 }
@@ -6198,6 +6335,7 @@ void Character::cancel_activity()
     }
     if( has_activity( activity_id( "ACT_TRY_SLEEP" ) ) ) {
         remove_value( "sleep_query" );
+        remove_effect( effect_trying_to_sleep );
     }
     // Clear any backlog items that aren't auto-resume.
     for( auto backlog_item = backlog.begin(); backlog_item != backlog.end(); ) {

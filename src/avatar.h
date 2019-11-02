@@ -133,15 +133,14 @@ class avatar : public player
         bool has_identified( const std::string &item_id ) const override;
 
         hint_rating rate_action_read( const item &it ) const;
-        /** wakes you up, if safe is true and you choose it you'll keep trying to sleep */
-        void wake_up( bool safe );
+        /** wakes you up */
+        void wake_up();
         // Grab furniture / vehicle
         void grab( object_type grab_type, const tripoint &grab_point = tripoint_zero );
         object_type get_grab_type() const;
         /** Handles player vomiting effects */
         void vomit();
 
-		void on_hurt(Creature* source, bool disturb);
 
         /**
          * Try to steal an item from the NPC's inventory. May result in fail attempt, when NPC not notices you,

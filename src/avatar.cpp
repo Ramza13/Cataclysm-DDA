@@ -67,12 +67,10 @@
 class JsonIn;
 class JsonOut;
 
-const efftype_id effect_adrenaline( "adrenaline" );
 const efftype_id effect_contacts( "contacts" );
 const efftype_id effect_depressants( "depressants" );
 const efftype_id effect_happy( "happy" );
 const efftype_id effect_irradiated( "irradiated" );
-const efftype_id effect_narcosis( "narcosis" );
 const efftype_id effect_pkill( "pkill" );
 const efftype_id effect_riding( "riding" );
 const efftype_id effect_sad( "sad" );
@@ -81,14 +79,12 @@ const efftype_id effect_sleep_deprived( "sleep_deprived" );
 const efftype_id effect_slept_through_alarm( "slept_through_alarm" );
 const efftype_id effect_stim( "stim" );
 const efftype_id effect_stim_overdose( "stim_overdose" );
-const efftype_id effect_trying_to_sleep( "trying_to_sleep" );
 const efftype_id effect_winded( "winded" );
 
 static const bionic_id bio_eye_optic( "bio_eye_optic" );
 static const bionic_id bio_memory( "bio_memory" );
 static const bionic_id bio_watch( "bio_watch" );
 
-static const trait_id trait_ADRENALINE( "ADRENALINE" );
 static const trait_id trait_ARACHNID_ARMS( "ARACHNID_ARMS" );
 static const trait_id trait_ARACHNID_ARMS_OK( "ARACHNID_ARMS_OK" );
 static const trait_id trait_CENOBITE( "CENOBITE" );
@@ -96,8 +92,6 @@ static const trait_id trait_CHITIN2( "CHITIN2" );
 static const trait_id trait_CHITIN3( "CHITIN3" );
 static const trait_id trait_CHITIN_FUR3( "CHITIN_FUR3" );
 static const trait_id trait_COMPOUND_EYES( "COMPOUND_EYES" );
-static const trait_id trait_HEAVYSLEEPER( "HEAVYSLEEPER" );
-static const trait_id trait_HEAVYSLEEPER2( "HEAVYSLEEPER2" );
 static const trait_id trait_HYPEROPIC( "HYPEROPIC" );
 static const trait_id trait_INSECT_ARMS( "INSECT_ARMS" );
 static const trait_id trait_INSECT_ARMS_OK( "INSECT_ARMS_OK" );
@@ -915,7 +909,7 @@ hint_rating avatar::rate_action_read( const item &it ) const
     return get_book_reader( it, dummy ) == nullptr ? HINT_IFFY : HINT_GOOD;
 }
 
-void avatar::wake_up( bool safe )
+void avatar::wake_up()
 {
     if( has_effect( effect_sleep ) ) {
         if( calendar::turn - get_effect( effect_sleep ).get_start_time() > 2_hours ) {
@@ -929,11 +923,8 @@ void avatar::wake_up( bool safe )
             }
         }
     }
+
     Character::wake_up( );
-    //if ( safe && get_fatigue() > TIRED && has_effect(effect_trying_to_sleep))
-    {
-        try_to_sleep(get_effect(effect_trying_to_sleep).get_duration());
-    }
 }
 
 void avatar::vomit()
@@ -950,36 +941,6 @@ void avatar::vomit()
         add_msg( m_warning, _( "You retched, but your stomach is empty." ) );
     }
     Character::vomit();
-    if( stomach.contains() > 0_ml ) {
-        wake_up( true );
-    }
-}
-
-void avatar::on_hurt( Creature *source, bool disturb /*= true*/ )
-{
-    if( has_trait( trait_ADRENALINE ) && !has_effect( effect_adrenaline ) &&
-        ( hp_cur[hp_head] < 25 || hp_cur[hp_torso] < 15 ) ) {
-        add_effect( effect_adrenaline, 20_minutes );
-    }
-
-    if( disturb ) {
-        if( has_effect( effect_sleep ) && !has_effect( effect_narcosis ) ) {
-            wake_up( false );
-        }
-        if( !is_npc() && !has_effect( effect_narcosis ) ) {
-            if( source != nullptr ) {
-                g->cancel_activity_or_ignore_query( distraction_type::attacked,
-                                                    string_format( _( "You were attacked by %s!" ),
-                                                            source->disp_name() ) );
-            } else {
-                g->cancel_activity_or_ignore_query( distraction_type::attacked, _( "You were hurt!" ) );
-            }
-        }
-    }
-
-    if( is_dead_state() ) {
-        set_killer( source );
-    }
 }
 
 void avatar::disp_morale()

@@ -410,7 +410,7 @@ void sounds::process_sound_markers( player *p )
                   ( p->has_trait( trait_HEAVYSLEEPER2 ) && dice( 6, 15 ) < heard_volume ) ) &&
                 !p->has_effect( effect_narcosis ) ) {
                 //Not kidding about sleep-through-firefight
-                p->wake_up( true );
+                p->wake_up();
                 add_msg( m_warning, _( "Something is making noise." ) );
             } else {
                 continue;

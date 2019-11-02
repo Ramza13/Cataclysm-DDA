@@ -1250,7 +1250,7 @@ void player::hardcoded_effects( effect &it )
                                ( has_trait( trait_id( "HEAVYSLEEPER2" ) ) && dice( 6, 15 ) < volume ) ) {
                         // Secure the flag before wake_up() clears the effect
                         bool slept_through = has_effect( effect_slept_through_alarm );
-                        wake_up( false );
+                        wake_up();
                         if( slept_through ) {
                             add_msg_if_player( _( "Your internal chronometer finally wakes you up." ) );
                         } else {

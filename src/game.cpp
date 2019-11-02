@@ -4219,7 +4219,7 @@ void game::monmove()
             cancel_activity_or_ignore_query( distraction_type::motion_alarm,
                                              _( "Your motion alarm goes off!" ) );
             if( u.has_effect( efftype_id( "sleep" ) ) ) {
-                u.wake_up( false );
+                u.wake_up();
             }
         }
     }

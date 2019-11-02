@@ -204,6 +204,7 @@ class Character : public Creature, public visitable<Character>
         field_type_id gibType() const override;
         bool is_warm() const override;
         bool in_species( const species_id &spec ) const override;
+        bool bio_soporific_powered_at_last_sleep_check;
 
         const std::string &symbol() const override;
 
@@ -801,6 +802,9 @@ class Character : public Creature, public visitable<Character>
          */
         int item_store_cost( const item &it, const item &container, bool penalties = true,
                              int base_cost = INVENTORY_HANDLING_PENALTY ) const;
+
+        /** Handles sleep attempts by the character, starts ACT_TRY_SLEEP activity */
+        void try_to_sleep( const time_duration &dur = 30_minutes );
 
         /** Returns nearby items which match the provided predicate */
         std::vector<item_location> nearby( const std::function<bool( const item *, const item * )> &func,
