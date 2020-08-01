@@ -22,6 +22,7 @@
 #include "enums.h"
 #include "game.h"
 #include "game_constants.h"
+#include "generic_event_type.h"
 #include "item.h"
 #include "item_contents.h"
 #include "item_pocket.h"
@@ -66,7 +67,7 @@ static const std::string flag_SUN_GLASSES( "SUN_GLASSES" );
  * @{
  */
 
-static bool is_creature_outside( const Creature &target )
+bool is_creature_outside( const Creature &target )
 {
     map &here = get_map();
     return here.is_outside( point( target.posx(), target.posy() ) ) && here.get_abs_sub().z >= 0;
@@ -388,6 +389,17 @@ static void fill_water_collectors( int mmPerHour, bool acid )
     }
 }
 
+double precip_mm_per_hour( precip_class const p )
+// Precipitation rate expressed as the rainfall equivalent if all
+// the precipitation were rain (rather than snow).
+{
+    return
+        p == precip_class::very_light ? 0.5 :
+        p == precip_class::light ? 1.5 :
+        p == precip_class::heavy ? 3   :
+        0;
+}
+
 /**
  * Main routine for wet effects caused by weather.
  * Drenching the player is applied after checks against worn and held items.
@@ -400,7 +412,7 @@ static void fill_water_collectors( int mmPerHour, bool acid )
  * @see map::decay_fields_and_scent
  * @see player::drench
  */
-void wet( Character &target, int amount )
+void wet_character( Character &target, int amount )
 {
     if( !is_creature_outside( target ) ||
         amount <= 0 ||
@@ -430,39 +442,7 @@ void wet( Character &target, int amount )
     target.drench( amount, drenched_parts, false );
 }
 
-void weather_sound( const translation &sound_message, const std::string &sound_effect )
-{
-    Character &player_character = get_player_character();
-    map &here = get_map();
-    if( !player_character.has_effect( effect_sleep ) && !player_character.is_deaf() ) {
-        if( here.get_abs_sub().z >= 0 ) {
-            add_msg( sound_message );
-            if( !sound_effect.empty() ) {
-                sfx::play_variant_sound( "environment", sound_effect, 80, rng( 0, 359 ) );
-            }
-        } else if( one_in( std::max( roll_remainder( 2.0f * here.get_abs_sub().z /
-                                     player_character.mutation_value( "hearing_modifier" ) ), 1 ) ) ) {
-            add_msg( sound_message );
-            if( !sound_effect.empty() ) {
-                sfx::play_variant_sound( "environment", sound_effect,
-                                         ( 80 * player_character.mutation_value( "hearing_modifier" ) ), rng( 0, 359 ) );
-            }
-        }
-    }
-}
-
-double precip_mm_per_hour( precip_class const p )
-// Precipitation rate expressed as the rainfall equivalent if all
-// the precipitation were rain (rather than snow).
-{
-    return
-        p == precip_class::very_light ? 0.5 :
-        p == precip_class::light ? 1.5 :
-        p == precip_class::heavy ? 3   :
-        0;
-}
-
-void handle_weather_effects( const weather_type_id &w )
+void handle_weather_effects( weather_type_id const w )
 {
     //Possible TODO, make npc/monsters affected
     map &here = get_map();
@@ -483,128 +463,12 @@ void handle_weather_effects( const weather_type_id &w )
             wetness = 60;
         }
         here.decay_fields_and_scent( decay_time );
-        wet( player_character, wetness );
+        wet_character( player_character, wetness );
     }
     glare( w );
     g->weather.lightning_active = false;
-
-    for( const weather_effect &current_effect : w->effects ) {
-        if( current_effect.must_be_outside && !is_creature_outside( player_character ) ) {
-            continue;
-        }
-        if( current_effect.time_between > 0_seconds &&
-            !calendar::once_every( current_effect.time_between ) ) {
-            continue;
-        }
-        if( !one_in( current_effect.one_in_chance ) ) {
-            continue;
-        }
-        if( current_effect.lightning && here.get_abs_sub().z >= 0 ) {
-            g->weather.lightning_active = true;
-        }
-        if( current_effect.rain_proof ) {
-            int chance = 0;
-            if( w->precip <= precip_class::light ) {
-                chance = 2;
-            } else if( w->precip >= precip_class::heavy ) {
-                chance = 4;
-            }
-            if( player_character.weapon.has_flag( "RAIN_PROTECT" ) && one_in( chance ) ) {
-                add_msg( _( "Your %s protects you from the weather." ), player_character.weapon.tname() );
-                continue;
-            } else {
-                if( player_character.worn_with_flag( "RAINPROOF" ) && one_in( chance * 2 ) ) {
-                    add_msg( _( "Your clothing protects you from the weather." ) );
-                    continue;
-                } else {
-                    bool has_helmet = false;
-                    if( player_character.is_wearing_power_armor( &has_helmet ) && ( has_helmet ||
-                            one_in( chance * 2 ) ) ) {
-                        add_msg( _( "Your power armor protects you from the weather." ) );
-                        continue;
-                    }
-                }
-            }
-        }
-        if( player_character.get_pain() >= current_effect.pain_max ) {
-            continue;
-        }
-
-        bool spawned = current_effect.spawns.empty();
-        for( const spawn_type &spawn : current_effect.spawns ) {
-            monster target_monster;
-            if( spawn.target.is_empty() ) {
-                //grab a random nearby hostile creature to create a hallucination or copy of
-                Creature *copy = g->get_creature_if( [&spawn]( const Creature & critter ) -> bool {
-                    bool not_self = get_player_character().pos() != critter.pos();
-                    bool in_range = std::round( rl_dist_exact( get_player_character().pos(), critter.pos() ) ) <= spawn.target_range;
-                    bool valid_target = get_player_character().attitude_to( critter ) == Creature::Attitude::HOSTILE;
-                    return not_self && in_range && valid_target;
-                } );
-                if( copy == nullptr ) {
-                    continue;
-                }
-                target_monster = *dynamic_cast<monster *>( copy );
-            } else {
-                target_monster = spawn.target;
-            }
-
-            for( int i = 0; i < spawn.hallucination_count; i++ ) {
-                tripoint point;
-                if( g->find_nearby_spawn_point( player_character, target_monster.type->id, spawn.min_radius,
-                                                spawn.max_radius, point ) ) {
-                    g->spawn_hallucination( point, target_monster.type->id );
-                    spawned = true;
-                }
-            }
-            for( int i = 0; i < spawn.real_count; i++ ) {
-                tripoint point;
-                if( g->find_nearby_spawn_point( player_character, target_monster.type->id, spawn.min_radius,
-                                                spawn.max_radius, point ) ) {
-                    g->place_critter_at( target_monster.type->id, point );
-                    spawned = true;
-                }
-            }
-        }
-        if( !spawned ) {
-            continue;
-        }
-        for( const weather_field &field : current_effect.fields ) {
-            for( const tripoint &dest : get_map().points_in_radius( player_character.pos(), field.radius ) ) {
-                if( !field.outdoor_only || get_map().is_outside( dest ) ) {
-                    get_map().add_field( dest, field.type, field.intensity, field.age );
-                }
-            }
-        }
-        if( current_effect.effect_id.is_valid() ) {
-            if( current_effect.target_part.is_valid() ) {
-                player_character.add_effect( current_effect.effect_id, current_effect.effect_duration,
-                                             current_effect.target_part );
-            } else {
-                player_character.add_effect( current_effect.effect_id, current_effect.effect_duration );
-            }
-        }
-        if( current_effect.trait_id_to_add.is_valid() ) {
-            player_character.set_mutation( current_effect.trait_id_to_add );
-        }
-        if( current_effect.trait_id_to_remove.is_valid() ) {
-            player_character.unset_mutation( current_effect.trait_id_to_remove );
-        }
-        if( !current_effect.damage.empty() ) {
-            if( current_effect.target_part.is_valid() ) {
-                player_character.deal_damage( nullptr, current_effect.target_part, current_effect.damage );
-            } else {
-                for( const bodypart_id &bp : player_character.get_all_body_parts() ) {
-                    player_character.deal_damage( nullptr, bp, current_effect.damage );
-                }
-            }
-        }
-        player_character.mod_healthy( current_effect.healthy );
-        player_character.mod_rad( current_effect.radiation );
-        wet( player_character, current_effect.wet );
-        player_character.mod_pain( current_effect.pain );
-        weather_sound( current_effect.sound_message, current_effect.sound_effect );
-        player_character.add_msg_if_player( current_effect.message );
+    for( const generic_event_type_id event : w->events ) {
+        event->do_event();
     }
 }
 

@@ -14,6 +14,7 @@
 #include "field.h"
 #include "string_id.h"
 #include "translations.h"
+#include "generic_event_type.h"
 #include "type_id.h"
 
 class JsonObject;
@@ -99,47 +100,6 @@ struct weather_requirements {
     time_duration time_passed_min = 0_turns;
     time_duration time_passed_max = 0_turns;
     int one_in_chance = 0;
-};
-
-struct weather_field {
-    field_type_str_id type;
-    int intensity = 0;
-    time_duration age = 0_turns;
-    int radius = 0;
-    bool outdoor_only = false;
-};
-
-struct spawn_type {
-    mtype_id target;
-    int target_range = 0;
-    int hallucination_count = 0;
-    int real_count = 0;
-    int min_radius = 0;
-    int max_radius = 0;
-};
-
-struct weather_effect {
-    int one_in_chance = 0;
-    time_duration time_between = 0_turns;
-    translation message;
-    bool must_be_outside = false;
-    translation sound_message;
-    std::string sound_effect;
-    bool lightning = false;
-    bool rain_proof = false;
-    int pain = 0;
-    int pain_max = 0;
-    int wet = 0;
-    int radiation = 0;
-    int healthy = 0;
-    efftype_id effect_id;
-    time_duration effect_duration = 0_turns;
-    trait_id trait_id_to_add;
-    trait_id trait_id_to_remove;
-    bodypart_str_id target_part;
-    damage_instance damage;
-    std::vector<spawn_type> spawns;
-    std::vector<weather_field> fields;
 };
 
 struct weather_type {
