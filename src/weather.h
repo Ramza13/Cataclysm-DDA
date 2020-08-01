@@ -48,6 +48,7 @@ static constexpr int BODYTEMP_SCORCHING = 9500;
 #include <vector>
 
 class Character;
+class Creature;
 class item;
 struct rl_vec2d;
 struct trap;
@@ -77,7 +78,8 @@ struct weather_sum {
     float sunlight = 0.0f;
     int wind_amount = 0;
 };
-
+bool is_creature_outside( const Creature &target );
+void wet_character( Character &target, int amount );
 weather_type_id get_bad_weather();
 std::string get_shortdirstring( int angle );
 
@@ -152,7 +154,6 @@ int incident_sunlight( weather_type_id wtype,
                        const time_point &t = calendar::turn );
 
 void weather_sound( translation sound_message, std::string sound_effect );
-void wet( Character &target, int amount );
 
 class weather_manager
 {
@@ -185,8 +186,6 @@ class weather_manager
         // Returns outdoor or indoor temperature of given location
         int get_temperature( const tripoint_abs_omt &location );
         void clear_temp_cache();
-        void on_load();
-        static void serialize_all( JsonOut &json );
         static void unserialize_all( JsonIn &jsin );
 };
 
