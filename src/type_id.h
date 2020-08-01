@@ -197,4 +197,7 @@ struct construction;
 using construction_id = int_id<construction>;
 using construction_str_id = string_id<construction>;
 
+struct generic_event_type;
+using generic_event_type_id = string_id<generic_event_type>;
+
 #endif // CATA_SRC_TYPE_ID_H
