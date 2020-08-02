@@ -446,7 +446,7 @@ void handle_weather_effects( weather_type_id const w )
 {
     //Possible TODO, make npc/monsters affected
     map &here = get_map();
-    Character &player_character = get_player_character();
+    Character &target = get_player_character();
     if( w->rains && w->precip != precip_class::none ) {
         fill_water_collectors( precip_mm_per_hour( w->precip ),
                                w->acidic );
@@ -463,12 +463,12 @@ void handle_weather_effects( weather_type_id const w )
             wetness = 60;
         }
         here.decay_fields_and_scent( decay_time );
-        wet_character( player_character, wetness );
+        wet_character( target, wetness );
     }
     glare( w );
     g->weather.lightning_active = false;
     for( const generic_event_type_id event : w->events ) {
-        event->do_event();
+        event->do_event( target.pos() );
     }
 }
 

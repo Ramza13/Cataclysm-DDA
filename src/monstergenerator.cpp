@@ -805,6 +805,9 @@ void mtype::load( const JsonObject &jo, const std::string &src )
         // TODO: really needed? Is an empty `dies` container not allowed?
         dies.push_back( mdeath::normal );
     }
+    for( const std::string &event : jo.get_string_array( "death_events" ) ) {
+        death_events.push_back( generic_event_type_id( event ) );
+    }
 
     if( jo.has_array( "emit_fields" ) ) {
         JsonArray jar = jo.get_array( "emit_fields" );
