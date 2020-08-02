@@ -56,7 +56,7 @@ struct generic_event_type {
         int damage;
         std::vector<spawn_type> spawns;
         std::vector<generic_event_type_field> fields;
-        void do_event() const;
+        void do_event( const tripoint &point ) const;
         void load( const JsonObject &jo, const std::string &src );
         void finalize();
         void check() const;
@@ -71,9 +71,9 @@ const std::vector<generic_event_type> &get_all();
 void finalize_all();
 /** Clear all loaded weather types (invalidating any pointers) */
 void reset();
-/** Load weather type from JSON definition */
+/** Load generic event type from JSON definition */
 void load( const JsonObject &jo, const std::string &src );
 /** Checks all loaded from JSON are valid */
 void check_consistency();
-} // namespace weather_types
+} // namespace generic_event_types
 #endif // CATA_SRC_GENERIC_EVENT_TYPE_H
