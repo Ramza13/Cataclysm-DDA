@@ -200,4 +200,7 @@ using construction_str_id = string_id<construction>;
 struct generic_event_type;
 using generic_event_type_id = string_id<generic_event_type>;
 
+struct generic_requirement_type;
+using generic_requirement_type_id = string_id<generic_requirement_type>;
+
 #endif // CATA_SRC_TYPE_ID_H

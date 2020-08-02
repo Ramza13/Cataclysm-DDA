@@ -38,6 +38,7 @@
 #include "flag.h"
 #include "gates.h"
 #include "generic_event_type.h"
+#include "generic_requirement_type.h"
 #include "harvest.h"
 #include "item_action.h"
 #include "item_category.h"
@@ -206,6 +207,7 @@ void DynamicDataLoader::initialize()
     add( "relic_procgen_data", &relic_procgen_data::load_relic_procgen_data );
     add( "field_type", &field_types::load );
     add( "generic_event_type", &generic_event_types::load );
+    add( "generic_requirement_type", &generic_requirement_types::load );
     add( "weather_type", &weather_types::load );
     add( "ammo_effect", &ammo_effects::load );
     add( "emit", &emit::load_emit );
@@ -500,6 +502,7 @@ void DynamicDataLoader::unload_data()
     field_types::reset();
     gates::reset();
     generic_event_types::reset();
+    generic_requirement_types::reset();
     harvest_list::reset();
     item_controller->reset();
     json_flag::reset();
@@ -574,6 +577,7 @@ void DynamicDataLoader::finalize_loaded_data( loading_ui &ui )
     const std::vector<named_entry> entries = {{
             { _( "Body parts" ), &body_part_type::finalize_all },
             { _( "Generic event types" ), &generic_event_types::finalize_all },
+            { _( "Generic requirements types" ), &generic_requirement_types::finalize_all },
             { _( "Weather types" ), &weather_types::finalize_all },
             { _( "Field types" ), &field_types::finalize_all },
             { _( "Ammo effects" ), &ammo_effects::finalize_all },

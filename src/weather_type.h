@@ -14,6 +14,7 @@
 #include "string_id.h"
 #include "translations.h"
 #include "generic_event_type.h"
+#include "generic_requirement_type.h"
 #include "type_id.h"
 
 class JsonObject;
@@ -48,17 +49,6 @@ struct enum_traits<sun_intensity_type > {
     static constexpr sun_intensity_type last = sun_intensity_type::last;
 };
 
-enum class weather_time_requirement_type : int {
-    day,
-    night,
-    both,
-    last
-};
-template<>
-struct enum_traits<weather_time_requirement_type> {
-    static constexpr weather_time_requirement_type last = weather_time_requirement_type::last;
-};
-
 enum weather_sound_category : int {
     silent,
     drizzle,
@@ -84,23 +74,6 @@ struct weather_animation_t {
     char     glyph;
 };
 
-struct weather_requirements {
-    int windpower_min = INT_MIN;
-    int windpower_max = INT_MAX;
-    int temperature_min = INT_MIN;
-    int temperature_max = INT_MAX;
-    int pressure_min = INT_MIN;
-    int pressure_max = INT_MAX;
-    int humidity_min = INT_MIN;
-    int humidity_max = INT_MAX;
-    bool humidity_and_pressure = true;
-    weather_time_requirement_type time;
-    std::vector<weather_type_id> required_weathers;
-    time_duration time_passed_min;
-    time_duration time_passed_max;
-    int one_in_chance;
-};
-
 struct weather_type {
     public:
         friend class generic_factory<weather_type>;
@@ -123,7 +96,7 @@ struct weather_type {
         weather_animation_t weather_animation; //!< Information for weather animations
         weather_sound_category sound_category; //!< if playing sound effects what to use
         sun_intensity_type sun_intensity; //!< strength of the sun
-        weather_requirements requirements; //!< when this weather should happen
+        generic_requirement_type_id requirement_id; //!< when this weather should happen
         time_duration duration_min;
         time_duration duration_max;
         time_duration time_between_min;

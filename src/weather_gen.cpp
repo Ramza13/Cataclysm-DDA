@@ -9,6 +9,7 @@
 
 #include "cata_utility.h"
 #include "game_constants.h"
+#include "generic_requirement_type.h"
 #include "json.h"
 #include "math_defines.h"
 #include "point.h"
@@ -182,55 +183,10 @@ weather_type_id weather_generator::get_weather_conditions( const w_point &w,
     for( const std::string &weather_type : weather_types ) {
         weather_type_id type = weather_type_id( weather_type );
 
-        const weather_requirements &requires = type->requirements;
-        if( ( w.time < ( calendar::start_of_cataclysm + requires.time_passed_min ) ) ||
-            ( requires.time_passed_max != 0_seconds &&
-              ( w.time > ( calendar::start_of_cataclysm + requires.time_passed_max ) ) ) ) {
-            continue;
+        const generic_requirement_type_id &requires = type->requirement_id;
+        if( requires->test( w, current_conditions ) ) {
+            current_conditions = type;
         }
-        std::map<weather_type_id, time_point>::iterator instance = next_instance_allowed.find( type );
-        if( instance != next_instance_allowed.end() && instance->second > calendar::turn ) {
-            continue;
-        }
-
-        bool test_pressure =
-            requires.pressure_max > w.pressure &&
-            requires.pressure_min < w.pressure;
-        bool test_humidity =
-            requires.humidity_max > w.humidity &&
-            requires.humidity_min < w.humidity;
-        if( ( requires.humidity_and_pressure && !( test_pressure && test_humidity ) ) ||
-            ( !requires.humidity_and_pressure && !( test_pressure || test_humidity ) ) ) {
-            continue;
-        }
-
-        bool test_temperature =
-            requires.temperature_max > w.temperature &&
-            requires.temperature_min < w.temperature;
-        bool test_windspeed =
-            requires.windpower_max > w.windpower &&
-            requires.windpower_min < w.windpower;
-        if( !( test_temperature && test_windspeed ) ) {
-            continue;
-        }
-
-        if( !requires.required_weathers.empty() ) {
-            if( std::find( requires.required_weathers.begin(), requires.required_weathers.end(),
-                           current_conditions ) == requires.required_weathers.end() ) {
-                continue;
-            }
-        }
-
-        if( !( requires.time == weather_time_requirement_type::both ||
-               ( requires.time == weather_time_requirement_type::day && is_day( calendar::turn ) ) ||
-               ( requires.time == weather_time_requirement_type::night && !is_day( calendar::turn ) ) ) ) {
-            continue;
-        }
-        if( requires.one_in_chance != 0 && !one_in( requires.one_in_chance ) ) {
-            continue;
-        }
-
-        current_conditions = type;
     }
     return current_conditions;
 }
