@@ -1,0 +1,84 @@
+[
+  {
+    "id": "true",
+    "type": "generic_requirement_type"
+  },
+  {
+    "id": "weather_sunny",
+    "type": "generic_requirement_type",
+    "pressure_min": 1020,
+    "humidity_max": 70,
+    "time": "day"
+  },
+  {
+    "id": "weather_cloudy",
+    "type": "generic_requirement_type",
+    "pressure_max": 1010,
+    "humidity_min": 40
+  },
+  {
+    "id": "weather_light_drizzle",
+    "type": "generic_requirement_type",
+    "pressure_max": 1003,
+    "humidity_min": 96,
+    "humidity_and_pressure": false,
+    "required_weathers": [ "cloudy" ]
+  },
+  {
+    "id": "weather_drizzle",
+    "type": "generic_requirement_type",
+    "pressure_max": 1000,
+    "humidity_min": 97,
+    "humidity_and_pressure": false,
+    "required_weathers": [ "light_drizzle" ]
+  },
+  {
+    "id": "weather_rain",
+    "type": "generic_requirement_type",
+    "pressure_max": 993,
+    "humidity_min": 98,
+    "humidity_and_pressure": false,
+    "required_weathers": [ "light_drizzle", "drizzle" ]
+  },
+  {
+    "id": "weather_thunder",
+    "type": "generic_requirement_type",
+    "pressure_max": 996,
+    "required_weathers": [ "rain" ]
+  },
+  {
+    "id": "weather_lightning",
+    "type": "generic_requirement_type",
+    "pressure_max": 990,
+    "required_weathers": [ "thunder" ]
+  },
+  {
+    "id": "weather_acid_drizzle",
+    "type": "generic_requirement_type",
+    "required_weathers": [ "drizzle" ]
+  },
+  {
+    "id": "weather_acid_rain",
+    "type": "generic_requirement_type",
+    "required_weathers": [ "rain" ]
+  },
+  {
+    "id": "weather_flurries",
+    "type": "generic_requirement_type",
+    "temperature_max": 33,
+    "required_weathers": [ "drizzle" ]
+  },
+  {
+    "id": "weather_snowing",
+    "type": "generic_requirement_type",
+    "temperature_max": 33,
+    "required_weathers": [ "rain", "thunder", "lightning" ]
+  },
+  {
+    "id": "weather_snowstorm",
+    "type": "generic_requirement_type",
+    "temperature_max": 33,
+    "windpower_min": 15,
+    "required_weathers": [ "thunder", "lightning" ]
+  }
+]

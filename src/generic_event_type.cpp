@@ -70,7 +70,7 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "message", message );
     optional( jo, was_loaded, "sound_message", sound_message );
     optional( jo, was_loaded, "sound_effect", sound_effect, "" );
-    mandatory( jo, was_loaded, "must_be_outside", must_be_outside );
+    optional( jo, was_loaded, "must_be_outside", must_be_outside, false );
     optional( jo, was_loaded, "one_in_chance", one_in_chance, -1 );
     optional( jo, was_loaded, "time_between", time_between );
     optional( jo, was_loaded, "lightning", lightning, false );
@@ -134,7 +134,7 @@ void weather_sound( translation sound_message, std::string sound_effect )
 }
 
 
-void generic_event_type::do_event() const
+void generic_event_type::do_event( const tripoint &point ) const
 {
     //Possible TODO, make npc/monsters affected
     map &here = get_map();
@@ -279,14 +279,6 @@ const std::vector<generic_event_type> &generic_event_types::get_all()
 
 void generic_event_types::check_consistency()
 {
-    /*if( !WEATHER_CLEAR.is_valid() ) {
-        debugmsg( "Weather type clear is required." );
-        abort();
-    }
-    if( !WEATHER_NULL.is_valid() ) {
-        debugmsg( "Weather type null is required." );
-        abort();
-    }*/
     generic_event_type_factory.check();
 }
 
