@@ -62,6 +62,24 @@ void generic_requirement_type::check() const
             abort();
         }
     }
+    for( const trait_id &trait : required_traits ) {
+        if( !trait.is_valid() ) {
+            debugmsg( "trait %s does not exist.", trait.c_str() );
+            abort();
+        }
+    }
+    for( const efftype_id &effect : required_effects ) {
+        if( !effect.is_valid() ) {
+            debugmsg( "effect %s does not exist.", effect.c_str() );
+            abort();
+        }
+    }
+    for( const bionic_id &cbm : required_cbms ) {
+        if( !cbm.is_valid() ) {
+            debugmsg( "cbm %s does not exist.", cbm.c_str() );
+            abort();
+        }
+    }
 }
 
 void generic_requirement_type::load( const JsonObject &jo, const std::string & )
@@ -82,14 +100,48 @@ void generic_requirement_type::load( const JsonObject &jo, const std::string & )
          jo.get_string_array( "required_weathers" ) ) {
         required_weathers.push_back( weather_type_id( required_weather ) );
     }
+    for( const std::string &required_trait :
+         jo.get_string_array( "required_traits" ) ) {
+        required_traits.push_back( trait_id( required_trait ) );
+    }
+    for( const std::string &required_effect :
+         jo.get_string_array( "required_effects" ) ) {
+        required_effects.push_back( efftype_id( required_effect ) );
+    }
+    for( const std::string &required_cbm :
+         jo.get_string_array( "required_cbms" ) ) {
+        required_cbms.push_back( bionic_id( required_cbm ) );
+    }
     optional( jo, was_loaded, "time_passed_min", time_passed_min,
               0_seconds );
     optional( jo, was_loaded, "time_passed_max", time_passed_max,
               0_seconds );
+    optional( jo, was_loaded, "once_every", once_every,
+              1_seconds );
     optional( jo, was_loaded, "one_in_chance", one_in_chance, 0 );
+    optional( jo, was_loaded, "pain_max", pain_max, INT_MAX );
+    optional( jo, was_loaded, "pain_max", pain_min, INT_MIN );
+    optional( jo, was_loaded, "height_max", height_max, INT_MAX );
+    optional( jo, was_loaded, "height_min", height_min, INT_MIN );
+    optional( jo, was_loaded, "must_be_outside", must_be_outside, false );
 }
 
 bool generic_requirement_type::test( const w_point &point,
+                                     weather_type_id current_conditions ) const
+{
+    return test( point, get_player_character(), current_conditions );
+}
+
+bool generic_requirement_type::test( const tripoint &point, Character &target,
+                                     weather_type_id current_conditions ) const
+{
+    w_point w( get_weather().get_cur_weather_gen().get_weather( point, calendar::turn,
+               g->get_seed() ) );
+
+    return test( w, target, current_conditions );
+}
+
+bool generic_requirement_type::test( const w_point &point, Character &target,
                                      weather_type_id current_conditions ) const
 {
     if( ( point.time < ( calendar::start_of_cataclysm + time_passed_min ) ) ||
@@ -99,10 +151,18 @@ bool generic_requirement_type::test( const w_point &point,
     }
     std::map<weather_type_id, time_point>::iterator instance = g->weather.next_instance_allowed.find(
                 current_conditions );
+    if( !calendar::once_every( once_every ) ) {
+        return false;
+    }
     if( instance != g->weather.next_instance_allowed.end() && instance->second > calendar::turn ) {
         return false;
     }
-
+    if( one_in_chance != 0 && !one_in( one_in_chance ) ) {
+        return false;
+    }
+    if( target.posz() > height_max || target.posz() < height_min ) {
+        return false;
+    }
     bool test_pressure =
         pressure_max > point.pressure &&
         pressure_min < point.pressure;
@@ -133,15 +193,37 @@ bool generic_requirement_type::test( const w_point &point,
             return false;
         }
     }
+    if( must_be_outside && !is_creature_outside( target ) ) {
+        return false;
+    }
+    for( trait_id required_trait : required_traits ) {
+        if( !target.has_trait( required_trait ) ) {
+            return false;
+        }
+    }
+    for( efftype_id required_effect : required_effects ) {
+        if( !target.has_effect( required_effect ) ) {
+            return false;
+        }
+    }
+    for( bionic_id required_cbm : required_cbms ) {
+        if( !target.has_bionic( required_cbm ) ) {
+            return false;
+        }
+    }
 
     if( !( time == time_requirement_type::both ||
            ( time == time_requirement_type::day && is_day( calendar::turn ) ) ||
            ( time == time_requirement_type::night && !is_day( calendar::turn ) ) ) ) {
         return false;
     }
-    if( one_in_chance != 0 && !one_in( one_in_chance ) ) {
+    if( target.get_pain() < pain_min || target.get_pain() > pain_max ) {
         return false;
     }
+
+
+
+
     return true;
 }
 

@@ -208,6 +208,7 @@ void DynamicDataLoader::initialize()
     add( "field_type", &field_types::load );
     add( "generic_event_type", &generic_event_types::load );
     add( "generic_requirement_type", &generic_requirement_types::load );
+    add( "generic_pair", &generic_event_types::load_pair );
     add( "weather_type", &weather_types::load );
     add( "ammo_effect", &ammo_effects::load );
     add( "emit", &emit::load_emit );

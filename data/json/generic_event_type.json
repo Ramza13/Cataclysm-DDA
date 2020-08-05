@@ -2,16 +2,12 @@
   {
     "id": "thunder",
     "type": "generic_event_type",
-    "one_in_chance": 50,
-    "must_be_outside": false,
     "sound_message": "You hear a distant rumble of thunder.",
     "sound_effect": "thunder_far"
   },
   {
     "id": "lightning",
     "type": "generic_event_type",
-    "one_in_chance": 600,
-    "must_be_outside": false,
     "message": "A flash of lightning illuminates your surroundings!.",
     "sound_effect": "thunder_near",
     "lightning": true
@@ -20,32 +16,26 @@
     "id": "acid_drizzle",
     "type": "generic_event_type",
     "time_between": "3 minutes",
-    "must_be_outside": true,
     "message": "The acid rain stings, but is mostly harmless for now…",
     "rain_proof": true,
-    "pain_max": 10,
     "pain": 1
   },
   {
     "id": "acid_rain",
     "type": "generic_event_type",
     "time_between": "2 seconds",
-    "must_be_outside": true,
     "message": "The acid rain burns!",
     "rain_proof": true,
-    "pain_max": 100,
     "pain": 3
   },
   {
     "id": "snow",
     "type": "generic_event_type",
-    "must_be_outside": true,
     "wet": 10
   },
   {
     "id": "snowstorm",
     "type": "generic_event_type",
-    "must_be_outside": true,
     "wet": 40
   }
 ]

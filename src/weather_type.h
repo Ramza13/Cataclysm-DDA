@@ -91,7 +91,6 @@ struct weather_type {
         precip_class precip;          //!< Amount of associated precipitation.
         bool rains;                   //!< Whether said precipitation falls as rain.
         bool acidic;                  //!< Whether said precipitation is acidic.
-        std::vector<generic_event_type_id> events;      //!< vector for weather events.
         std::string tiles_animation;  //!< string for tiles animation
         weather_animation_t weather_animation; //!< Information for weather animations
         weather_sound_category sound_category; //!< if playing sound effects what to use

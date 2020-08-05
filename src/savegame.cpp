@@ -106,6 +106,9 @@ void game::serialize( std::ostream &fout )
     json.member( "stats_tracker", *stats_tracker_ptr );
     json.member( "achievements_tracker", *achievements_tracker_ptr );
 
+    //save generic_events,generic_requirement pairs
+    json.member( "generic_events_vector", generic_events_vector );
+
     json.member( "player", u );
     Messages::serialize( json );
 
@@ -236,6 +239,8 @@ void game::unserialize( std::istream &fin )
         data.read( "player", u );
         data.read( "stats_tracker", *stats_tracker_ptr );
         data.read( "achievements_tracker", *achievements_tracker_ptr );
+
+        data.read( "generic_events_vector", generic_events_vector );
         Messages::deserialize( data );
 
     } catch( const JsonError &jsonerr ) {

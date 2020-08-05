@@ -1,0 +1,32 @@
+[
+  {
+    "type": "generic_pair",
+    "require": "thunder_effect",
+    "event": "thunder"
+  },
+  {
+    "type": "generic_pair",
+    "require": "lightning_effect",
+    "event": "lightning"
+  },
+  {
+    "type": "generic_pair",
+    "require": "acid_drizzle_effect",
+    "event": "acid_drizzle"
+  },
+  {
+    "type": "generic_pair",
+    "require": "acid_rain_effect",
+    "event": "acid_rain"
+  },
+  {
+    "type": "generic_pair",
+    "require": "snow_effect",
+    "event": "snow"
+  },
+  {
+    "type": "generic_pair",
+    "require": "snowstorm_effect",
+    "event": "snowstorm"
+  }
+]
