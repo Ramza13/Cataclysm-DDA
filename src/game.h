@@ -24,6 +24,8 @@
 #include "cursesdef.h"
 #include "enums.h"
 #include "game_constants.h"
+#include "generic_event_type.h"
+#include "generic_requirement_type.h"
 #include "item_location.h"
 #include "memory_fast.h"
 #include "monster.h"
@@ -1027,6 +1029,7 @@ class game
         int turnssincelastmon = 0; // needed for auto run mode
 
         weather_manager weather;
+        std::vector<std::pair<generic_requirement_type_id, generic_event_type_id>> generic_events_vector;
 
         int mostseen = 0; // # of mons seen last turn; if this increases, set safe_mode to SAFE_MODE_STOP
     private:

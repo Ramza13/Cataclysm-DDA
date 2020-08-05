@@ -53,8 +53,6 @@ std::string enum_to_string<sun_intensity_type>( sun_intensity_type data )
     abort();
 }
 
-
-
 template<>
 std::string enum_to_string<weather_sound_category>( weather_sound_category data )
 {
@@ -106,12 +104,6 @@ void weather_type::check() const
         debugmsg( "Generic requirement type %s does not exist.", requirement_id.c_str() );
         abort();
     }
-    for( const generic_event_type_id &event : events ) {
-        if( !event.is_valid() ) {
-            debugmsg( "Event type %s does not exist.", event.c_str() );
-            abort();
-        }
-    }
 }
 
 void weather_type::load( const JsonObject &jo, const std::string & )
@@ -150,9 +142,6 @@ void weather_type::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "time_between_max", time_between_max, 0_seconds );
     if( time_between_min > time_between_max ) {
         jo.throw_error( "time_between_min must be less than or equal to time_between_max" );
-    }
-    for( const std::string &event : jo.get_string_array( "events" ) ) {
-        events.push_back( generic_event_type_id( event ) );
     }
     weather_animation = { 0.0f, c_white, '?' };
     if( jo.has_member( "weather_animation" ) ) {

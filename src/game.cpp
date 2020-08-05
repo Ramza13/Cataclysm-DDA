@@ -1601,7 +1601,7 @@ bool game::do_turn()
     if( levz >= 0 && !u.is_underwater() ) {
         handle_weather_effects( weather.weather_id );
     }
-
+    generic_event_types::process_generic_pairs();
     const bool player_is_sleeping = u.has_effect( effect_sleep );
     bool wait_redraw = false;
     std::string wait_message;
