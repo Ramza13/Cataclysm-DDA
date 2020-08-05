@@ -467,9 +467,6 @@ void handle_weather_effects( weather_type_id const w )
     }
     glare( w );
     g->weather.lightning_active = false;
-    for( const generic_event_type_id event : w->events ) {
-        event->do_event( target.pos() );
-    }
 }
 
 static std::string to_string( const weekdays &d )

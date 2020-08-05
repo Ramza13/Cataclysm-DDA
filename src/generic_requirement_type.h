@@ -13,6 +13,7 @@
 
 template<typename T>
 class generic_factory;
+class Character;
 
 struct w_point;
 
@@ -41,12 +42,23 @@ struct generic_requirement_type {
         int humidity_min = INT_MIN;
         int humidity_max = INT_MAX;
         bool humidity_and_pressure = true;
+        bool must_be_outside;
         time_requirement_type time;
         std::vector<weather_type_id> required_weathers;
+        std::vector<trait_id> required_traits;
+        std::vector<bionic_id> required_cbms;
+        std::vector<efftype_id> required_effects;
         time_duration time_passed_min;
         time_duration time_passed_max;
+        time_duration once_every;
         int one_in_chance;
-        bool test( const w_point &point, weather_type_id current_condtions ) const;
+        int pain_max;
+        int pain_min;
+        int height_max;
+        int height_min;
+        bool test( const w_point &point, weather_type_id current_conditions ) const;
+        bool test( const tripoint &point, Character &target, weather_type_id current_conditions ) const;
+        bool test( const w_point &point, Character &target, weather_type_id current_conditions ) const;
         void load( const JsonObject &jo, const std::string &src );
         void finalize();
         void check() const;
@@ -55,9 +67,9 @@ struct generic_requirement_type {
 
 namespace generic_requirement_types
 {
-/** Get all currently loaded weather types */
+/** Get all currently loaded generic requirements */
 const std::vector<generic_requirement_type> &get_all();
-/** Finalize all loaded weather types */
+/** Finalize all loaded generic requirements */
 void finalize_all();
 /** Clear all loaded weather types (invalidating any pointers) */
 void reset();

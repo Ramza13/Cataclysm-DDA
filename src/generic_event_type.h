@@ -30,6 +30,13 @@ struct spawn_type {
     int max_radius;
 };
 
+struct effect_info {
+    time_duration length = 0_seconds;
+    int intensity = 0;
+    efftype_id id;
+    bodypart_str_id target_part;
+};
+
 struct generic_event_type {
     public:
         friend class generic_factory<generic_event_type>;
@@ -38,20 +45,21 @@ struct generic_event_type {
         int one_in_chance;
         time_duration time_between;
         translation message;
-        bool must_be_outside;
         translation sound_message;
         std::string sound_effect;
         bool lightning;
         bool rain_proof;
         int pain;
-        int pain_max;
         int wet;
         int radiation;
         int healthy;
-        efftype_id effect_id;
-        time_duration effect_duration;
-        trait_id trait_id_to_add;
-        trait_id trait_id_to_remove;
+        weather_type_id weather_change;
+        std::vector<trait_id> traits_to_add;
+        std::vector<trait_id> traits_to_remove;
+        std::vector<bionic_id> cbms_to_add;
+        std::vector<bionic_id> cbms_to_remove;
+        std::vector<effect_info> effects_to_add;
+        std::vector<efftype_id> effects_to_remove;
         bodypart_str_id target_part;
         int damage;
         std::vector<spawn_type> spawns;
@@ -65,11 +73,13 @@ struct generic_event_type {
 
 namespace generic_event_types
 {
-/** Get all currently loaded weather types */
+void load_pair( const JsonObject &jo, const std::string & );
+void process_generic_pairs();
+/** Get all currently loaded generic events */
 const std::vector<generic_event_type> &get_all();
-/** Finalize all loaded weather types */
+/** Finalize all loaded generic event types */
 void finalize_all();
-/** Clear all loaded weather types (invalidating any pointers) */
+/** Clear all loaded generic event types (invalidating any pointers) */
 void reset();
 /** Load generic event type from JSON definition */
 void load( const JsonObject &jo, const std::string &src );

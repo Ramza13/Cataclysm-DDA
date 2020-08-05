@@ -80,5 +80,45 @@
     "temperature_max": 33,
     "windpower_min": 15,
     "required_weathers": [ "thunder", "lightning" ]
+  },
+  {
+    "id": "thunder_effect",
+    "type": "generic_requirement_type",
+    "required_weathers": [ "thunder", "lightning" ],
+    "one_in_chance": 50,
+    "height_min": 0
+  },
+  {
+    "id": "lightning_effect",
+    "type": "generic_requirement_type",
+    "required_weathers": [ "lightning" ],
+    "one_in_chance": 600,
+    "height_min": 0
+  },
+  {
+    "id": "acid_drizzle_effect",
+    "type": "generic_requirement_type",
+    "required_weathers": [ "acid_drizzle" ],
+    "pain_max": 10,
+    "must_be_outside": true
+  },
+  {
+    "id": "acid_rain_effect",
+    "type": "generic_requirement_type",
+    "required_weathers": [ "acid_rain" ],
+    "pain_max": 100,
+    "must_be_outside": true
+  },
+  {
+    "id": "snow_effect",
+    "type": "generic_requirement_type",
+    "required_weathers": [ "snow" ],
+    "must_be_outside": true
+  },
+  {
+    "id": "snowstorm_effect",
+    "type": "generic_requirement_type",
+    "required_weathers": [ "snowstorm" ],
+    "must_be_outside": true
   }
 ]
