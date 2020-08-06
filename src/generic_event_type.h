@@ -43,12 +43,10 @@ struct generic_event_type {
         bool was_loaded = false;
         generic_event_type_id id;
         int one_in_chance;
-        time_duration time_between;
         translation message;
         translation sound_message;
         std::string sound_effect;
         bool lightning;
-        bool rain_proof;
         int pain;
         int wet;
         int radiation;

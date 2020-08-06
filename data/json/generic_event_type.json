@@ -15,17 +15,13 @@
   {
     "id": "acid_drizzle",
     "type": "generic_event_type",
-    "time_between": "3 minutes",
     "message": "The acid rain stings, but is mostly harmless for now…",
-    "rain_proof": true,
     "pain": 1
   },
   {
     "id": "acid_rain",
     "type": "generic_event_type",
-    "time_between": "2 seconds",
     "message": "The acid rain burns!",
-    "rain_proof": true,
     "pain": 3
   },
   {
