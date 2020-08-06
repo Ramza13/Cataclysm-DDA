@@ -169,7 +169,7 @@ weather_type_id current_weather( const tripoint &location, const time_point &t )
     if( g->weather.weather_override != WEATHER_NULL ) {
         return g->weather.weather_override;
     }
-    return wgen.get_weather_conditions( location, t, g->get_seed(), g->weather.next_instance_allowed );
+    return wgen.get_weather_conditions( location, t, g->get_seed() );
 }
 
 ////// Funnels.
@@ -562,7 +562,7 @@ std::string weather_forecast( const point_abs_sm &abs_sm_pos )
         const auto wgen = get_weather().get_cur_weather_gen();
         for( time_point i = last_hour + d * 12_hours; i < last_hour + ( d + 1 ) * 12_hours; i += 1_hours ) {
             w_point w = wgen.get_weather( abs_ms_pos, i, g->get_seed() );
-            forecast = std::max( forecast, wgen.get_weather_conditions( w, g->weather.next_instance_allowed ) );
+            forecast = std::max( forecast, wgen.get_weather_conditions( w ) );
             high = std::max( high, w.temperature );
             low = std::min( low, w.temperature );
         }
@@ -916,13 +916,11 @@ void weather_manager::update_weather()
                                      g->get_seed() );
         weather_type_id old_weather = weather_id;
         weather_id = weather_override == WEATHER_NULL ?
-                     weather_gen.get_weather_conditions( w, next_instance_allowed )
+                     weather_gen.get_weather_conditions( w )
                      : weather_override;
         sfx::do_ambient();
         temperature = w.temperature;
         lightning_active = false;
-        next_instance_allowed[weather_id] = calendar::turn + rng( weather_id->time_between_min,
-                                            weather_id->time_between_max );
         nextweather = calendar::turn + rng( weather_id->duration_min, weather_id->duration_max );
         map &here = get_map();
         if( weather_id != old_weather && weather_id->dangerous &&

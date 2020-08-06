@@ -168,16 +168,14 @@ w_point weather_generator::get_weather( const tripoint &location, const time_poi
 }
 
 weather_type_id weather_generator::get_weather_conditions( const tripoint &location,
-        const time_point &t, unsigned seed,
-        std::map<weather_type_id, time_point> &next_instance_allowed ) const
+        const time_point &t, unsigned seed ) const
 {
     w_point w( get_weather( location, t, seed ) );
-    weather_type_id wt = get_weather_conditions( w, next_instance_allowed );
+    weather_type_id wt = get_weather_conditions( w );
     return wt;
 }
 
-weather_type_id weather_generator::get_weather_conditions( const w_point &w,
-        std::map<weather_type_id, time_point> &next_instance_allowed ) const
+weather_type_id weather_generator::get_weather_conditions( const w_point &w ) const
 {
     weather_type_id current_conditions = WEATHER_CLEAR;
     for( const std::string &weather_type : weather_types ) {
@@ -248,8 +246,7 @@ int weather_generator::get_water_temperature() const
     return water_temperature;
 }
 
-void weather_generator::test_weather( unsigned seed,
-                                      std::map<weather_type_id, time_point> &next_instance_allowed ) const
+void weather_generator::test_weather( unsigned seed ) const
 {
     // Outputs a Cata year's worth of weather data to a CSV file.
     // Usage:
@@ -264,7 +261,7 @@ void weather_generator::test_weather( unsigned seed,
         const time_point end = begin + 2 * calendar::year_length();
         for( time_point i = begin; i < end; i += 20_minutes ) {
             w_point w = get_weather( tripoint_zero, to_turn<int>( i ), seed );
-            weather_type_id conditions = get_weather_conditions( w, next_instance_allowed );
+            weather_type_id conditions = get_weather_conditions( w );
 
             int year = to_turns<int>( i - calendar::turn_zero ) / to_turns<int>
                        ( calendar::year_length() ) + 1;

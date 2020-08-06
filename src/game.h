@@ -1026,6 +1026,9 @@ class game
 
         weather_manager weather;
         std::vector<std::pair<generic_requirement_type_id, generic_event_type_id>> generic_events_vector;
+        std::vector<std::pair<time_point, generic_event_type_id>> queued_generic_events;
+        std::map<std::string, bool> generic_variable_map;
+        std::map<generic_requirement_type_id, time_point> next_instance_allowed;
 
         int mostseen = 0; // # of mons seen last turn; if this increases, set safe_mode to SAFE_MODE_STOP
     private:
