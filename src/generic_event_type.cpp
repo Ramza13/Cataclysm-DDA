@@ -106,9 +106,7 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "message", message );
     optional( jo, was_loaded, "sound_message", sound_message );
     optional( jo, was_loaded, "sound_effect", sound_effect, "" );
-    optional( jo, was_loaded, "time_between", time_between );
     optional( jo, was_loaded, "lightning", lightning, false );
-    optional( jo, was_loaded, "rain_proof", rain_proof, false );
     optional( jo, was_loaded, "pain", pain, 0 );
     optional( jo, was_loaded, "wet", wet, 0 );
     optional( jo, was_loaded, "radiation", radiation, 0 );
@@ -196,36 +194,8 @@ void generic_event_type::do_event( const tripoint &point ) const
     weather_manager wm = get_weather();
     Character &target = get_player_character();
 
-    if( time_between > 0_seconds && !calendar::once_every( time_between ) ) {
-        return;
-    }
     if( lightning && here.get_abs_sub().z >= 0 ) {
         wm.lightning_active = true;
-    }
-    if( rain_proof ) {
-        int chance = 0;
-        if( wm.weather_id->precip <= precip_class::light ) {
-            chance = 2;
-        } else if( wm.weather_id->precip >= precip_class::heavy ) {
-            chance = 4;
-        }
-        if( target.weapon.has_flag( "RAIN_PROTECT" ) && one_in( chance ) ) {
-            target.add_msg_if_player( _( "Your %s protects you from the weather." ),
-                                      target.weapon.tname() );
-            return;
-        } else {
-            if( target.worn_with_flag( "RAINPROOF" ) && one_in( chance * 2 ) ) {
-                target.add_msg_if_player( _( "Your clothing protects you from the weather." ) );
-                return;
-            } else {
-                bool has_helmet = false;
-                if( target.is_wearing_power_armor( &has_helmet ) && ( has_helmet ||
-                        one_in( chance * 2 ) ) ) {
-                    target.add_msg_if_player( _( "Your power armor protects you from the weather." ) );
-                    return;
-                }
-            }
-        }
     }
 
     bool spawned = spawns.empty();
@@ -328,6 +298,17 @@ void generic_event_types::load_pair( const JsonObject &jo, const std::string & )
 
 void generic_event_types::process_generic_pairs()
 {
+    std::vector<std::pair<time_point, generic_event_type_id>>::iterator queued_event =
+                g->queued_generic_events.begin();
+
+    while( queued_event != g->queued_generic_events.end() ) {
+        if( queued_event->first <= calendar::turn ) {
+            queued_event->second->do_event( get_player_character().pos() );
+            queued_event = g->queued_generic_events.erase( queued_event );
+        } else {
+            ++queued_event;
+        }
+    }
     for( std::pair<generic_requirement_type_id, generic_event_type_id> require_event :
          g->generic_events_vector ) {
         if( require_event.first->test( get_player_character().pos(), get_player_character(),
