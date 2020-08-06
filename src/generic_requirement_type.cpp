@@ -124,6 +124,8 @@ void generic_requirement_type::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "height_max", height_max, INT_MAX );
     optional( jo, was_loaded, "height_min", height_min, INT_MIN );
     optional( jo, was_loaded, "must_be_outside", must_be_outside, false );
+    optional( jo, was_loaded, "time_between", time_between, 0_seconds );
+    optional( jo, was_loaded, "rain_proof", rain_proof, false );
 }
 
 bool generic_requirement_type::test( const w_point &point,
@@ -144,17 +146,17 @@ bool generic_requirement_type::test( const tripoint &point, Character &target,
 bool generic_requirement_type::test( const w_point &point, Character &target,
                                      weather_type_id current_conditions ) const
 {
+    if( !calendar::once_every( once_every ) ) {
+        return false;
+    }
     if( ( point.time < ( calendar::start_of_cataclysm + time_passed_min ) ) ||
         ( time_passed_max != 0_seconds &&
           ( point.time > ( calendar::start_of_cataclysm + time_passed_max ) ) ) ) {
         return false;
     }
-    std::map<weather_type_id, time_point>::iterator instance = g->weather.next_instance_allowed.find(
-                current_conditions );
-    if( !calendar::once_every( once_every ) ) {
-        return false;
-    }
-    if( instance != g->weather.next_instance_allowed.end() && instance->second > calendar::turn ) {
+    std::map<generic_requirement_type_id, time_point>::iterator instance =
+        g->next_instance_allowed.find( id );
+    if( instance != g->next_instance_allowed.end() && instance->second > calendar::turn ) {
         return false;
     }
     if( one_in_chance != 0 && !one_in( one_in_chance ) ) {
@@ -183,11 +185,10 @@ bool generic_requirement_type::test( const w_point &point, Character &target,
     if( !( test_temperature && test_windspeed ) ) {
         return false;
     }
-
+    if( current_conditions == WEATHER_NULL ) {
+        current_conditions = get_weather().weather_id;
+    }
     if( !required_weathers.empty() ) {
-        if( current_conditions == WEATHER_NULL ) {
-            current_conditions = get_weather().weather_id;
-        }
         if( std::find( required_weathers.begin(), required_weathers.end(),
                        current_conditions ) == required_weathers.end() ) {
             return false;
@@ -211,7 +212,6 @@ bool generic_requirement_type::test( const w_point &point, Character &target,
             return false;
         }
     }
-
     if( !( time == time_requirement_type::both ||
            ( time == time_requirement_type::day && is_day( calendar::turn ) ) ||
            ( time == time_requirement_type::night && !is_day( calendar::turn ) ) ) ) {
@@ -220,10 +220,34 @@ bool generic_requirement_type::test( const w_point &point, Character &target,
     if( target.get_pain() < pain_min || target.get_pain() > pain_max ) {
         return false;
     }
-
-
-
-
+    if( rain_proof ) {
+        int chance = 0;
+        if( current_conditions->precip <= precip_class::light ) {
+            chance = 2;
+        } else if( current_conditions->precip >= precip_class::heavy ) {
+            chance = 4;
+        }
+        if( target.weapon.has_flag( "RAIN_PROTECT" ) && one_in( chance ) ) {
+            target.add_msg_if_player( _( "Your %s protects you from the weather." ),
+                                      target.weapon.tname() );
+            return false;
+        } else {
+            if( target.worn_with_flag( "RAINPROOF" ) && one_in( chance * 2 ) ) {
+                target.add_msg_if_player( _( "Your clothing protects you from the weather." ) );
+                return false;
+            } else {
+                bool has_helmet = false;
+                if( target.is_wearing_power_armor( &has_helmet ) && ( has_helmet ||
+                        one_in( chance * 2 ) ) ) {
+                    target.add_msg_if_player( _( "Your power armor protects you from the weather." ) );
+                    return false;
+                }
+            }
+        }
+    }
+    if( time_between != 0_seconds ) {
+        g->next_instance_allowed[id] = calendar::turn + time_between;
+    }
     return true;
 }
 

@@ -43,6 +43,7 @@ struct generic_requirement_type {
         int humidity_max = INT_MAX;
         bool humidity_and_pressure = true;
         bool must_be_outside;
+        bool rain_proof;
         time_requirement_type time;
         std::vector<weather_type_id> required_weathers;
         std::vector<trait_id> required_traits;
@@ -51,6 +52,7 @@ struct generic_requirement_type {
         time_duration time_passed_min;
         time_duration time_passed_max;
         time_duration once_every;
+        time_duration time_between;
         int one_in_chance;
         int pain_max;
         int pain_min;

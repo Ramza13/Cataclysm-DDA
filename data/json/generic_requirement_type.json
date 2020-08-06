@@ -100,14 +100,18 @@
     "type": "generic_requirement_type",
     "required_weathers": [ "acid_drizzle" ],
     "pain_max": 10,
-    "must_be_outside": true
+    "must_be_outside": true,
+    "time_between": "3 minutes",
+    "rain_proof": true
   },
   {
     "id": "acid_rain_effect",
     "type": "generic_requirement_type",
     "required_weathers": [ "acid_rain" ],
     "pain_max": 100,
-    "must_be_outside": true
+    "must_be_outside": true,
+    "time_between": "2 seconds",
+    "rain_proof": true
   },
   {
     "id": "snow_effect",
