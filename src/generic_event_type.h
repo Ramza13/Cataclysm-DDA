@@ -13,6 +13,8 @@
 template<typename T>
 class generic_factory;
 
+const generic_event_type_id NEXT_WEATHER_GENERIC_EVENT( "next_weather" );
+
 struct generic_event_type_field {
     field_type_str_id type;
     int intensity;
@@ -47,6 +49,7 @@ struct generic_event_type {
         translation sound_message;
         std::string sound_effect;
         bool lightning;
+        bool update_weather;
         int pain;
         int wet;
         int radiation;
@@ -58,6 +61,9 @@ struct generic_event_type {
         std::vector<bionic_id> cbms_to_remove;
         std::vector<effect_info> effects_to_add;
         std::vector<efftype_id> effects_to_remove;
+        std::vector<std::string> generic_variables_to_set_true;
+        std::vector<std::string> generic_variables_to_set_false;
+        std::vector<std::pair<time_duration, generic_event_type_id>> events_to_queue;
         bodypart_str_id target_part;
         int damage;
         std::vector<spawn_type> spawns;
@@ -71,6 +77,7 @@ struct generic_event_type {
 
 namespace generic_event_types
 {
+void queue_generic_event( time_duration duration, generic_event_type_id id );
 void load_pair( const JsonObject &jo, const std::string & );
 void process_generic_pairs();
 /** Get all currently loaded generic events */

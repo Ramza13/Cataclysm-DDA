@@ -1,5 +1,10 @@
 [
   {
+    "id": "next_weather",
+    "type": "generic_event_type",
+    "update_weather": true
+  },
+  {
     "id": "thunder",
     "type": "generic_event_type",
     "sound_message": "You hear a distant rumble of thunder.",

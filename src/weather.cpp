@@ -892,7 +892,7 @@ weather_manager::weather_manager()
 {
     lightning_active = false;
     weather_override = WEATHER_NULL;
-    nextweather = calendar::before_time_starts;
+    next_weather = true;
     temperature = 0;
     weather_id = WEATHER_CLEAR;
 }
@@ -910,7 +910,7 @@ void weather_manager::update_weather()
     winddirection = wind_direction_override ? *wind_direction_override : w.winddirection;
     windspeed = windspeed_override ? *windspeed_override : w.windpower;
     Character &player_character = get_player_character();
-    if( weather_id == WEATHER_NULL || calendar::turn >= nextweather ) {
+    if( weather_id == WEATHER_NULL || next_weather ) {
         const weather_generator &weather_gen = get_cur_weather_gen();
         w = weather_gen.get_weather( player_character.global_square_location(), calendar::turn,
                                      g->get_seed() );
@@ -921,7 +921,9 @@ void weather_manager::update_weather()
         sfx::do_ambient();
         temperature = w.temperature;
         lightning_active = false;
-        nextweather = calendar::turn + rng( weather_id->duration_min, weather_id->duration_max );
+        next_weather = false;
+        generic_event_types::queue_generic_event( rng( weather_id->duration_min, weather_id->duration_max ),
+                NEXT_WEATHER_GENERIC_EVENT );
         map &here = get_map();
         if( weather_id != old_weather && weather_id->dangerous &&
             here.get_abs_sub().z >= 0 && here.is_outside( player_character.pos() )
@@ -941,12 +943,6 @@ void weather_manager::update_weather()
             }
         }
     }
-}
-
-void weather_manager::set_nextweather( time_point t )
-{
-    nextweather = t;
-    update_weather();
 }
 
 int weather_manager::get_temperature( const tripoint &location )

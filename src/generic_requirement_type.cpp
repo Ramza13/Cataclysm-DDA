@@ -112,6 +112,12 @@ void generic_requirement_type::load( const JsonObject &jo, const std::string & )
          jo.get_string_array( "required_cbms" ) ) {
         required_cbms.push_back( bionic_id( required_cbm ) );
     }
+    for( const std::string &variable : jo.get_string_array( "true_generic_variables" ) ) {
+        true_generic_variables.push_back( variable );
+    }
+    for( const std::string &variable : jo.get_string_array( "false_generic_variables" ) ) {
+        false_generic_variables.push_back( variable );
+    }
     optional( jo, was_loaded, "time_passed_min", time_passed_min,
               0_seconds );
     optional( jo, was_loaded, "time_passed_max", time_passed_max,
@@ -209,6 +215,16 @@ bool generic_requirement_type::test( const w_point &point, Character &target,
     }
     for( bionic_id required_cbm : required_cbms ) {
         if( !target.has_bionic( required_cbm ) ) {
+            return false;
+        }
+    }
+    for( std::string variable : true_generic_variables ) {
+        if( !g->generic_variable_map[variable] ) {
+            return false;
+        }
+    }
+    for( std::string variable : false_generic_variables ) {
+        if( !g->generic_variable_map.count( variable ) && !g->generic_variable_map[variable] ) {
             return false;
         }
     }
