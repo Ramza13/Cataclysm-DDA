@@ -1491,7 +1491,7 @@ void debug()
                 static_cast<size_t>( weather_menu.ret ) < weather_types::get_all().size() ) {
                 const weather_type_id selected_weather = weather_types::get_all()[weather_menu.ret].id;
                 g->weather.weather_override = selected_weather;
-                g->weather.set_nextweather( calendar::turn );
+                g->weather.next_weather = true;
             }
         }
         break;
@@ -1511,7 +1511,7 @@ void debug()
                 g->weather.wind_direction_override = cata::nullopt;
             } else if( wind_direction_menu.ret >= 0 && wind_direction_menu.ret < 9 ) {
                 g->weather.wind_direction_override = ( wind_direction_menu.ret - 1 ) * 45;
-                g->weather.set_nextweather( calendar::turn );
+                g->weather.next_weather = true;
             }
         }
         break;
@@ -1533,7 +1533,7 @@ void debug()
             } else if( wind_speed_menu.ret >= 0 && wind_speed_menu.ret < 12 ) {
                 int selected_wind_speed = ( wind_speed_menu.ret - 1 ) * 10;
                 g->weather.windspeed_override = selected_wind_speed;
-                g->weather.set_nextweather( calendar::turn );
+                g->weather.next_weather = true;
             }
         }
         break;

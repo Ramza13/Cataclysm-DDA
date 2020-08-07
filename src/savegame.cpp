@@ -107,7 +107,8 @@ void game::serialize( std::ostream &fout )
     json.member( "achievements_tracker", *achievements_tracker_ptr );
 
     //save generic_events,generic_requirement pairs
-    json.member( "generic_events_vector", generic_events_vector );
+    json.member( "queued_generic_events", queued_generic_events );
+    json.member( "generic_variable_map", generic_variable_map );
 
     json.member( "player", u );
     Messages::serialize( json );
@@ -240,7 +241,8 @@ void game::unserialize( std::istream &fin )
         data.read( "stats_tracker", *stats_tracker_ptr );
         data.read( "achievements_tracker", *achievements_tracker_ptr );
 
-        data.read( "generic_events_vector", generic_events_vector );
+        data.read( "queued_generic_events", queued_generic_events );
+        data.read( "generic_variable_map", generic_variable_map );
         Messages::deserialize( data );
 
     } catch( const JsonError &jsonerr ) {
@@ -1177,7 +1179,6 @@ void weather_manager::unserialize_all( JsonIn &jsin )
     JsonObject w = jsin.get_object();
     w.read( "lightning", get_weather().lightning_active );
     w.read( "weather_id", get_weather().weather_id );
-    w.read( "next_weather", get_weather().nextweather );
     w.read( "temperature", get_weather().temperature );
     w.read( "winddirection", get_weather().winddirection );
     w.read( "windspeed", get_weather().windspeed );
@@ -1203,7 +1204,6 @@ void game::serialize_master( std::ostream &fout )
         json.start_object();
         json.member( "lightning", weather.lightning_active );
         json.member( "weather_id", weather.weather_id );
-        json.member( "next_weather", weather.nextweather );
         json.member( "temperature", weather.temperature );
         json.member( "winddirection", weather.winddirection );
         json.member( "windspeed", weather.windspeed );

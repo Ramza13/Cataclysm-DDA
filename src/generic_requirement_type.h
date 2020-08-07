@@ -49,6 +49,8 @@ struct generic_requirement_type {
         std::vector<trait_id> required_traits;
         std::vector<bionic_id> required_cbms;
         std::vector<efftype_id> required_effects;
+        std::vector<std::string> true_generic_variables;
+        std::vector<std::string> false_generic_variables;
         time_duration time_passed_min;
         time_duration time_passed_max;
         time_duration once_every;

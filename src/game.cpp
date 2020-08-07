@@ -620,9 +620,8 @@ void game::setup()
 
     weather.weather_id = WEATHER_CLEAR;
     // Weather shift in 30
-    weather.nextweather = calendar::start_of_cataclysm + time_duration::from_hours(
-                              get_option<int>( "INITIAL_TIME" ) ) + 30_minutes;
-
+    generic_event_types::queue_generic_event( time_duration::from_hours(
+                get_option<int>( "INITIAL_TIME" ) ) + 30_minutes, NEXT_WEATHER_GENERIC_EVENT );
     turnssincelastmon = 0; //Auto safe mode init
 
     sounds::reset_sounds();
@@ -674,7 +673,7 @@ bool game::start_game()
     seed = rng_bits();
     new_game = true;
     start_calendar();
-    weather.nextweather = calendar::turn;
+    weather.next_weather = true;
     safe_mode = ( get_option<bool>( "SAFEMODE" ) ? SAFE_MODE_ON : SAFE_MODE_OFF );
     mostseen = 0; // ...and mostseen is 0, we haven't seen any monsters yet.
     get_safemode().load_global();
@@ -10043,7 +10042,7 @@ void game::place_player_overmap( const tripoint_abs_omt &om_dest )
     m.spawn_monsters( true ); // Static monsters
     update_overmap_seen();
     // update weather now as it could be different on the new location
-    weather.nextweather = calendar::turn;
+    weather.next_weather = true;
     place_player( player_pos );
 }
 
