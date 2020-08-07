@@ -75,14 +75,6 @@ void generic_event_type::check() const
         debugmsg( "weather type %s does not exist.", weather_change.c_str() );
         abort();
     }
-    //if( !trait_id_to_add.is_empty() && !trait_id_to_add.is_valid() ) {
-    //    debugmsg( "Trait %s does not exist.", trait_id_to_add.c_str() );
-    //    abort();
-    //}
-    //if( !trait_id_to_remove.is_empty() && !trait_id_to_remove.is_valid() ) {
-    //    debugmsg( "Trait %s does not exist.", trait_id_to_remove.c_str() );
-    //    abort();
-    //}
     if( !target_part.is_empty() && !target_part.is_valid() ) {
         debugmsg( "Target part %s does not exist.", target_part.c_str() );
         abort();
@@ -112,7 +104,7 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "radiation", radiation, 0 );
     optional( jo, was_loaded, "healthy", healthy, 0 );
     optional( jo, was_loaded, "weather_change", weather_change, WEATHER_NULL );
-
+    optional( jo, was_loaded, "update_weather", update_weather, false );
     for( const std::string &trait : jo.get_string_array( "traits_to_add" ) ) {
         traits_to_add.push_back( trait_id( trait ) );
     }
@@ -139,6 +131,14 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
          jo.get_string_array( "cbms_to_remove" ) ) {
         cbms_to_remove.push_back( bionic_id( cbm ) );
     }
+    for( const std::string &variable :
+         jo.get_string_array( "generic_variables_to_set_true" ) ) {
+        generic_variables_to_set_true.push_back( variable );
+    }
+    for( const std::string &variable :
+         jo.get_string_array( "generic_variables_to_set_false" ) ) {
+        generic_variables_to_set_false.push_back( variable );
+    }
     optional( jo, was_loaded, "damage", damage, 0 );
     for( const JsonObject field_jo : jo.get_array( "fields" ) ) {
         generic_event_type_field new_field;
@@ -164,6 +164,14 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
 
         spawns.emplace_back( spawn );
     }
+    for( const JsonObject queue_jo : jo.get_array( "events_to_queue" ) ) {
+        std::pair<time_duration, generic_event_type_id> pair;
+        mandatory( queue_jo, was_loaded, "duration", pair.first );
+        mandatory( queue_jo, was_loaded, "id", pair.second );
+        events_to_queue.emplace_back( pair );
+    }
+
+    std::vector<std::pair<time_duration, generic_event_type_id>> ;
 }
 
 void sound( translation sound_message, std::string sound_effect )
@@ -272,6 +280,15 @@ void generic_event_type::do_event( const tripoint &point ) const
             target.remove_bionic( cbm );
         }
     }
+    for( std::string variable : generic_variables_to_set_true ) {
+        g->generic_variable_map[variable] = true;
+    }
+    for( std::string variable : generic_variables_to_set_false ) {
+        g->generic_variable_map[variable] = false;
+    }
+    for( std::pair<time_duration, generic_event_type_id> pair : events_to_queue ) {
+        generic_event_types::queue_generic_event( pair.first, pair.second );
+    }
     if( damage != 0 ) {
         if( target_part.is_valid() ) {
             target.deal_damage( nullptr, target_part, damage_instance( DT_BASH,
@@ -282,6 +299,13 @@ void generic_event_type::do_event( const tripoint &point ) const
             }
         }
     }
+    if( weather_change != WEATHER_NULL ) {
+        get_weather().weather_override = weather_change;
+    }
+    if( update_weather ) {
+        get_weather().next_weather = true;
+    }
+
     target.mod_healthy( healthy );
     target.mod_rad( radiation );
     wet_character( target, wet );
@@ -346,3 +370,7 @@ void generic_event_types::load( const JsonObject &jo, const std::string &src )
     generic_event_type_factory.load( jo, src );
 }
 
+void generic_event_types::queue_generic_event( time_duration duration, generic_event_type_id id )
+{
+    g->queued_generic_events.emplace_back( calendar::turn + duration, id );
+}
