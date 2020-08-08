@@ -2284,7 +2284,7 @@ void monster::die( Creature *nkiller )
     }
 
     for( const generic_event_type_id &event : type->death_events ) {
-        event->do_event( pos() );
+        event->do_event( );
     }
 
     // If our species fears seeing one of our own die, process that
