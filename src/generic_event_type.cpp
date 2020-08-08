@@ -170,8 +170,6 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
         mandatory( queue_jo, was_loaded, "id", pair.second );
         events_to_queue.emplace_back( pair );
     }
-
-    std::vector<std::pair<time_duration, generic_event_type_id>> ;
 }
 
 void sound( translation sound_message, std::string sound_effect )
@@ -195,7 +193,7 @@ void sound( translation sound_message, std::string sound_effect )
     }
 }
 
-void generic_event_type::do_event( const tripoint &point ) const
+void generic_event_type::do_event( ) const
 {
     //Possible TODO, make npc/monsters affected
     map &here = get_map();
@@ -327,7 +325,7 @@ void generic_event_types::process_generic_pairs()
 
     while( queued_event != g->queued_generic_events.end() ) {
         if( queued_event->first <= calendar::turn ) {
-            queued_event->second->do_event( get_player_character().pos() );
+            queued_event->second->do_event( );
             queued_event = g->queued_generic_events.erase( queued_event );
         } else {
             ++queued_event;
@@ -337,7 +335,7 @@ void generic_event_types::process_generic_pairs()
          g->generic_events_vector ) {
         if( require_event.first->test( get_player_character().pos(), get_player_character(),
                                        WEATHER_NULL ) ) {
-            require_event.second->do_event( get_player_character().pos() );
+            require_event.second->do_event( );
         }
     }
 }
