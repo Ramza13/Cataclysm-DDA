@@ -34,7 +34,7 @@ std::string enum_to_string<time_requirement_type>( time_requirement_type data )
     debugmsg( "Invalid time_requirement_type" );
     abort();
 }
-}
+} // namespace io
 
 template<>
 const generic_requirement_type &generic_requirement_type_id::obj() const
@@ -203,27 +203,27 @@ bool generic_requirement_type::test( const w_point &point, Character &target,
     if( must_be_outside && !is_creature_outside( target ) ) {
         return false;
     }
-    for( trait_id required_trait : required_traits ) {
+    for( const trait_id &required_trait : required_traits ) {
         if( !target.has_trait( required_trait ) ) {
             return false;
         }
     }
-    for( efftype_id required_effect : required_effects ) {
+    for( const efftype_id &required_effect : required_effects ) {
         if( !target.has_effect( required_effect ) ) {
             return false;
         }
     }
-    for( bionic_id required_cbm : required_cbms ) {
+    for( const bionic_id &required_cbm : required_cbms ) {
         if( !target.has_bionic( required_cbm ) ) {
             return false;
         }
     }
-    for( std::string variable : true_generic_variables ) {
+    for( const std::string &variable : true_generic_variables ) {
         if( !g->generic_variable_map[variable] ) {
             return false;
         }
     }
-    for( std::string variable : false_generic_variables ) {
+    for( const std::string &variable : false_generic_variables ) {
         if( !g->generic_variable_map.count( variable ) && !g->generic_variable_map[variable] ) {
             return false;
         }
