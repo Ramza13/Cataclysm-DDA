@@ -68,7 +68,7 @@ struct generic_event_type {
         int damage;
         std::vector<spawn_type> spawns;
         std::vector<generic_event_type_field> fields;
-        void do_event( const tripoint &point ) const;
+        void do_event( ) const;
         void load( const JsonObject &jo, const std::string &src );
         void finalize();
         void check() const;
