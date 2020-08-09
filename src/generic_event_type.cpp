@@ -111,8 +111,7 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
     for( const std::string &trait : jo.get_string_array( "traits_to_remove" ) ) {
         traits_to_remove.push_back( trait_id( trait ) );
     }
-    for( const JsonObject &effect_jo :
-         jo.get_array( "effects_to_add" ) ) {
+    for( const JsonObject &effect_jo : jo.get_array( "effects_to_add" ) ) {
         effect_info info;
         mandatory( effect_jo, was_loaded, "id", info.id );
         optional( effect_jo, was_loaded, "intensity", info.intensity, 1 );
@@ -120,15 +119,26 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
         optional( effect_jo, was_loaded, "length", info.length, 1_seconds );
         effects_to_add.push_back( info );
     }
+    for( const JsonObject &morale_jo : jo.get_array( "morales_to_add" ) ) {
+        morale_info info;
+        mandatory( morale_jo, was_loaded, "type", info.type );
+        mandatory( morale_jo, was_loaded, "bonus", info.bonus );
+        optional( morale_jo, was_loaded, "max_bonus", info.max_bonus, 0 );
+        optional( morale_jo, was_loaded, "duration", info.duration, 1_hours );
+        optional( morale_jo, was_loaded, "decay_start", info.decay_start, 30_minutes );
+        optional( morale_jo, was_loaded, "capped", info.capped, false );
+        morales_to_add.push_back( info );
+    }
+    for( const std::string &morale : jo.get_array( "morales_to_remove" ) ) {
+        morales_to_remove.push_back( morale_type( morale ) );
+    }
     for( const std::string &effect : jo.get_array( "effects_to_remove" ) ) {
         effects_to_remove.push_back( efftype_id( effect ) );
     }
-    for( const std::string &cbm :
-         jo.get_string_array( "cbms_to_add" ) ) {
+    for( const std::string &cbm : jo.get_string_array( "cbms_to_add" ) ) {
         cbms_to_add.push_back( bionic_id( cbm ) );
     }
-    for( const std::string &cbm :
-         jo.get_string_array( "cbms_to_remove" ) ) {
+    for( const std::string &cbm : jo.get_string_array( "cbms_to_remove" ) ) {
         cbms_to_remove.push_back( bionic_id( cbm ) );
     }
     for( const std::string &variable :
@@ -224,18 +234,18 @@ void generic_event_type::do_event( ) const
         }
 
         for( int i = 0; i < spawn.hallucination_count; i++ ) {
-            tripoint point;
+            tripoint spawn_point;
             if( g->find_nearby_spawn_point( target, target_monster.type->id, spawn.min_radius,
-                                            spawn.max_radius, point ) ) {
-                g->spawn_hallucination( point, target_monster.type->id );
+                                            spawn.max_radius, spawn_point ) ) {
+                g->spawn_hallucination( spawn_point, target_monster.type->id );
                 spawned = true;
             }
         }
         for( int i = 0; i < spawn.real_count; i++ ) {
-            tripoint point;
+            tripoint spawn_point;
             if( g->find_nearby_spawn_point( target, target_monster.type->id, spawn.min_radius,
-                                            spawn.max_radius, point ) ) {
-                g->place_critter_at( target_monster.type->id, point );
+                                            spawn.max_radius, spawn_point ) ) {
+                g->place_critter_at( target_monster.type->id, spawn_point );
                 spawned = true;
             }
         }
@@ -277,6 +287,13 @@ void generic_event_type::do_event( ) const
         if( target.has_bionic( cbm ) ) {
             target.remove_bionic( cbm );
         }
+    }
+    for( morale_info info : morales_to_add ) {
+        target.add_morale( info.type, info.bonus, info.max_bonus, info.duration, info.decay_start,
+                           info.capped );
+    }
+    for( morale_type type : morales_to_remove ) {
+        target.rem_morale( type );
     }
     for( std::string variable : generic_variables_to_set_true ) {
         g->generic_variable_map[variable] = true;

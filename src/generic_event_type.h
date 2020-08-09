@@ -38,6 +38,14 @@ struct effect_info {
     efftype_id id;
     bodypart_str_id target_part;
 };
+struct morale_info {
+    morale_type type;
+    int bonus;
+    int max_bonus;
+    time_duration duration;
+    time_duration decay_start;
+    bool capped;
+};
 
 struct generic_event_type {
     public:
@@ -61,6 +69,8 @@ struct generic_event_type {
         std::vector<bionic_id> cbms_to_remove;
         std::vector<effect_info> effects_to_add;
         std::vector<efftype_id> effects_to_remove;
+        std::vector<morale_info> morales_to_add;
+        std::vector<morale_type> morales_to_remove;
         std::vector<std::string> generic_variables_to_set_true;
         std::vector<std::string> generic_variables_to_set_false;
         std::vector<std::pair<time_duration, generic_event_type_id>> events_to_queue;
