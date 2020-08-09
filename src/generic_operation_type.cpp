@@ -1,4 +1,4 @@
-#include "generic_event_type.h"
+#include "generic_operation_type.h"
 
 #include "character.h"
 #include "game.h"
@@ -12,30 +12,30 @@ static const efftype_id effect_sleep( "sleep" );
 
 namespace
 {
-generic_factory<generic_event_type> generic_event_type_factory( "generic_event_type" );
+generic_factory<generic_operation_type> generic_operation_factory( "generic_operation_type" );
 } // namespace
 
 template<>
-const generic_event_type &generic_event_type_id::obj() const
+const generic_operation_type &generic_operation_type_id::obj() const
 {
-    return generic_event_type_factory.obj( *this );
+    return generic_operation_factory.obj( *this );
 }
 
 /** @relates string_id */
 template<>
-bool string_id<generic_event_type>::is_valid() const
+bool string_id<generic_operation_type>::is_valid() const
 {
-    return generic_event_type_factory.is_valid( *this );
+    return generic_operation_factory.is_valid( *this );
 }
 
-void generic_event_type::finalize()
+void generic_operation_type::finalize()
 {
 
 }
 
-void generic_event_type::check() const
+void generic_operation_type::check() const
 {
-    for( const effect_info &info : effects_to_add ) {
+    for( const generic_operation_effect &info : effects_to_add ) {
         if( !info.id.is_valid() ) {
             debugmsg( "Effect %s does not exist.", info.id.c_str() );
             abort();
@@ -79,13 +79,13 @@ void generic_event_type::check() const
         debugmsg( "Target part %s does not exist.", target_part.c_str() );
         abort();
     }
-    for( const spawn_type &spawn : spawns ) {
+    for( const generic_operation_spawn &spawn : spawns ) {
         if( !spawn.target.is_empty() && !spawn.target.is_valid() ) {
             debugmsg( "Spawn target %s does not exist.", spawn.target.c_str() );
             abort();
         }
     }
-    for( const generic_event_type_field &field : fields ) {
+    for( const generic_operation_field &field : fields ) {
         if( !field.type.is_valid() ) {
             debugmsg( "field type %s does not exist.", field.type.c_str() );
             abort();
@@ -93,7 +93,7 @@ void generic_event_type::check() const
     }
 }
 
-void generic_event_type::load( const JsonObject &jo, const std::string & )
+void generic_operation_type::load( const JsonObject &jo, const std::string & )
 {
     optional( jo, was_loaded, "message", message );
     optional( jo, was_loaded, "sound_message", sound_message );
@@ -109,7 +109,7 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "traits_to_remove", traits_to_remove );
 
     for( const JsonObject &effect_jo : jo.get_array( "effects_to_add" ) ) {
-        effect_info info;
+        generic_operation_effect info;
         mandatory( effect_jo, was_loaded, "id", info.id );
         optional( effect_jo, was_loaded, "intensity", info.intensity, 1 );
         optional( effect_jo, was_loaded, "target_part", info.target_part, bodypart_str_id( "bp_null" ) );
@@ -118,7 +118,7 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
     }
     optional( jo, was_loaded, "effects_to_remove", effects_to_remove );
     for( const JsonObject &morale_jo : jo.get_array( "morales_to_add" ) ) {
-        morale_info info;
+        generic_operation_morale info;
         mandatory( morale_jo, was_loaded, "type", info.type );
         mandatory( morale_jo, was_loaded, "bonus", info.bonus );
         optional( morale_jo, was_loaded, "max_bonus", info.max_bonus, 0 );
@@ -134,7 +134,7 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "generic_variables_to_set_false", generic_variables_to_set_false );
     optional( jo, was_loaded, "damage", damage, 0 );
     for( const JsonObject field_jo : jo.get_array( "fields" ) ) {
-        generic_event_type_field new_field;
+        generic_operation_field new_field;
         mandatory( field_jo, was_loaded, "type", new_field.type );
         mandatory( field_jo, was_loaded, "intensity", new_field.intensity );
         mandatory( field_jo, was_loaded, "age", new_field.age );
@@ -144,7 +144,7 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
         fields.emplace_back( new_field );
     }
     for( const JsonObject spawn_jo : jo.get_array( "spawns" ) ) {
-        spawn_type spawn;
+        generic_operation_spawn spawn;
         mandatory( spawn_jo, was_loaded, "max_radius", spawn.max_radius );
         mandatory( spawn_jo, was_loaded, "min_radius", spawn.min_radius );
         if( spawn.min_radius > spawn.max_radius ) {
@@ -158,7 +158,7 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
         spawns.emplace_back( spawn );
     }
     for( const JsonObject queue_jo : jo.get_array( "events_to_queue" ) ) {
-        std::pair<time_duration, generic_event_type_id> pair;
+        std::pair<time_duration, generic_operation_type_id> pair;
         mandatory( queue_jo, was_loaded, "duration", pair.first );
         mandatory( queue_jo, was_loaded, "id", pair.second );
         events_to_queue.emplace_back( pair );
@@ -186,7 +186,7 @@ void sound( translation sound_message, std::string sound_effect )
     }
 }
 
-void generic_event_type::do_event( ) const
+void generic_operation_type::do_event( ) const
 {
     //Possible TODO, make npc/monsters affected
     map &here = get_map();
@@ -198,7 +198,7 @@ void generic_event_type::do_event( ) const
     }
 
     bool spawned = spawns.empty();
-    for( const spawn_type &spawn : spawns ) {
+    for( const generic_operation_spawn &spawn : spawns ) {
         monster target_monster;
         if( spawn.target.is_empty() ) {
             //grab a random nearby hostile creature to create a hallucination or copy of
@@ -236,7 +236,7 @@ void generic_event_type::do_event( ) const
     if( !spawned ) {
         return;
     }
-    for( const generic_event_type_field &field : fields ) {
+    for( const generic_operation_field &field : fields ) {
         for( const tripoint &dest : get_map().points_in_radius( target.pos(), field.radius ) ) {
             if( !field.outdoor_only || get_map().is_outside( dest ) ) {
                 get_map().add_field( dest, field.type, field.intensity, field.age );
@@ -258,7 +258,7 @@ void generic_event_type::do_event( ) const
             target.remove_effect( effect );
         }
     }
-    for( const effect_info &effect : effects_to_add ) {
+    for( const generic_operation_effect &effect : effects_to_add ) {
         target.add_effect( effect.id, effect.length, effect.target_part->token, effect.intensity );
     }
     for( const bionic_id &cbm : cbms_to_add ) {
@@ -271,7 +271,7 @@ void generic_event_type::do_event( ) const
             target.remove_bionic( cbm );
         }
     }
-    for( const morale_info &info : morales_to_add ) {
+    for( const generic_operation_morale &info : morales_to_add ) {
         target.add_morale( info.type, info.bonus, info.max_bonus, info.duration, info.decay_start,
                            info.capped );
     }
@@ -284,8 +284,8 @@ void generic_event_type::do_event( ) const
     for( const std::string &variable : generic_variables_to_set_false ) {
         g->generic_variable_map[variable] = false;
     }
-    for( const std::pair<time_duration, generic_event_type_id> &pair : events_to_queue ) {
-        generic_event_types::queue_generic_event( pair.first, pair.second );
+    for( const std::pair<time_duration, generic_operation_type_id> &pair : events_to_queue ) {
+        generic_operation_types::queue_generic_operation( pair.first, pair.second );
     }
     if( damage != 0 ) {
         if( target_part.is_valid() ) {
@@ -312,27 +312,28 @@ void generic_event_type::do_event( ) const
     target.add_msg_if_player( message );
 }
 
-void generic_event_types::load_pair( const JsonObject &jo, const std::string & )
+void generic_operation_types::load_pair( const JsonObject &jo, const std::string & )
 {
-    g->generic_events_vector.emplace_back( generic_requirement_type_id( jo.get_string( "require" ) ),
-                                           generic_event_type_id( jo.get_string( "event" ) ) );
+    g->generic_operations_vector.emplace_back( generic_requirement_type_id(
+                jo.get_string( "require" ) ),
+            generic_operation_type_id( jo.get_string( "operation" ) ) );
 }
 
-void generic_event_types::process_generic_pairs()
+void generic_operation_types::process_generic_pairs()
 {
-    std::vector<std::pair<time_point, generic_event_type_id>>::iterator queued_event =
-                g->queued_generic_events.begin();
+    std::vector<std::pair<time_point, generic_operation_type_id>>::iterator queued_event =
+                g->queued_generic_operations.begin();
 
-    while( queued_event != g->queued_generic_events.end() ) {
+    while( queued_event != g->queued_generic_operations.end() ) {
         if( queued_event->first <= calendar::turn ) {
             queued_event->second->do_event( );
-            queued_event = g->queued_generic_events.erase( queued_event );
+            queued_event = g->queued_generic_operations.erase( queued_event );
         } else {
             ++queued_event;
         }
     }
-    for( const std::pair<generic_requirement_type_id, generic_event_type_id> &require_event :
-         g->generic_events_vector ) {
+    for( const std::pair<generic_requirement_type_id, generic_operation_type_id> &require_event :
+         g->generic_operations_vector ) {
         if( require_event.first->test( get_player_character().pos(), get_player_character(),
                                        WEATHER_NULL ) ) {
             require_event.second->do_event( );
@@ -340,35 +341,36 @@ void generic_event_types::process_generic_pairs()
     }
 }
 
-void generic_event_types::reset()
+void generic_operation_types::reset()
 {
-    generic_event_type_factory.reset();
+    generic_operation_factory.reset();
 }
 
-void generic_event_types::finalize_all()
+void generic_operation_types::finalize_all()
 {
-    generic_event_type_factory.finalize();
-    for( const generic_event_type &get : generic_event_type_factory.get_all() ) {
-        const_cast<generic_event_type &>( get ).finalize();
+    generic_operation_factory.finalize();
+    for( const generic_operation_type &get : generic_operation_factory.get_all() ) {
+        const_cast<generic_operation_type &>( get ).finalize();
     }
 }
 
-const std::vector<generic_event_type> &generic_event_types::get_all()
+const std::vector<generic_operation_type> &generic_operation_types::get_all()
 {
-    return generic_event_type_factory.get_all();
+    return generic_operation_factory.get_all();
 }
 
-void generic_event_types::check_consistency()
+void generic_operation_types::check_consistency()
 {
-    generic_event_type_factory.check();
+    generic_operation_factory.check();
 }
 
-void generic_event_types::load( const JsonObject &jo, const std::string &src )
+void generic_operation_types::load( const JsonObject &jo, const std::string &src )
 {
-    generic_event_type_factory.load( jo, src );
+    generic_operation_factory.load( jo, src );
 }
 
-void generic_event_types::queue_generic_event( time_duration duration, generic_event_type_id id )
+void generic_operation_types::queue_generic_operation( time_duration duration,
+        generic_operation_type_id id )
 {
-    g->queued_generic_events.emplace_back( calendar::turn + duration, id );
+    g->queued_generic_operations.emplace_back( calendar::turn + duration, id );
 }

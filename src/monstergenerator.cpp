@@ -806,7 +806,7 @@ void mtype::load( const JsonObject &jo, const std::string &src )
         dies.push_back( mdeath::normal );
     }
     for( const std::string &event : jo.get_string_array( "death_events" ) ) {
-        death_events.push_back( generic_event_type_id( event ) );
+        death_events.push_back( generic_operation_type_id( event ) );
     }
 
     if( jo.has_array( "emit_fields" ) ) {

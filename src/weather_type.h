@@ -13,7 +13,6 @@
 #include "field.h"
 #include "string_id.h"
 #include "translations.h"
-#include "generic_event_type.h"
 #include "generic_requirement_type.h"
 #include "type_id.h"
 
