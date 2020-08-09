@@ -922,7 +922,7 @@ void weather_manager::update_weather()
         temperature = w.temperature;
         lightning_active = false;
         next_weather = false;
-        generic_operation_types::queue_generic_operation( rng( weather_id->duration_min,
+        generic_trigger_op_on_precon::queue_generic_operation( rng( weather_id->duration_min,
                 weather_id->duration_max ),
                 NEXT_WEATHER_GENERIC_OPERATION );
         map &here = get_map();

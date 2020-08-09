@@ -39,6 +39,7 @@
 #include "gates.h"
 #include "generic_operation_type.h"
 #include "generic_precondition_type.h"
+#include "generic_trigger_op_on_precon.h"
 #include "harvest.h"
 #include "item_action.h"
 #include "item_category.h"
@@ -208,7 +209,8 @@ void DynamicDataLoader::initialize()
     add( "field_type", &field_types::load );
     add( "generic_operation_type", &generic_operation_types::load );
     add( "generic_precondition_type", &generic_precondition_types::load );
-    add( "generic_pair", &generic_operation_types::load_pair );
+    add( "generic_trigger_op_on_precon",
+         &generic_trigger_op_on_precon::load_generic_trigger_op_on_precon );
     add( "weather_type", &weather_types::load );
     add( "ammo_effect", &ammo_effects::load );
     add( "emit", &emit::load_emit );

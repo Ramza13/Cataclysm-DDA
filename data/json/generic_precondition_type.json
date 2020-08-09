@@ -82,21 +82,21 @@
     "required_weathers": [ "thunder", "lightning" ]
   },
   {
-    "id": "thunder_effect",
+    "id": "thunder_operation",
     "type": "generic_precondition_type",
     "required_weathers": [ "thunder", "lightning" ],
     "one_in_chance": 50,
     "height_min": 0
   },
   {
-    "id": "lightning_effect",
+    "id": "lightning_operation",
     "type": "generic_precondition_type",
     "required_weathers": [ "lightning" ],
     "one_in_chance": 600,
     "height_min": 0
   },
   {
-    "id": "acid_drizzle_effect",
+    "id": "acid_drizzle_operation",
     "type": "generic_precondition_type",
     "required_weathers": [ "acid_drizzle" ],
     "pain_max": 10,
@@ -105,7 +105,7 @@
     "rain_proof": true
   },
   {
-    "id": "acid_rain_effect",
+    "id": "acid_rain_operation",
     "type": "generic_precondition_type",
     "required_weathers": [ "acid_rain" ],
     "pain_max": 100,
@@ -114,13 +114,13 @@
     "rain_proof": true
   },
   {
-    "id": "snow_effect",
+    "id": "snow_operation",
     "type": "generic_precondition_type",
     "required_weathers": [ "snow" ],
     "must_be_outside": true
   },
   {
-    "id": "snowstorm_effect",
+    "id": "snowstorm_operation",
     "type": "generic_precondition_type",
     "required_weathers": [ "snowstorm" ],
     "must_be_outside": true
