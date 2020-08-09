@@ -314,7 +314,7 @@ void generic_operation_type::do_event( ) const
 
 void generic_operation_types::load_pair( const JsonObject &jo, const std::string & )
 {
-    g->generic_operations_vector.emplace_back( generic_requirement_type_id(
+    g->generic_operations_vector.emplace_back( generic_precondition_type_id(
                 jo.get_string( "require" ) ),
             generic_operation_type_id( jo.get_string( "operation" ) ) );
 }
@@ -332,7 +332,7 @@ void generic_operation_types::process_generic_pairs()
             ++queued_event;
         }
     }
-    for( const std::pair<generic_requirement_type_id, generic_operation_type_id> &require_event :
+    for( const std::pair<generic_precondition_type_id, generic_operation_type_id> &require_event :
          g->generic_operations_vector ) {
         if( require_event.first->test( get_player_character().pos(), get_player_character(),
                                        WEATHER_NULL ) ) {

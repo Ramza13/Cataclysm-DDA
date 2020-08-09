@@ -106,7 +106,7 @@ void game::serialize( std::ostream &fout )
     json.member( "stats_tracker", *stats_tracker_ptr );
     json.member( "achievements_tracker", *achievements_tracker_ptr );
 
-    //save generic_operation,generic_requirement pairs
+    //save queued operations and generic_variables
     json.member( "queued_generic_operations", queued_generic_operations );
     json.member( "generic_variable_map", generic_variable_map );
 

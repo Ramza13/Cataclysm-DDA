@@ -1,4 +1,4 @@
-#include "generic_requirement_type.h"
+#include "generic_precondition_type.h"
 
 #include "character.h"
 #include "game.h"
@@ -12,8 +12,8 @@ static const efftype_id effect_sleep( "sleep" );
 
 namespace
 {
-generic_factory<generic_requirement_type>
-generic_requirement_type_factory( "generic_requirement_type" );
+generic_factory<generic_precondition_type>
+generic_precondition_factory( "generic_precondition_type" );
 } // namespace
 
 namespace io
@@ -37,24 +37,24 @@ std::string enum_to_string<time_requirement_type>( time_requirement_type data )
 } // namespace io
 
 template<>
-const generic_requirement_type &generic_requirement_type_id::obj() const
+const generic_precondition_type &generic_precondition_type_id::obj() const
 {
-    return generic_requirement_type_factory.obj( *this );
+    return generic_precondition_factory.obj( *this );
 }
 
 /** @relates string_id */
 template<>
-bool string_id<generic_requirement_type>::is_valid() const
+bool string_id<generic_precondition_type>::is_valid() const
 {
-    return generic_requirement_type_factory.is_valid( *this );
+    return generic_precondition_factory.is_valid( *this );
 }
 
-void generic_requirement_type::finalize()
+void generic_precondition_type::finalize()
 {
 
 }
 
-void generic_requirement_type::check() const
+void generic_precondition_type::check() const
 {
     for( const weather_type_id &weather : required_weathers ) {
         if( !weather.is_valid() ) {
@@ -82,7 +82,7 @@ void generic_requirement_type::check() const
     }
 }
 
-void generic_requirement_type::load( const JsonObject &jo, const std::string & )
+void generic_precondition_type::load( const JsonObject &jo, const std::string & )
 {
     optional( jo, was_loaded, "pressure_min", pressure_min, INT_MIN );
     optional( jo, was_loaded, "pressure_max", pressure_max, INT_MAX );
@@ -113,14 +113,14 @@ void generic_requirement_type::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "rain_proof", rain_proof, false );
 }
 
-bool generic_requirement_type::test( const w_point &point,
-                                     weather_type_id current_conditions ) const
+bool generic_precondition_type::test( const w_point &point,
+                                      weather_type_id current_conditions ) const
 {
     return test( point, get_player_character(), current_conditions );
 }
 
-bool generic_requirement_type::test( const tripoint &point, Character &target,
-                                     weather_type_id current_conditions ) const
+bool generic_precondition_type::test( const tripoint &point, Character &target,
+                                      weather_type_id current_conditions ) const
 {
     w_point w( get_weather().get_cur_weather_gen().get_weather( point, calendar::turn,
                g->get_seed() ) );
@@ -128,8 +128,8 @@ bool generic_requirement_type::test( const tripoint &point, Character &target,
     return test( w, target, current_conditions );
 }
 
-bool generic_requirement_type::test( const w_point &point, Character &target,
-                                     weather_type_id current_conditions ) const
+bool generic_precondition_type::test( const w_point &point, Character &target,
+                                      weather_type_id current_conditions ) const
 {
     if( !calendar::once_every( once_every ) ) {
         return false;
@@ -139,7 +139,7 @@ bool generic_requirement_type::test( const w_point &point, Character &target,
           ( point.time > ( calendar::start_of_cataclysm + *time_passed_max ) ) ) ) {
         return false;
     }
-    std::map<generic_requirement_type_id, time_point>::iterator instance =
+    std::map<generic_precondition_type_id, time_point>::iterator instance =
         g->next_instance_allowed.find( id );
     if( instance != g->next_instance_allowed.end() && instance->second > calendar::turn ) {
         return false;
@@ -246,31 +246,31 @@ bool generic_requirement_type::test( const w_point &point, Character &target,
     return true;
 }
 
-void generic_requirement_types::reset()
+void generic_precondition_types::reset()
 {
-    generic_requirement_type_factory.reset();
+    generic_precondition_factory.reset();
 }
 
-void generic_requirement_types::finalize_all()
+void generic_precondition_types::finalize_all()
 {
-    generic_requirement_type_factory.finalize();
-    for( const generic_requirement_type &get : generic_requirement_type_factory.get_all() ) {
-        const_cast<generic_requirement_type &>( get ).finalize();
+    generic_precondition_factory.finalize();
+    for( const generic_precondition_type &get : generic_precondition_factory.get_all() ) {
+        const_cast<generic_precondition_type &>( get ).finalize();
     }
 }
 
-const std::vector<generic_requirement_type> &generic_requirement_types::get_all()
+const std::vector<generic_precondition_type> &generic_precondition_types::get_all()
 {
-    return generic_requirement_type_factory.get_all();
+    return generic_precondition_factory.get_all();
 }
 
-void generic_requirement_types::check_consistency()
+void generic_precondition_types::check_consistency()
 {
-    generic_requirement_type_factory.check();
+    generic_precondition_factory.check();
 }
 
-void generic_requirement_types::load( const JsonObject &jo, const std::string &src )
+void generic_precondition_types::load( const JsonObject &jo, const std::string &src )
 {
-    generic_requirement_type_factory.load( jo, src );
+    generic_precondition_factory.load( jo, src );
 }
 
