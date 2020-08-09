@@ -4,6 +4,7 @@
 #include "game.h"
 #include "game_constants.h"
 #include "generic_factory.h"
+#include "generic_trigger_op_on_precon.h"
 #include "map.h"
 #include "map_iterator.h"
 #include "weather.h"
@@ -285,7 +286,7 @@ void generic_operation_type::do_event( ) const
         g->generic_variable_map[variable] = false;
     }
     for( const std::pair<time_duration, generic_operation_type_id> &pair : events_to_queue ) {
-        generic_operation_types::queue_generic_operation( pair.first, pair.second );
+        generic_trigger_op_on_precon::queue_generic_operation( pair.first, pair.second );
     }
     if( damage != 0 ) {
         if( target_part.is_valid() ) {
@@ -310,35 +311,6 @@ void generic_operation_type::do_event( ) const
     target.mod_pain( pain );
     sound( sound_message, sound_effect );
     target.add_msg_if_player( message );
-}
-
-void generic_operation_types::load_pair( const JsonObject &jo, const std::string & )
-{
-    g->generic_operations_vector.emplace_back( generic_precondition_type_id(
-                jo.get_string( "require" ) ),
-            generic_operation_type_id( jo.get_string( "operation" ) ) );
-}
-
-void generic_operation_types::process_generic_pairs()
-{
-    std::vector<std::pair<time_point, generic_operation_type_id>>::iterator queued_event =
-                g->queued_generic_operations.begin();
-
-    while( queued_event != g->queued_generic_operations.end() ) {
-        if( queued_event->first <= calendar::turn ) {
-            queued_event->second->do_event( );
-            queued_event = g->queued_generic_operations.erase( queued_event );
-        } else {
-            ++queued_event;
-        }
-    }
-    for( const std::pair<generic_precondition_type_id, generic_operation_type_id> &require_event :
-         g->generic_operations_vector ) {
-        if( require_event.first->test( get_player_character().pos(), get_player_character(),
-                                       WEATHER_NULL ) ) {
-            require_event.second->do_event( );
-        }
-    }
 }
 
 void generic_operation_types::reset()
@@ -367,10 +339,4 @@ void generic_operation_types::check_consistency()
 void generic_operation_types::load( const JsonObject &jo, const std::string &src )
 {
     generic_operation_factory.load( jo, src );
-}
-
-void generic_operation_types::queue_generic_operation( time_duration duration,
-        generic_operation_type_id id )
-{
-    g->queued_generic_operations.emplace_back( calendar::turn + duration, id );
 }

@@ -26,6 +26,7 @@
 #include "game_constants.h"
 #include "generic_operation_type.h"
 #include "generic_precondition_type.h"
+#include "generic_trigger_op_on_precon.h"
 #include "item_location.h"
 #include "memory_fast.h"
 #include "monster.h"

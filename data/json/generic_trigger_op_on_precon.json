@@ -1,0 +1,32 @@
+[
+  {
+    "type": "generic_trigger_op_on_precon",
+    "precondition": "thunder_operation",
+    "operation": "thunder"
+  },
+  {
+    "type": "generic_trigger_op_on_precon",
+    "precondition": "lightning_operation",
+    "operation": "lightning"
+  },
+  {
+    "type": "generic_trigger_op_on_precon",
+    "precondition": "acid_drizzle_operation",
+    "operation": "acid_drizzle"
+  },
+  {
+    "type": "generic_trigger_op_on_precon",
+    "precondition": "acid_rain_operation",
+    "operation": "acid_rain"
+  },
+  {
+    "type": "generic_trigger_op_on_precon",
+    "precondition": "snow_operation",
+    "operation": "snow"
+  },
+  {
+    "type": "generic_trigger_op_on_precon",
+    "precondition": "snowstorm_operation",
+    "operation": "snowstorm"
+  }
+]

@@ -86,9 +86,6 @@ struct generic_operation_type {
 
 namespace generic_operation_types
 {
-void queue_generic_operation( time_duration duration, generic_operation_type_id id );
-void load_pair( const JsonObject &jo, const std::string & );
-void process_generic_pairs();
 /** Get all currently loaded generic_operations */
 const std::vector<generic_operation_type> &get_all();
 /** Finalize all loaded generic_operation types */
