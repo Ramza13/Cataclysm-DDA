@@ -210,8 +210,8 @@ struct construction;
 using construction_id = int_id<construction>;
 using construction_str_id = string_id<construction>;
 
-struct generic_event_type;
-using generic_event_type_id = string_id<generic_event_type>;
+struct generic_operation_type;
+using generic_operation_type_id = string_id<generic_operation_type>;
 
 struct generic_requirement_type;
 using generic_requirement_type_id = string_id<generic_requirement_type>;
