@@ -620,8 +620,8 @@ void game::setup()
 
     weather.weather_id = WEATHER_CLEAR;
     // Weather shift in 30
-    generic_event_types::queue_generic_event( time_duration::from_hours(
-                get_option<int>( "INITIAL_TIME" ) ) + 30_minutes, NEXT_WEATHER_GENERIC_EVENT );
+    generic_operation_types::queue_generic_operation( time_duration::from_hours(
+                get_option<int>( "INITIAL_TIME" ) ) + 30_minutes, NEXT_WEATHER_GENERIC_OPERATION );
     turnssincelastmon = 0; //Auto safe mode init
 
     sounds::reset_sounds();
@@ -1600,7 +1600,7 @@ bool game::do_turn()
     if( levz >= 0 && !u.is_underwater() ) {
         handle_weather_effects( weather.weather_id );
     }
-    generic_event_types::process_generic_pairs();
+    generic_operation_types::process_generic_pairs();
     const bool player_is_sleeping = u.has_effect( effect_sleep );
     bool wait_redraw = false;
     std::string wait_message;

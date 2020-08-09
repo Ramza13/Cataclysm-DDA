@@ -24,7 +24,7 @@
 #include "cursesdef.h"
 #include "enums.h"
 #include "game_constants.h"
-#include "generic_event_type.h"
+#include "generic_operation_type.h"
 #include "generic_requirement_type.h"
 #include "item_location.h"
 #include "memory_fast.h"
@@ -1029,8 +1029,9 @@ class game
         int turnssincelastmon = 0; // needed for auto run mode
 
         weather_manager weather;
-        std::vector<std::pair<generic_requirement_type_id, generic_event_type_id>> generic_events_vector;
-        std::vector<std::pair<time_point, generic_event_type_id>> queued_generic_events;
+        std::vector<std::pair<generic_requirement_type_id, generic_operation_type_id>>
+                generic_operations_vector;
+        std::vector<std::pair<time_point, generic_operation_type_id>> queued_generic_operations;
         std::map<std::string, bool> generic_variable_map;
         std::map<generic_requirement_type_id, time_point> next_instance_allowed;
 
