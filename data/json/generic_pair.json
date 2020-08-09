@@ -2,31 +2,31 @@
   {
     "type": "generic_pair",
     "require": "thunder_effect",
-    "event": "thunder"
+    "operation": "thunder"
   },
   {
     "type": "generic_pair",
     "require": "lightning_effect",
-    "event": "lightning"
+    "operation": "lightning"
   },
   {
     "type": "generic_pair",
     "require": "acid_drizzle_effect",
-    "event": "acid_drizzle"
+    "operation": "acid_drizzle"
   },
   {
     "type": "generic_pair",
     "require": "acid_rain_effect",
-    "event": "acid_rain"
+    "operation": "acid_rain"
   },
   {
     "type": "generic_pair",
     "require": "snow_effect",
-    "event": "snow"
+    "operation": "snow"
   },
   {
     "type": "generic_pair",
     "require": "snowstorm_effect",
-    "event": "snowstorm"
+    "operation": "snowstorm"
   }
 ]

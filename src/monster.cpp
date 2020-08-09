@@ -2283,7 +2283,7 @@ void monster::die( Creature *nkiller )
         deathfunction( *this );
     }
 
-    for( const generic_event_type_id &event : type->death_events ) {
+    for( const generic_operation_type_id &event : type->death_events ) {
         event->do_event( );
     }
 

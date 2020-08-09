@@ -13,7 +13,7 @@
 #include "damage.h"
 #include "enum_bitset.h"
 #include "enums.h"
-#include "generic_event_type.h"
+#include "generic_operation_type.h"
 #include "mattack_common.h"
 #include "optional.h"
 #include "pathfinding.h"
@@ -299,7 +299,7 @@ struct mtype {
         std::vector<std::string> special_attacks_names; // names of attacks, in json load order
 
         std::vector<mon_action_death> dies;       // What happens when this monster dies
-        std::vector<generic_event_type_id> death_events; // What events happen when this monster dies
+        std::vector<generic_operation_type_id> death_events; // What events happen when this monster dies
         // This monster's special "defensive" move that may trigger when the monster is attacked.
         // Note that this can be anything, and is not necessarily beneficial to the monster
         mon_action_defend sp_defense;

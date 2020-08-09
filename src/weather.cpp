@@ -22,7 +22,7 @@
 #include "enums.h"
 #include "game.h"
 #include "game_constants.h"
-#include "generic_event_type.h"
+#include "generic_operation_type.h"
 #include "item.h"
 #include "item_contents.h"
 #include "item_pocket.h"
@@ -922,8 +922,9 @@ void weather_manager::update_weather()
         temperature = w.temperature;
         lightning_active = false;
         next_weather = false;
-        generic_event_types::queue_generic_event( rng( weather_id->duration_min, weather_id->duration_max ),
-                NEXT_WEATHER_GENERIC_EVENT );
+        generic_operation_types::queue_generic_operation( rng( weather_id->duration_min,
+                weather_id->duration_max ),
+                NEXT_WEATHER_GENERIC_OPERATION );
         map &here = get_map();
         if( weather_id != old_weather && weather_id->dangerous &&
             here.get_abs_sub().z >= 0 && here.is_outside( player_character.pos() )
