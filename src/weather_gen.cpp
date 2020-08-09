@@ -9,7 +9,7 @@
 
 #include "cata_utility.h"
 #include "game_constants.h"
-#include "generic_requirement_type.h"
+#include "generic_precondition_type.h"
 #include "json.h"
 #include "math_defines.h"
 #include "point.h"
@@ -181,7 +181,7 @@ weather_type_id weather_generator::get_weather_conditions( const w_point &w ) co
     for( const std::string &weather_type : weather_types ) {
         weather_type_id type = weather_type_id( weather_type );
 
-        const generic_requirement_type_id &requires = type->requirement_id;
+        const generic_precondition_type_id &requires = type->requirement_id;
         if( requires->test( w, current_conditions ) ) {
             current_conditions = type;
         }

@@ -6,7 +6,7 @@
 #include "assign.h"
 #include "debug.h"
 #include "generic_factory.h"
-#include "generic_requirement_type.h"
+#include "generic_precondition_type.h"
 
 namespace
 {
@@ -159,7 +159,8 @@ void weather_type::load( const JsonObject &jo, const std::string & )
         }
         weather_animation = animation;
     }
-    optional( jo, was_loaded, "requirement_id", requirement_id, generic_requirement_type_id( "true" ) );
+    optional( jo, was_loaded, "requirement_id", requirement_id,
+              generic_precondition_type_id( "true" ) );
 }
 
 void weather_types::reset()

@@ -13,7 +13,7 @@
 #include "field.h"
 #include "string_id.h"
 #include "translations.h"
-#include "generic_requirement_type.h"
+#include "generic_precondition_type.h"
 #include "type_id.h"
 
 class JsonObject;
@@ -94,7 +94,7 @@ struct weather_type {
         weather_animation_t weather_animation; //!< Information for weather animations
         weather_sound_category sound_category; //!< if playing sound effects what to use
         sun_intensity_type sun_intensity; //!< strength of the sun
-        generic_requirement_type_id requirement_id; //!< when this weather should happen
+        generic_precondition_type_id requirement_id; //!< when this weather should happen
         time_duration duration_min;
         time_duration duration_max;
         time_duration time_between_min;
