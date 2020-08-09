@@ -1,0 +1,19 @@
+#pragma once
+#ifndef CATA_SRC_GENERIC_TRIGGER_OP_ON_PRECON_H
+#define CATA_SRC_GENERIC_TRIGGER_OP_ON_PRECON_H
+
+#include <string>
+#include <climits>
+
+#include "calendar.h"
+#include "json.h"
+#include "type_id.h"
+
+namespace generic_trigger_op_on_precon
+{
+void load_generic_trigger_op_on_precon( const JsonObject &jo, const std::string & );
+void queue_generic_operation( time_duration duration, generic_operation_type_id id );
+void process_operations();
+}
+
+#endif // CATA_SRC_GENERIC_TRIGGER_OP_ON_PRECON_H
