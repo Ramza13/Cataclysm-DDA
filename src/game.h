@@ -25,7 +25,7 @@
 #include "enums.h"
 #include "game_constants.h"
 #include "generic_operation_type.h"
-#include "generic_requirement_type.h"
+#include "generic_precondition_type.h"
 #include "item_location.h"
 #include "memory_fast.h"
 #include "monster.h"
@@ -1025,11 +1025,11 @@ class game
         int turnssincelastmon = 0; // needed for auto run mode
 
         weather_manager weather;
-        std::vector<std::pair<generic_requirement_type_id, generic_operation_type_id>>
+        std::vector<std::pair<generic_precondition_type_id, generic_operation_type_id>>
                 generic_operations_vector;
         std::vector<std::pair<time_point, generic_operation_type_id>> queued_generic_operations;
         std::map<std::string, bool> generic_variable_map;
-        std::map<generic_requirement_type_id, time_point> next_instance_allowed;
+        std::map<generic_precondition_type_id, time_point> next_instance_allowed;
 
         int mostseen = 0; // # of mons seen last turn; if this increases, set safe_mode to SAFE_MODE_STOP
     private:

@@ -200,7 +200,7 @@ using construction_str_id = string_id<construction>;
 struct generic_operation_type;
 using generic_operation_type_id = string_id<generic_operation_type>;
 
-struct generic_requirement_type;
-using generic_requirement_type_id = string_id<generic_requirement_type>;
+struct generic_precondition_type;
+using generic_precondition_type_id = string_id<generic_precondition_type>;
 
 #endif // CATA_SRC_TYPE_ID_H

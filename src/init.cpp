@@ -38,7 +38,7 @@
 #include "flag.h"
 #include "gates.h"
 #include "generic_operation_type.h"
-#include "generic_requirement_type.h"
+#include "generic_precondition_type.h"
 #include "harvest.h"
 #include "item_action.h"
 #include "item_category.h"
@@ -207,7 +207,7 @@ void DynamicDataLoader::initialize()
     add( "relic_procgen_data", &relic_procgen_data::load_relic_procgen_data );
     add( "field_type", &field_types::load );
     add( "generic_operation_type", &generic_operation_types::load );
-    add( "generic_requirement_type", &generic_requirement_types::load );
+    add( "generic_precondition_type", &generic_precondition_types::load );
     add( "generic_pair", &generic_operation_types::load_pair );
     add( "weather_type", &weather_types::load );
     add( "ammo_effect", &ammo_effects::load );
@@ -504,7 +504,7 @@ void DynamicDataLoader::unload_data()
     field_types::reset();
     gates::reset();
     generic_operation_types::reset();
-    generic_requirement_types::reset();
+    generic_precondition_types::reset();
     harvest_list::reset();
     item_controller->reset();
     json_flag::reset();
@@ -578,8 +578,8 @@ void DynamicDataLoader::finalize_loaded_data( loading_ui &ui )
     using named_entry = std::pair<std::string, std::function<void()>>;
     const std::vector<named_entry> entries = {{
             { _( "Body parts" ), &body_part_type::finalize_all },
-            { _( "Generic event types" ), &generic_operation_types::finalize_all },
-            { _( "Generic requirements types" ), &generic_requirement_types::finalize_all },
+            { _( "Generic operation types" ), &generic_operation_types::finalize_all },
+            { _( "Generic precondtion types" ), &generic_precondition_types::finalize_all },
             { _( "Weather types" ), &weather_types::finalize_all },
             { _( "Field types" ), &field_types::finalize_all },
             { _( "Ammo effects" ), &ammo_effects::finalize_all },

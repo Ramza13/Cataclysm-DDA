@@ -1,6 +1,6 @@
 #pragma once
-#ifndef CATA_SRC_GENERIC_REQUIREMENT_TYPE_H
-#define CATA_SRC_GENERIC_REQUIREMENT_TYPE_H
+#ifndef CATA_SRC_GENERIC_PRECONDITION_TYPE_H
+#define CATA_SRC_GENERIC_PRECONDITION_TYPE_H
 
 #include <string>
 #include <climits>
@@ -28,11 +28,11 @@ struct enum_traits<time_requirement_type> {
     static constexpr time_requirement_type last = time_requirement_type::last;
 };
 
-struct generic_requirement_type {
+struct generic_precondition_type {
     public:
-        friend class generic_factory<generic_requirement_type>;
+        friend class generic_factory<generic_precondition_type>;
         bool was_loaded = false;
-        generic_requirement_type_id id;
+        generic_precondition_type_id id;
         int windpower_min = INT_MIN;
         int windpower_max = INT_MAX;
         int temperature_min = INT_MIN;
@@ -66,20 +66,20 @@ struct generic_requirement_type {
         void load( const JsonObject &jo, const std::string &src );
         void finalize();
         void check() const;
-        generic_requirement_type() = default;
+        generic_precondition_type() = default;
 };
 
-namespace generic_requirement_types
+namespace generic_precondition_types
 {
-/** Get all currently loaded generic requirements */
-const std::vector<generic_requirement_type> &get_all();
-/** Finalize all loaded generic requirements */
+/** Get all currently loaded generic_preconditions */
+const std::vector<generic_precondition_type> &get_all();
+/** Finalize all loaded generic_preconditions */
 void finalize_all();
-/** Clear all loaded weather types (invalidating any pointers) */
+/** Clear all loaded generic_preconditions (invalidating any pointers) */
 void reset();
 /** Load generic requirement type from JSON definition */
 void load( const JsonObject &jo, const std::string &src );
 /** Checks all loaded from JSON are valid */
 void check_consistency();
-} // namespace generic_requirement_types
-#endif // CATA_SRC_GENERIC_REQUIREMENT_TYPE_H
+} // namespace generic_precondition_types
+#endif // CATA_SRC_GENERIC_PRECONDITION_TYPE_H
