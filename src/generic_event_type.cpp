@@ -105,12 +105,9 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "healthy", healthy, 0 );
     optional( jo, was_loaded, "weather_change", weather_change, WEATHER_NULL );
     optional( jo, was_loaded, "update_weather", update_weather, false );
-    for( const std::string &trait : jo.get_string_array( "traits_to_add" ) ) {
-        traits_to_add.push_back( trait_id( trait ) );
-    }
-    for( const std::string &trait : jo.get_string_array( "traits_to_remove" ) ) {
-        traits_to_remove.push_back( trait_id( trait ) );
-    }
+    optional( jo, was_loaded, "traits_to_add", traits_to_add );
+    optional( jo, was_loaded, "traits_to_remove", traits_to_remove );
+
     for( const JsonObject &effect_jo : jo.get_array( "effects_to_add" ) ) {
         effect_info info;
         mandatory( effect_jo, was_loaded, "id", info.id );
@@ -119,6 +116,7 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
         optional( effect_jo, was_loaded, "length", info.length, 1_seconds );
         effects_to_add.push_back( info );
     }
+    optional( jo, was_loaded, "effects_to_remove", effects_to_remove );
     for( const JsonObject &morale_jo : jo.get_array( "morales_to_add" ) ) {
         morale_info info;
         mandatory( morale_jo, was_loaded, "type", info.type );
@@ -129,26 +127,11 @@ void generic_event_type::load( const JsonObject &jo, const std::string & )
         optional( morale_jo, was_loaded, "capped", info.capped, false );
         morales_to_add.push_back( info );
     }
-    for( const std::string &morale : jo.get_array( "morales_to_remove" ) ) {
-        morales_to_remove.push_back( morale_type( morale ) );
-    }
-    for( const std::string &effect : jo.get_array( "effects_to_remove" ) ) {
-        effects_to_remove.push_back( efftype_id( effect ) );
-    }
-    for( const std::string &cbm : jo.get_string_array( "cbms_to_add" ) ) {
-        cbms_to_add.push_back( bionic_id( cbm ) );
-    }
-    for( const std::string &cbm : jo.get_string_array( "cbms_to_remove" ) ) {
-        cbms_to_remove.push_back( bionic_id( cbm ) );
-    }
-    for( const std::string &variable :
-         jo.get_string_array( "generic_variables_to_set_true" ) ) {
-        generic_variables_to_set_true.push_back( variable );
-    }
-    for( const std::string &variable :
-         jo.get_string_array( "generic_variables_to_set_false" ) ) {
-        generic_variables_to_set_false.push_back( variable );
-    }
+    optional( jo, was_loaded, "morales_to_remove", morales_to_remove );
+    optional( jo, was_loaded, "cbms_to_add", cbms_to_add );
+    optional( jo, was_loaded, "cbms_to_remove", cbms_to_remove );
+    optional( jo, was_loaded, "generic_variables_to_set_true", generic_variables_to_set_true );
+    optional( jo, was_loaded, "generic_variables_to_set_false", generic_variables_to_set_false );
     optional( jo, was_loaded, "damage", damage, 0 );
     for( const JsonObject field_jo : jo.get_array( "fields" ) ) {
         generic_event_type_field new_field;
@@ -228,7 +211,7 @@ void generic_event_type::do_event( ) const
             if( copy == nullptr ) {
                 continue;
             }
-            target_monster = *dynamic_cast<monster *>( copy );
+            target_monster = *copy->as_monster();
         } else {
             target_monster = spawn.target;
         }
@@ -260,48 +243,48 @@ void generic_event_type::do_event( ) const
             }
         }
     }
-    for( trait_id trait : traits_to_remove ) {
+    for( const trait_id &trait : traits_to_remove ) {
         if( target.has_trait( trait ) ) {
             target.toggle_trait( trait );
         }
     }
-    for( trait_id trait : traits_to_add ) {
+    for( const trait_id &trait : traits_to_add ) {
         if( !target.has_trait( trait ) ) {
             target.toggle_trait( trait );
         }
     }
-    for( efftype_id effect : effects_to_remove ) {
+    for( const efftype_id &effect : effects_to_remove ) {
         if( target.has_effect( effect ) ) {
             target.remove_effect( effect );
         }
     }
-    for( effect_info effect : effects_to_add ) {
+    for( const effect_info &effect : effects_to_add ) {
         target.add_effect( effect.id, effect.length, effect.target_part->token, effect.intensity );
     }
-    for( bionic_id cbm : cbms_to_add ) {
+    for( const bionic_id &cbm : cbms_to_add ) {
         if( !target.has_bionic( cbm ) ) {
             target.add_bionic( cbm );
         }
     }
-    for( bionic_id cbm : cbms_to_remove ) {
+    for( const bionic_id &cbm : cbms_to_remove ) {
         if( target.has_bionic( cbm ) ) {
             target.remove_bionic( cbm );
         }
     }
-    for( morale_info info : morales_to_add ) {
+    for( const morale_info &info : morales_to_add ) {
         target.add_morale( info.type, info.bonus, info.max_bonus, info.duration, info.decay_start,
                            info.capped );
     }
-    for( morale_type type : morales_to_remove ) {
+    for( const morale_type &type : morales_to_remove ) {
         target.rem_morale( type );
     }
-    for( std::string variable : generic_variables_to_set_true ) {
+    for( const std::string &variable : generic_variables_to_set_true ) {
         g->generic_variable_map[variable] = true;
     }
-    for( std::string variable : generic_variables_to_set_false ) {
+    for( const std::string &variable : generic_variables_to_set_false ) {
         g->generic_variable_map[variable] = false;
     }
-    for( std::pair<time_duration, generic_event_type_id> pair : events_to_queue ) {
+    for( const std::pair<time_duration, generic_event_type_id> &pair : events_to_queue ) {
         generic_event_types::queue_generic_event( pair.first, pair.second );
     }
     if( damage != 0 ) {
@@ -348,7 +331,7 @@ void generic_event_types::process_generic_pairs()
             ++queued_event;
         }
     }
-    for( std::pair<generic_requirement_type_id, generic_event_type_id> require_event :
+    for( const std::pair<generic_requirement_type_id, generic_event_type_id> &require_event :
          g->generic_events_vector ) {
         if( require_event.first->test( get_player_character().pos(), get_player_character(),
                                        WEATHER_NULL ) ) {
