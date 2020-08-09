@@ -92,38 +92,17 @@ void generic_requirement_type::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "temperature_max", temperature_max, INT_MAX );
     optional( jo, was_loaded, "windpower_min", windpower_min, INT_MIN );
     optional( jo, was_loaded, "windpower_max", windpower_max, INT_MAX );
-    optional( jo, was_loaded, "humidity_and_pressure", humidity_and_pressure,
-              true );
-    optional( jo, was_loaded, "time", time,
-              time_requirement_type::both );
-    for( const std::string &required_weather :
-         jo.get_string_array( "required_weathers" ) ) {
-        required_weathers.push_back( weather_type_id( required_weather ) );
-    }
-    for( const std::string &required_trait :
-         jo.get_string_array( "required_traits" ) ) {
-        required_traits.push_back( trait_id( required_trait ) );
-    }
-    for( const std::string &required_effect :
-         jo.get_string_array( "required_effects" ) ) {
-        required_effects.push_back( efftype_id( required_effect ) );
-    }
-    for( const std::string &required_cbm :
-         jo.get_string_array( "required_cbms" ) ) {
-        required_cbms.push_back( bionic_id( required_cbm ) );
-    }
-    for( const std::string &variable : jo.get_string_array( "true_generic_variables" ) ) {
-        true_generic_variables.push_back( variable );
-    }
-    for( const std::string &variable : jo.get_string_array( "false_generic_variables" ) ) {
-        false_generic_variables.push_back( variable );
-    }
-    optional( jo, was_loaded, "time_passed_min", time_passed_min,
-              0_seconds );
-    optional( jo, was_loaded, "time_passed_max", time_passed_max,
-              0_seconds );
-    optional( jo, was_loaded, "once_every", once_every,
-              1_seconds );
+    optional( jo, was_loaded, "humidity_and_pressure", humidity_and_pressure, true );
+    optional( jo, was_loaded, "time", time, time_requirement_type::both );
+    optional( jo, was_loaded, "required_weathers", required_weathers );
+    optional( jo, was_loaded, "required_traits", required_traits );
+    optional( jo, was_loaded, "required_effects", required_effects );
+    optional( jo, was_loaded, "required_cbms", required_cbms );
+    optional( jo, was_loaded, "true_generic_variables", true_generic_variables );
+    optional( jo, was_loaded, "false_generic_variables", false_generic_variables );
+    optional( jo, was_loaded, "time_passed_min", time_passed_min, 0_seconds );
+    optional( jo, was_loaded, "time_passed_max", time_passed_max );
+    optional( jo, was_loaded, "once_every", once_every, 1_seconds );
     optional( jo, was_loaded, "one_in_chance", one_in_chance, 0 );
     optional( jo, was_loaded, "pain_max", pain_max, INT_MAX );
     optional( jo, was_loaded, "pain_max", pain_min, INT_MIN );
@@ -156,8 +135,8 @@ bool generic_requirement_type::test( const w_point &point, Character &target,
         return false;
     }
     if( ( point.time < ( calendar::start_of_cataclysm + time_passed_min ) ) ||
-        ( time_passed_max != 0_seconds &&
-          ( point.time > ( calendar::start_of_cataclysm + time_passed_max ) ) ) ) {
+        ( time_passed_max &&
+          ( point.time > ( calendar::start_of_cataclysm + *time_passed_max ) ) ) ) {
         return false;
     }
     std::map<generic_requirement_type_id, time_point>::iterator instance =

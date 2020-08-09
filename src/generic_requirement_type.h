@@ -52,7 +52,7 @@ struct generic_requirement_type {
         std::vector<std::string> true_generic_variables;
         std::vector<std::string> false_generic_variables;
         time_duration time_passed_min;
-        time_duration time_passed_max;
+        cata::optional<time_duration> time_passed_max;
         time_duration once_every;
         time_duration time_between;
         int one_in_chance;
