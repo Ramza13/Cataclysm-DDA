@@ -8,7 +8,7 @@
     "type": "generic_precondition_type",
     "pressure_min": 1020,
     "humidity_max": 70,
-    "time": "day"
+    "time_of_day": "day"
   },
   {
     "id": "weather_cloudy",

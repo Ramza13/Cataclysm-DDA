@@ -74,7 +74,7 @@ std::string enum_to_string<weather_sound_category>( weather_sound_category data 
         case weather_sound_category::last:
             break;
     }
-    debugmsg( "Invalid time_requirement_type" );
+    debugmsg( "Invalid time_of_day" );
     abort();
 }
 
