@@ -20,12 +20,19 @@ struct ammo_effect;
 using ammo_effect_id = int_id<ammo_effect>;
 using ammo_effect_str_id = string_id<ammo_effect>;
 
+class ascii_art;
+using ascii_art_id = string_id<ascii_art>;
+
 struct bionic_data;
 using bionic_id = string_id<bionic_data>;
 
 struct body_part_type;
 using bodypart_id = int_id<body_part_type>;
 using bodypart_str_id = string_id<body_part_type>;
+
+struct construction;
+using construction_id = int_id<construction>;
+using construction_str_id = string_id<construction>;
 
 struct construction_category;
 using construction_category_id = string_id<construction_category>;
@@ -35,12 +42,6 @@ using clothing_mod_id = string_id<clothing_mod>;
 
 class effect_type;
 using efftype_id = string_id<effect_type>;
-
-class scent_type;
-using scenttype_id = string_id<scent_type>;
-
-class ascii_art;
-using ascii_art_id = string_id<ascii_art>;
 
 class disease_type;
 using diseasetype_id = string_id<disease_type>;
@@ -61,6 +62,12 @@ using field_type_str_id = string_id<field_type>;
 struct furn_t;
 using furn_id = int_id<furn_t>;
 using furn_str_id = string_id<furn_t>;
+
+struct generic_operation_type;
+using generic_operation_type_id = string_id<generic_operation_type>;
+
+struct generic_precondition_type;
+using generic_precondition_type_id = string_id<generic_precondition_type>;
 
 class gun_mode;
 using gun_mode_id = string_id<gun_mode>;
@@ -128,6 +135,9 @@ using recipe_id = string_id<recipe>;
 struct requirement_data;
 using requirement_id = string_id<requirement_data>;
 
+class scent_type;
+using scenttype_id = string_id<scent_type>;
+
 class Skill;
 using skill_id = string_id<Skill>;
 
@@ -162,6 +172,9 @@ namespace trait_group
 using Trait_group_tag = string_id<Trait_group>;
 } // namespace trait_group
 
+class translation;
+using snippet_id = string_id<translation>;
+
 struct trap;
 using trap_id = int_id<trap>;
 using trap_str_id = string_id<trap>;
@@ -189,18 +202,4 @@ using weather_type_id = string_id<weather_type>;
 
 class zone_type;
 using zone_type_id = string_id<zone_type>;
-
-class translation;
-using snippet_id = string_id<translation>;
-
-struct construction;
-using construction_id = int_id<construction>;
-using construction_str_id = string_id<construction>;
-
-struct generic_operation_type;
-using generic_operation_type_id = string_id<generic_operation_type>;
-
-struct generic_precondition_type;
-using generic_precondition_type_id = string_id<generic_precondition_type>;
-
 #endif // CATA_SRC_TYPE_ID_H
