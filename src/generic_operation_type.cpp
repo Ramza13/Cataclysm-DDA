@@ -36,281 +36,171 @@ void generic_operation_type::finalize()
 
 void generic_operation_type::check() const
 {
-    for( const generic_operation_effect &info : effects_to_add ) {
-        if( !info.id.is_valid() ) {
-            debugmsg( "Effect %s does not exist.", info.id.c_str() );
-            abort();
-        }
+    for( const operation_type *type : operations ) {
+        type->check();
     }
-    for( const efftype_id &id : effects_to_remove ) {
-        if( !id.is_valid() ) {
-            debugmsg( "Effect %s does not exist.", id.c_str() );
-            abort();
-        }
-    }
-    for( const trait_id &id : traits_to_remove ) {
-        if( !id.is_valid() ) {
-            debugmsg( "trait %s does not exist.", id.c_str() );
-            abort();
-        }
-    }
-    for( const trait_id &id : traits_to_add ) {
-        if( !id.is_valid() ) {
-            debugmsg( "trait %s does not exist.", id.c_str() );
-            abort();
-        }
-    }
-    for( const bionic_id &id : cbms_to_add ) {
-        if( !id.is_valid() ) {
-            debugmsg( "cbm %s does not exist.", id.c_str() );
-            abort();
-        }
-    }
-    for( const bionic_id &id : cbms_to_remove ) {
-        if( !id.is_valid() ) {
-            debugmsg( "cbm %s does not exist.", id.c_str() );
-            abort();
-        }
-    }
-    if( !weather_change.is_empty() && !weather_change.is_valid() ) {
-        debugmsg( "weather type %s does not exist.", weather_change.c_str() );
-        abort();
-    }
-    if( !target_part.is_empty() && !target_part.is_valid() ) {
-        debugmsg( "Target part %s does not exist.", target_part.c_str() );
-        abort();
-    }
-    for( const generic_operation_spawn &spawn : spawns ) {
-        if( !spawn.target.is_empty() && !spawn.target.is_valid() ) {
-            debugmsg( "Spawn target %s does not exist.", spawn.target.c_str() );
-            abort();
-        }
-    }
-    for( const generic_operation_field &field : fields ) {
-        if( !field.type.is_valid() ) {
-            debugmsg( "field type %s does not exist.", field.type.c_str() );
-            abort();
-        }
-    }
+
 }
 
 void generic_operation_type::load( const JsonObject &jo, const std::string & )
 {
-    optional( jo, was_loaded, "message", message );
-    optional( jo, was_loaded, "sound_message", sound_message );
-    optional( jo, was_loaded, "sound_effect", sound_effect, "" );
-    optional( jo, was_loaded, "lightning", lightning, false );
-    optional( jo, was_loaded, "pain", pain, 0 );
-    optional( jo, was_loaded, "wet", wet, 0 );
-    optional( jo, was_loaded, "radiation", radiation, 0 );
-    optional( jo, was_loaded, "healthy", healthy, 0 );
-    optional( jo, was_loaded, "weather_change", weather_change, WEATHER_NULL );
-    optional( jo, was_loaded, "update_weather", update_weather, false );
-    optional( jo, was_loaded, "traits_to_add", traits_to_add );
-    optional( jo, was_loaded, "traits_to_remove", traits_to_remove );
+    if( jo.has_member( "message" ) ) {
+        translation message;
+        mandatory( jo, was_loaded, "message", message );
+        operations.push_back( new message_operation( message ) );
+    }
+    if( jo.has_member( "sound_message" ) || jo.has_member( "sound_effect" ) ) {
+        translation message;
+        std::string sound_effect;
+        optional( jo, was_loaded, "sound_message", message );
+        optional( jo, was_loaded, "sound_effect", sound_effect, "" );
+        operations.push_back( new sound_message_operation( message, sound_effect ) );
+    }
 
+    if( jo.has_member( "lightning" ) ) {
+        bool lightning;
+        mandatory( jo, was_loaded, "lightning", lightning );
+        operations.push_back( new lightning_operation( lightning ) );
+    }
+    if( jo.has_member( "pain" ) ) {
+        int pain;
+        mandatory( jo, was_loaded, "pain", pain );
+        operations.push_back( new pain_operation( pain ) );
+    }
+    if( jo.has_member( "wet" ) ) {
+        int wet;
+        mandatory( jo, was_loaded, "wet", wet );
+        operations.push_back( new wet_operation( wet ) );
+    }
+    if( jo.has_member( "radiation" ) ) {
+        int radiation;
+        mandatory( jo, was_loaded, "radiation", radiation );
+        operations.push_back( new radiation_operation( radiation ) );
+    }
+    if( jo.has_member( "healthy" ) ) {
+        int healthy;
+        mandatory( jo, was_loaded, "healthy", healthy );
+        operations.push_back( new healthy_operation( healthy ) );
+    }
+    if( jo.has_member( "weather_change" ) ) {
+        weather_type_id weather;
+        mandatory( jo, was_loaded, "weather_change", weather );
+        operations.push_back( new weather_change_operation( weather ) );
+    }
+    if( jo.has_member( "update_weather" ) ) {
+        bool update_weather;
+        mandatory( jo, was_loaded, "update_weather", update_weather );
+        operations.push_back( new update_weather_operation( update_weather ) );
+    }
+    for( const std::string &trait : jo.get_string_array( "traits_to_add" ) ) {
+        operations.push_back( new add_trait_operation( trait_id( trait ) ) );
+    }
+    for( const std::string &trait : jo.get_string_array( "traits_to_remove" ) ) {
+        operations.push_back( new remove_trait_operation( trait_id( trait ) ) );
+    }
+    for( const std::string &bionic : jo.get_string_array( "bionics_to_add" ) ) {
+        operations.push_back( new add_bionic_operation( bionic_id( bionic ) ) );
+    }
+    for( const std::string &bionic : jo.get_string_array( "bionics_to_remove" ) ) {
+        operations.push_back( new remove_bionic_operation( bionic_id( bionic ) ) );
+    }
     for( const JsonObject &effect_jo : jo.get_array( "effects_to_add" ) ) {
-        generic_operation_effect info;
-        mandatory( effect_jo, was_loaded, "id", info.id );
-        optional( effect_jo, was_loaded, "intensity", info.intensity, 1 );
-        optional( effect_jo, was_loaded, "target_part", info.target_part, bodypart_str_id( "bp_null" ) );
-        optional( effect_jo, was_loaded, "length", info.length, 1_seconds );
-        effects_to_add.push_back( info );
-    }
-    optional( jo, was_loaded, "effects_to_remove", effects_to_remove );
-    for( const JsonObject &morale_jo : jo.get_array( "morales_to_add" ) ) {
-        generic_operation_morale info;
-        mandatory( morale_jo, was_loaded, "type", info.type );
-        mandatory( morale_jo, was_loaded, "bonus", info.bonus );
-        optional( morale_jo, was_loaded, "max_bonus", info.max_bonus, 0 );
-        optional( morale_jo, was_loaded, "duration", info.duration, 1_hours );
-        optional( morale_jo, was_loaded, "decay_start", info.decay_start, 30_minutes );
-        optional( morale_jo, was_loaded, "capped", info.capped, false );
-        morales_to_add.push_back( info );
-    }
-    optional( jo, was_loaded, "morales_to_remove", morales_to_remove );
-    optional( jo, was_loaded, "cbms_to_add", cbms_to_add );
-    optional( jo, was_loaded, "cbms_to_remove", cbms_to_remove );
-    optional( jo, was_loaded, "generic_variables_to_set_true", generic_variables_to_set_true );
-    optional( jo, was_loaded, "generic_variables_to_set_false", generic_variables_to_set_false );
-    optional( jo, was_loaded, "damage", damage, 0 );
-    for( const JsonObject field_jo : jo.get_array( "fields" ) ) {
-        generic_operation_field new_field;
-        mandatory( field_jo, was_loaded, "type", new_field.type );
-        mandatory( field_jo, was_loaded, "intensity", new_field.intensity );
-        mandatory( field_jo, was_loaded, "age", new_field.age );
-        optional( field_jo, was_loaded, "outdoor_only", new_field.outdoor_only, true );
-        optional( field_jo, was_loaded, "radius", new_field.radius, 10000000 );
+        efftype_id effect;
+        time_duration length = 0_seconds;
+        int intensity = 0;
+        bodypart_str_id target_part;
 
-        fields.emplace_back( new_field );
+        mandatory( effect_jo, was_loaded, "id", effect );
+        optional( effect_jo, was_loaded, "intensity", intensity, 1 );
+        optional( effect_jo, was_loaded, "length", length, 1_seconds );
+        operations.push_back( new add_effect_operation( effect, length, intensity, target_part ) );
+    }
+    for( const std::string &effect : jo.get_string_array( "effects_to_remove" ) ) {
+        operations.push_back( new remove_effect_operation( efftype_id( effect ) ) );
+    }
+    for( const JsonObject &morale_jo : jo.get_array( "morales_to_add" ) ) {
+        morale_type type;
+        int bonus = 0;
+        int max_bonus = 0;
+        time_duration duration = 1_hours;
+        time_duration decay_start = 30_minutes;
+        bool capped = false;
+        mandatory( morale_jo, was_loaded, "type", type );
+        mandatory( morale_jo, was_loaded, "bonus", bonus );
+        optional( morale_jo, was_loaded, "max_bonus", max_bonus, 0 );
+        optional( morale_jo, was_loaded, "duration", duration, 1_hours );
+        optional( morale_jo, was_loaded, "decay_start", decay_start, 30_minutes );
+        optional( morale_jo, was_loaded, "capped", capped, false );
+        operations.push_back( new add_morale_operation( type, bonus, max_bonus, duration, decay_start,
+                              capped ) );
+    }
+    for( const std::string &morale : jo.get_string_array( "morales_to_remove" ) ) {
+        operations.push_back( new remove_morale_operation( morale_type( morale ) ) );
+    }
+    for( const JsonObject &var_jo : jo.get_array( "generic_variables_to_set" ) ) {
+        std::string variable_name;
+        bool value;
+        mandatory( var_jo, was_loaded, "variable_name", variable_name );
+        mandatory( var_jo, was_loaded, "value", value );
+        operations.push_back( new set_generic_variable_operation( variable_name, value ) );
+    }
+    for( const JsonObject &damage_jo : jo.get_array( "damages" ) ) {
+        damage_instance damage;
+        bodypart_str_id target_part;
+        assign( damage_jo, "damage", damage );
+        optional( damage_jo, was_loaded, "target_part", target_part, bodypart_str_id( "bp_null" ) );
+        operations.push_back( new damage_operation( damage, target_part ) );
+    }
+    for( const JsonObject field_jo : jo.get_array( "fields" ) ) {
+        field_type_str_id type;
+        int intensity = 0;
+        time_duration age = 0_seconds;
+        int radius = 0;
+        bool outdoor_only = false;
+
+        mandatory( field_jo, was_loaded, "type", type );
+        mandatory( field_jo, was_loaded, "intensity", intensity );
+        mandatory( field_jo, was_loaded, "age", age );
+        optional( field_jo, was_loaded, "outdoor_only", outdoor_only, true );
+        optional( field_jo, was_loaded, "radius", radius, 10000000 );
+        operations.push_back( new create_field_operation( type, intensity, age, radius, outdoor_only ) );
     }
     for( const JsonObject spawn_jo : jo.get_array( "spawns" ) ) {
-        generic_operation_spawn spawn;
-        mandatory( spawn_jo, was_loaded, "max_radius", spawn.max_radius );
-        mandatory( spawn_jo, was_loaded, "min_radius", spawn.min_radius );
-        if( spawn.min_radius > spawn.max_radius ) {
+        mtype_id mtarget;
+        int target_range = 0;
+        int hallucination_count = 0;
+        int real_count = 0;
+        int min_radius = 0;
+        int max_radius = 0;
+        mandatory( spawn_jo, was_loaded, "max_radius", max_radius );
+        mandatory( spawn_jo, was_loaded, "min_radius", min_radius );
+        if( min_radius > max_radius ) {
             spawn_jo.throw_error( "min_radius must be less than or equal to max_radius" );
         }
-        optional( spawn_jo, was_loaded, "hallucination_count", spawn.hallucination_count, 0 );
-        optional( spawn_jo, was_loaded, "real_count", spawn.real_count, 0 );
-        optional( spawn_jo, was_loaded, "target", spawn.target );
-        optional( spawn_jo, was_loaded, "target_range", spawn.target_range, 30 );
-
-        spawns.emplace_back( spawn );
+        optional( spawn_jo, was_loaded, "hallucination_count", hallucination_count, 0 );
+        optional( spawn_jo, was_loaded, "real_count", real_count, 0 );
+        optional( spawn_jo, was_loaded, "mtarget", mtarget );
+        optional( spawn_jo, was_loaded, "target_range", target_range, 30 );
+        operations.push_back( new spawn_monster_operation( mtarget, target_range, hallucination_count,
+                              real_count, min_radius, max_radius ) );
     }
     for( const JsonObject queue_jo : jo.get_array( "events_to_queue" ) ) {
-        std::pair<time_duration, generic_operation_type_id> pair;
-        mandatory( queue_jo, was_loaded, "duration", pair.first );
-        mandatory( queue_jo, was_loaded, "id", pair.second );
-        events_to_queue.emplace_back( pair );
+        generic_operation_type_id operation;
+        time_duration time_in_future;
+        mandatory( queue_jo, was_loaded, "time_in_future", time_in_future );
+        mandatory( queue_jo, was_loaded, "id", operation );
+        operations.push_back( new queue_operation_operation( operation, time_in_future ) );
     }
 }
 
-void sound( translation sound_message, std::string sound_effect )
-{
-    Character &player_character = get_player_character();
-    map &here = get_map();
-    if( !player_character.has_effect( effect_sleep ) && !player_character.is_deaf() ) {
-        if( here.get_abs_sub().z >= 0 ) {
-            player_character.add_msg_if_player( sound_message );
-            if( !sound_effect.empty() ) {
-                sfx::play_variant_sound( "environment", sound_effect, 80, rng( 0, 359 ) );
-            }
-        } else if( one_in( std::max( roll_remainder( 2.0f * here.get_abs_sub().z /
-                                     player_character.mutation_value( "hearing_modifier" ) ), 1 ) ) ) {
-            player_character.add_msg_if_player( sound_message );
-            if( !sound_effect.empty() ) {
-                sfx::play_variant_sound( "environment", sound_effect,
-                                         ( 80 * player_character.mutation_value( "hearing_modifier" ) ), rng( 0, 359 ) );
-            }
-        }
-    }
-}
-
-void generic_operation_type::do_event( ) const
+void generic_operation_type::perform( ) const
 {
     //Possible TODO, make npc/monsters affected
-    map &here = get_map();
-    weather_manager wm = get_weather();
     Character &target = get_player_character();
 
-    if( lightning && here.get_abs_sub().z >= 0 ) {
-        wm.lightning_active = true;
+    for( operation_type *type : operations ) {
+        type->perform( target );
     }
-
-    bool spawned = spawns.empty();
-    for( const generic_operation_spawn &spawn : spawns ) {
-        monster target_monster;
-        if( spawn.target.is_empty() ) {
-            //grab a random nearby hostile creature to create a hallucination or copy of
-            Creature *copy = g->get_creature_if( [&spawn]( const Creature & critter ) -> bool {
-                bool not_self = get_player_character().pos() != critter.pos();
-                bool in_range = std::round( rl_dist_exact( get_player_character().pos(), critter.pos() ) ) <= spawn.target_range;
-                bool valid_target = get_player_character().attitude_to( critter ) == Creature::Attitude::HOSTILE;
-                return not_self && in_range && valid_target;
-            } );
-            if( copy == nullptr ) {
-                continue;
-            }
-            target_monster = *copy->as_monster();
-        } else {
-            target_monster = spawn.target;
-        }
-
-        for( int i = 0; i < spawn.hallucination_count; i++ ) {
-            tripoint spawn_point;
-            if( g->find_nearby_spawn_point( target, target_monster.type->id, spawn.min_radius,
-                                            spawn.max_radius, spawn_point ) ) {
-                g->spawn_hallucination( spawn_point, target_monster.type->id );
-                spawned = true;
-            }
-        }
-        for( int i = 0; i < spawn.real_count; i++ ) {
-            tripoint spawn_point;
-            if( g->find_nearby_spawn_point( target, target_monster.type->id, spawn.min_radius,
-                                            spawn.max_radius, spawn_point ) ) {
-                g->place_critter_at( target_monster.type->id, spawn_point );
-                spawned = true;
-            }
-        }
-    }
-    if( !spawned ) {
-        return;
-    }
-    for( const generic_operation_field &field : fields ) {
-        for( const tripoint &dest : get_map().points_in_radius( target.pos(), field.radius ) ) {
-            if( !field.outdoor_only || get_map().is_outside( dest ) ) {
-                get_map().add_field( dest, field.type, field.intensity, field.age );
-            }
-        }
-    }
-    for( const trait_id &trait : traits_to_remove ) {
-        if( target.has_trait( trait ) ) {
-            target.toggle_trait( trait );
-        }
-    }
-    for( const trait_id &trait : traits_to_add ) {
-        if( !target.has_trait( trait ) ) {
-            target.toggle_trait( trait );
-        }
-    }
-    for( const efftype_id &effect : effects_to_remove ) {
-        if( target.has_effect( effect ) ) {
-            target.remove_effect( effect );
-        }
-    }
-    for( const generic_operation_effect &effect : effects_to_add ) {
-        target.add_effect( effect.id, effect.length, effect.target_part->token, effect.intensity );
-    }
-    for( const bionic_id &cbm : cbms_to_add ) {
-        if( !target.has_bionic( cbm ) ) {
-            target.add_bionic( cbm );
-        }
-    }
-    for( const bionic_id &cbm : cbms_to_remove ) {
-        if( target.has_bionic( cbm ) ) {
-            target.remove_bionic( cbm );
-        }
-    }
-    for( const generic_operation_morale &info : morales_to_add ) {
-        target.add_morale( info.type, info.bonus, info.max_bonus, info.duration, info.decay_start,
-                           info.capped );
-    }
-    for( const morale_type &type : morales_to_remove ) {
-        target.rem_morale( type );
-    }
-    for( const std::string &variable : generic_variables_to_set_true ) {
-        g->generic_variable_map[variable] = true;
-    }
-    for( const std::string &variable : generic_variables_to_set_false ) {
-        g->generic_variable_map[variable] = false;
-    }
-    for( const std::pair<time_duration, generic_operation_type_id> &pair : events_to_queue ) {
-        generic_trigger_op_on_precon::queue_generic_operation( pair.first, pair.second );
-    }
-    if( damage != 0 ) {
-        if( target_part.is_valid() ) {
-            target.deal_damage( nullptr, target_part, damage_instance( DT_BASH,
-                                damage ) );
-        } else {
-            for( const bodypart_id &bp : target.get_all_body_parts() ) {
-                target.deal_damage( nullptr, bp, damage_instance( DT_BASH, damage ) );
-            }
-        }
-    }
-    if( weather_change != WEATHER_NULL ) {
-        get_weather().weather_override = weather_change;
-    }
-    if( update_weather ) {
-        get_weather().next_weather = true;
-    }
-
-    target.mod_healthy( healthy );
-    target.mod_rad( radiation );
-    wet_character( target, wet );
-    target.mod_pain( pain );
-    sound( sound_message, sound_effect );
-    target.add_msg_if_player( message );
 }
 
 void generic_operation_types::reset()
@@ -339,4 +229,279 @@ void generic_operation_types::check_consistency()
 void generic_operation_types::load( const JsonObject &jo, const std::string &src )
 {
     generic_operation_factory.load( jo, src );
+}
+
+void pain_operation::perform( Character &target )
+{
+    target.mod_pain( pain );
+}
+
+void wet_operation::perform( Character &target )
+{
+    wet_character( target, wet );
+}
+
+void radiation_operation::perform( Character &target )
+{
+    target.mod_rad( radiation );
+}
+
+void healthy_operation::perform( Character &target )
+{
+    target.mod_healthy( healthy );
+}
+
+void lightning_operation::perform( Character &target )
+{
+    if( lightning && target.posz() >= 0 ) {
+        get_weather().lightning_active = true;
+    }
+}
+
+void update_weather_operation::perform( Character &target )
+{
+    if( update_weather ) {
+        get_weather().next_weather = true;
+    }
+}
+
+void message_operation::perform( Character &target )
+{
+    target.add_msg_if_player( message );
+}
+
+void sound_message_operation::perform( Character &target )
+{
+    map &here = get_map();
+    if( !target.has_effect( effect_sleep ) && !target.is_deaf() ) {
+        if( here.get_abs_sub().z >= 0 ) {
+            target.add_msg_if_player( message );
+            if( !sound_effect.empty() ) {
+                sfx::play_variant_sound( "environment", sound_effect, 80, rng( 0, 359 ) );
+            }
+        } else if( one_in( std::max( roll_remainder( 2.0f * here.get_abs_sub().z /
+                                     target.mutation_value( "hearing_modifier" ) ), 1 ) ) ) {
+            target.add_msg_if_player( message );
+            if( !sound_effect.empty() ) {
+                sfx::play_variant_sound( "environment", sound_effect,
+                                         ( 80 * target.mutation_value( "hearing_modifier" ) ), rng( 0, 359 ) );
+            }
+        }
+    }
+}
+
+void damage_operation::perform( Character &target )
+{
+    if( target_part.is_valid() ) {
+        target.deal_damage( nullptr, target_part, damage );
+    } else {
+        for( const bodypart_id &bp : target.get_all_body_parts() ) {
+            target.deal_damage( nullptr, bp, damage );
+        }
+    }
+}
+
+void add_trait_operation::check() const
+{
+    if( !trait.is_valid() ) {
+        debugmsg( "trait %s does not exist.", trait.c_str() );
+        abort();
+    }
+}
+
+void add_trait_operation::perform( Character &target )
+{
+    if( !target.has_trait( trait ) ) {
+        target.toggle_trait( trait );
+    }
+}
+
+void remove_trait_operation::check() const
+{
+    if( !trait.is_valid() ) {
+        debugmsg( "trait %s does not exist.", trait.c_str() );
+        abort();
+    }
+}
+
+void remove_trait_operation::perform( Character &target )
+{
+    if( target.has_trait( trait ) ) {
+        target.toggle_trait( trait );
+    }
+}
+
+void add_bionic_operation::check() const
+{
+    if( !bionic.is_valid() ) {
+        debugmsg( "bionic %s does not exist.", bionic.c_str() );
+        abort();
+    }
+}
+
+void add_bionic_operation::perform( Character &target )
+{
+    if( !target.has_bionic( bionic ) ) {
+        target.add_bionic( bionic );
+    }
+}
+
+void remove_bionic_operation::check() const
+{
+    if( !bionic.is_valid() ) {
+        debugmsg( "bionic %s does not exist.", bionic.c_str() );
+        abort();
+    }
+}
+
+void remove_bionic_operation::perform( Character &target )
+{
+    if( target.has_bionic( bionic ) ) {
+        target.remove_bionic( bionic );
+    }
+}
+
+void add_effect_operation::check() const
+{
+    if( !effect.is_valid() ) {
+        debugmsg( "effect %s does not exist.", effect.c_str() );
+        abort();
+    }
+}
+
+void add_effect_operation::perform( Character &target )
+{
+    target.add_effect( effect, length, target_part->token, intensity );
+}
+
+void remove_effect_operation::check() const
+{
+    if( !effect.is_valid() ) {
+        debugmsg( "effect %s does not exist.", effect.c_str() );
+        abort();
+    }
+}
+
+void remove_effect_operation::perform( Character &target )
+{
+    if( target.has_effect( effect ) ) {
+        target.remove_effect( effect );
+    }
+}
+
+void weather_change_operation::check() const
+{
+    if( !weather.is_valid() ) {
+        debugmsg( "weather type %s does not exist.", weather.c_str() );
+        abort();
+    }
+}
+
+void weather_change_operation::perform( Character &target )
+{
+    get_weather().weather_override = weather;
+}
+
+void add_morale_operation::check() const
+{
+    if( !type.is_valid() ) {
+        debugmsg( "morale type %s does not exist.", type.c_str() );
+        abort();
+    }
+}
+
+void add_morale_operation::perform( Character &target )
+{
+    target.add_morale( type, bonus, max_bonus, duration, decay_start, capped );
+}
+
+void remove_morale_operation::check() const
+{
+    if( !type.is_valid() ) {
+        debugmsg( "morale type %s does not exist.", type.c_str() );
+        abort();
+    }
+}
+
+void remove_morale_operation::perform( Character &target )
+{
+    target.rem_morale( type );
+}
+
+void set_generic_variable_operation::perform( Character &target )
+{
+    g->generic_variable_map[variable_name] = value;
+}
+
+void spawn_monster_operation::check() const
+{
+    if( !mtarget.is_empty() && !mtarget.is_valid() ) {
+        debugmsg( "Spawn target %s does not exist.", mtarget.c_str() );
+        abort();
+    }
+}
+
+void spawn_monster_operation::perform( Character &target )
+{
+    monster target_monster;
+    if( mtarget.is_empty() ) {
+        //grab a random nearby hostile creature to create a hallucination or copy of
+        Creature *copy = g->get_creature_if( [this]( const Creature & critter ) -> bool {
+            bool not_self = get_player_character().pos() != critter.pos();
+            bool in_range = std::round( rl_dist_exact( get_player_character().pos(), critter.pos() ) ) <= target_range;
+            bool valid_target = get_player_character().attitude_to( critter ) == Creature::Attitude::HOSTILE;
+            return not_self && in_range && valid_target;
+        } );
+        if( copy == nullptr ) {
+            return;
+        }
+        target_monster = *copy->as_monster();
+    } else {
+        target_monster = mtarget;
+    }
+
+    for( int i = 0; i < hallucination_count; i++ ) {
+        tripoint spawn_point;
+        if( g->find_nearby_spawn_point( target, target_monster.type->id, min_radius,
+                                        max_radius, spawn_point ) ) {
+            g->spawn_hallucination( spawn_point, target_monster.type->id );
+        }
+    }
+    for( int i = 0; i < real_count; i++ ) {
+        tripoint spawn_point;
+        if( g->find_nearby_spawn_point( target, target_monster.type->id, min_radius,
+                                        max_radius, spawn_point ) ) {
+            g->place_critter_at( target_monster.type->id, spawn_point );
+        }
+    }
+}
+
+void create_field_operation::check() const
+{
+    if( !type.is_valid() ) {
+        debugmsg( "field type %s does not exist.", type.c_str() );
+        abort();
+    }
+}
+
+void create_field_operation::perform( Character &target )
+{
+    for( const tripoint &dest : get_map().points_in_radius( target.pos(), radius ) ) {
+        if( !outdoor_only || get_map().is_outside( dest ) ) {
+            get_map().add_field( dest, type, intensity, age );
+        }
+    }
+}
+
+void queue_operation_operation::check() const
+{
+    if( !operation.is_valid() ) {
+        debugmsg( "generic_operation type %s does not exist.", operation.c_str() );
+        abort();
+    }
+}
+
+void queue_operation_operation::perform( Character &target )
+{
+    generic_trigger_op_on_precon::queue_generic_operation( time_in_future, operation );
 }

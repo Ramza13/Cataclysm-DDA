@@ -26,7 +26,7 @@ void generic_trigger_op_on_precon::process_operations()
 
     while( queued_operation != g->queued_generic_operations.end() ) {
         if( queued_operation->first <= calendar::turn ) {
-            queued_operation->second->do_event( );
+            queued_operation->second->perform( );
             queued_operation = g->queued_generic_operations.erase( queued_operation );
         } else {
             ++queued_operation;
@@ -36,7 +36,7 @@ void generic_trigger_op_on_precon::process_operations()
          g->generic_operations_vector ) {
         if( require_event.first->test( get_player_character().pos(), get_player_character(),
                                        WEATHER_NULL ) ) {
-            require_event.second->do_event( );
+            require_event.second->perform( );
         }
     }
 }

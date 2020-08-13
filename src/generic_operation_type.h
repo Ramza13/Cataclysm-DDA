@@ -6,45 +6,267 @@
 #include <climits>
 
 #include "bodypart.h"
+#include "damage.h"
 #include "field.h"
 #include "translations.h"
 #include "type_id.h"
+#include "weather.h"
 
 template<typename T>
 class generic_factory;
 
 const generic_operation_type_id NEXT_WEATHER_GENERIC_OPERATION( "next_weather" );
 
-struct generic_operation_field {
-    field_type_str_id type;
-    int intensity = 0;
-    time_duration age = 0_seconds;
-    int radius = 0;
-    bool outdoor_only = false;
+class operation_type
+{
+    public:
+        virtual void perform( Character &target ) = 0;
+        void check() const {}
 };
 
-struct generic_operation_spawn {
-    mtype_id target;
-    int target_range = 0;
-    int hallucination_count = 0;
-    int real_count = 0;
-    int min_radius = 0;
-    int max_radius = 0;
+class pain_operation : public operation_type
+{
+    public:
+        int pain = 0;
+
+        void perform( Character &target ) override;
+        pain_operation( int pain ) : pain( pain ) {}
 };
 
-struct generic_operation_effect {
-    time_duration length = 0_seconds;
-    int intensity = 0;
-    efftype_id id;
-    bodypart_str_id target_part;
+class wet_operation : public operation_type
+{
+    public:
+        int wet = 0;
+
+        void perform( Character &target ) override;
+        wet_operation( int wet ) : wet( wet ) {}
 };
-struct generic_operation_morale {
-    morale_type type;
-    int bonus = 0;
-    int max_bonus = 0;
-    time_duration duration = 1_hours;
-    time_duration decay_start = 30_minutes;
-    bool capped = false;
+
+class radiation_operation : public operation_type
+{
+    public:
+        int radiation = 0;
+
+        void perform( Character &target ) override;
+        radiation_operation( int radiation ) : radiation( radiation ) {}
+};
+
+class healthy_operation : public operation_type
+{
+    public:
+        int healthy = 0;
+
+        void perform( Character &target ) override;
+        healthy_operation( int healthy ) : healthy( healthy ) {}
+};
+
+class lightning_operation : public operation_type
+{
+    public:
+        bool lightning = false;
+
+        void perform( Character &target ) override;
+        lightning_operation( bool lightning ) : lightning( lightning ) {}
+};
+
+class update_weather_operation : public operation_type
+{
+    public:
+        bool update_weather = false;
+
+        void perform( Character &target ) override;
+        update_weather_operation( bool update_weather ) : update_weather( update_weather ) {}
+};
+
+class message_operation : public operation_type
+{
+    public:
+        translation message;
+
+        void perform( Character &target ) override;
+        message_operation( translation message ) : message( message ) {}
+};
+
+class sound_message_operation : public operation_type
+{
+    public:
+        translation message;
+        std::string sound_effect;
+
+        void perform( Character &target ) override;
+        sound_message_operation( translation message, std::string sound_effect ) : message( message ),
+            sound_effect( sound_effect ) {}
+};
+
+class damage_operation : public operation_type
+{
+    public:
+        damage_instance damage;
+        bodypart_str_id target_part;
+
+        void perform( Character &target ) override;
+        damage_operation( damage_instance &damage, bodypart_str_id target_part ) : damage( damage ),
+            target_part( target_part ) {}
+};
+
+class add_trait_operation : public operation_type
+{
+    public:
+        trait_id trait;
+
+        void check() const;
+        void perform( Character &target ) override;
+        add_trait_operation( trait_id trait ) : trait( trait ) {}
+};
+
+class remove_trait_operation : public operation_type
+{
+    public:
+        trait_id trait;
+
+        void check() const;
+        void perform( Character &target ) override;
+        remove_trait_operation( trait_id trait ) : trait( trait ) {}
+};
+
+class add_bionic_operation : public operation_type
+{
+    public:
+        bionic_id bionic;
+
+        void check() const;
+        void perform( Character &target ) override;
+        add_bionic_operation( bionic_id bionic ) : bionic( bionic ) {}
+};
+
+class remove_bionic_operation : public operation_type
+{
+    public:
+        bionic_id bionic;
+
+        void check() const;
+        void perform( Character &target ) override;
+        remove_bionic_operation( bionic_id bionic ) : bionic( bionic ) {}
+};
+
+class add_effect_operation : public operation_type
+{
+    public:
+        efftype_id effect;
+        time_duration length = 0_seconds;
+        int intensity = 0;
+        bodypart_str_id target_part;
+
+        void check() const;
+        void perform( Character &target ) override;
+        add_effect_operation( efftype_id effect, time_duration length, int intensity,
+                              bodypart_str_id target_part ) : effect( effect ), length( length ), intensity( intensity ),
+            target_part( target_part ) {}
+};
+
+class remove_effect_operation : public operation_type
+{
+    public:
+        efftype_id effect;
+
+        void check() const;
+        void perform( Character &target ) override;
+        remove_effect_operation( efftype_id effect ) : effect( effect ) {}
+};
+
+class weather_change_operation : public operation_type
+{
+    public:
+        weather_type_id weather;
+
+        void check() const;
+        void perform( Character &target ) override;
+        weather_change_operation( weather_type_id weather ) : weather( weather ) {}
+};
+
+class add_morale_operation : public operation_type
+{
+    public:
+        morale_type type;
+        int bonus = 0;
+        int max_bonus = 0;
+        time_duration duration = 1_hours;
+        time_duration decay_start = 30_minutes;
+        bool capped = false;
+
+        void check() const;
+        void perform( Character &target ) override;
+        add_morale_operation( morale_type type, int bonus, int max_bonus, time_duration duration,
+                              time_duration decay_start, bool capped ) : type( type ), bonus( bonus ), max_bonus( max_bonus ),
+            duration( duration ), decay_start( decay_start ), capped( capped ) {}
+};
+
+class remove_morale_operation : public operation_type
+{
+    public:
+        morale_type type;
+
+        void check() const;
+        void perform( Character &target ) override;
+        remove_morale_operation( morale_type morale ) : type( type ) {}
+};
+
+class set_generic_variable_operation : public operation_type
+{
+    public:
+        std::string variable_name;
+        bool value;
+
+        void perform( Character &target ) override;
+        set_generic_variable_operation( std::string variable_name,
+                                        bool value ) : variable_name( variable_name ), value( value ) {}
+};
+
+class spawn_monster_operation : public operation_type
+{
+    public:
+        mtype_id mtarget;
+        int target_range = 0;
+        int hallucination_count = 0;
+        int real_count = 0;
+        int min_radius = 0;
+        int max_radius = 0;
+
+        void check() const;
+        void perform( Character &target ) override;
+        spawn_monster_operation( mtype_id mtarget, int target_range, int hallucination_count,
+                                 int real_count, int min_radius, int max_radius ) : mtarget( mtarget ), target_range( target_range ),
+            hallucination_count( hallucination_count ), real_count( real_count ), min_radius( min_radius ),
+            max_radius( max_radius )  {}
+};
+
+class create_field_operation : public operation_type
+{
+    public:
+        field_type_str_id type;
+        int intensity = 0;
+        time_duration age = 0_seconds;
+        int radius = 0;
+        bool outdoor_only = false;
+
+        void check() const;
+        void perform( Character &target ) override;
+        create_field_operation( field_type_str_id type, int intensity, time_duration age, int radius,
+                                bool outdoor_only ) : type( type ), intensity( intensity ), age( age ), radius( radius ),
+            outdoor_only( outdoor_only )  {}
+};
+
+
+class queue_operation_operation : public operation_type
+{
+    public:
+        generic_operation_type_id operation;
+        time_duration time_in_future;
+
+        void check() const;
+        void perform( Character &target ) override;
+        queue_operation_operation( generic_operation_type_id operation,
+                                   time_duration time_in_future ) : operation( operation ), time_in_future( time_in_future ) {}
 };
 
 struct generic_operation_type {
@@ -52,32 +274,8 @@ struct generic_operation_type {
         friend class generic_factory<generic_operation_type>;
         bool was_loaded = false;
         generic_operation_type_id id;
-        translation message;
-        translation sound_message;
-        std::string sound_effect;
-        bool lightning = false;
-        bool update_weather = false;
-        int pain = 0;
-        int wet = 0;
-        int radiation = 0;
-        int healthy = 0;
-        weather_type_id weather_change;
-        std::vector<trait_id> traits_to_add;
-        std::vector<trait_id> traits_to_remove;
-        std::vector<bionic_id> cbms_to_add;
-        std::vector<bionic_id> cbms_to_remove;
-        std::vector<generic_operation_effect> effects_to_add;
-        std::vector<efftype_id> effects_to_remove;
-        std::vector<generic_operation_morale> morales_to_add;
-        std::vector<morale_type> morales_to_remove;
-        std::vector<std::string> generic_variables_to_set_true;
-        std::vector<std::string> generic_variables_to_set_false;
-        std::vector<std::pair<time_duration, generic_operation_type_id>> events_to_queue;
-        bodypart_str_id target_part;
-        int damage = 0;
-        std::vector<generic_operation_spawn> spawns;
-        std::vector<generic_operation_field> fields;
-        void do_event( ) const;
+        std::vector<operation_type *> operations;
+        void perform( ) const;
         void load( const JsonObject &jo, const std::string &src );
         void finalize();
         void check() const;
