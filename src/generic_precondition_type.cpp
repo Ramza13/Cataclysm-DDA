@@ -470,3 +470,7 @@ bool required_generic_variable_precondition::test( w_point point, Character &tar
 {
     return g->generic_variable_map[generic_var];
 }
+
+precondition_type::~precondition_type()
+{
+}
