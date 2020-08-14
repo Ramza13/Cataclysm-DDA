@@ -397,7 +397,7 @@ void weather_change_operation::check() const
     }
 }
 
-void weather_change_operation::perform( Character &target )
+void weather_change_operation::perform( Character & )
 {
     get_weather().weather_override = weather;
 }
@@ -428,7 +428,7 @@ void remove_morale_operation::perform( Character &target )
     target.rem_morale( type );
 }
 
-void set_generic_variable_operation::perform( Character &target )
+void set_generic_variable_operation::perform( Character & )
 {
     g->generic_variable_map[variable_name] = value;
 }
@@ -501,7 +501,7 @@ void queue_operation_operation::check() const
     }
 }
 
-void queue_operation_operation::perform( Character &target )
+void queue_operation_operation::perform( Character & )
 {
     generic_trigger_op_on_precon::queue_generic_operation( time_in_future, operation );
 }
