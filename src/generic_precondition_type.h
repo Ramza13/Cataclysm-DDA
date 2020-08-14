@@ -44,7 +44,7 @@ class temperature_precondition : public precondition_type
         int temperature_min = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        temperature_precondition( int max, int min ) : temperature_max( max ), temperature_min( min ) {}
+        temperature_precondition( int min, int max ) : temperature_max( max ), temperature_min( min ) {}
 };
 
 class humidity_pressure_precondition : public precondition_type
@@ -71,7 +71,7 @@ class windpower_precondition : public precondition_type
         int windpower_min = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        windpower_precondition( int min, int max ) : windpower_min( min ), windpower_max( max ) {}
+        windpower_precondition( int min, int max ) : windpower_max( max ), windpower_min( min ) {}
 };
 
 class pain_precondition : public precondition_type
@@ -81,7 +81,7 @@ class pain_precondition : public precondition_type
         int pain_min = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        pain_precondition( int min, int max ) : pain_min( min ), pain_max( max ) {}
+        pain_precondition( int min, int max ) : pain_max( max ), pain_min( min ) {}
 };
 
 class height_precondition : public precondition_type
@@ -91,7 +91,7 @@ class height_precondition : public precondition_type
         int height_min = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        height_precondition( int min, int max ) : height_min( min ), height_max( max ) {}
+        height_precondition( int min, int max ) : height_max( max ), height_min( min ) {}
 };
 
 class time_of_day_precondition : public precondition_type
