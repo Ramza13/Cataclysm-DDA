@@ -250,18 +250,18 @@ void generic_precondition_types::load( const JsonObject &jo, const std::string &
     generic_precondition_factory.load( jo, src );
 }
 
-bool temperature_precondition::test( w_point point, Character &target,
-                                     weather_type_id &weather ) const
+bool temperature_precondition::test( w_point point, Character &,
+                                     weather_type_id & ) const
 {
     return temperature_max > point.temperature && temperature_min < point.temperature;
 }
-bool windpower_precondition::test( w_point point, Character &target,
-                                   weather_type_id &weather ) const
+bool windpower_precondition::test( w_point point, Character &,
+                                   weather_type_id & ) const
 {
     return windpower_max > point.windpower && windpower_min < point.windpower;
 }
-bool humidity_pressure_precondition::test( w_point point, Character &target,
-        weather_type_id &weather ) const
+bool humidity_pressure_precondition::test( w_point point, Character &,
+        weather_type_id & ) const
 {
     bool test_pressure =
         pressure_max > point.pressure &&
@@ -276,18 +276,18 @@ bool humidity_pressure_precondition::test( w_point point, Character &target,
     return true;
 }
 
-bool pain_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+bool pain_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.get_pain() >= pain_min && target.get_pain() <= pain_max;
 }
 
-bool height_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+bool height_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.posz() <= height_max && target.posz() >= height_min;
 }
 
-bool time_of_day_precondition::test( w_point point, Character &target,
-                                     weather_type_id &weather ) const
+bool time_of_day_precondition::test( w_point, Character &,
+                                     weather_type_id & ) const
 {
     return ( time == time_of_day::both ||
              ( time == time_of_day::day && is_day( calendar::turn ) ) ||
@@ -302,8 +302,8 @@ void required_trait_precondition::check() const
     }
 }
 
-bool required_trait_precondition::test( w_point point, Character &target,
-                                        weather_type_id &weather ) const
+bool required_trait_precondition::test( w_point, Character &target,
+                                        weather_type_id & ) const
 {
     return target.has_trait( trait );
 }
@@ -316,8 +316,8 @@ void forbidden_trait_precondition::check() const
     }
 }
 
-bool forbidden_trait_precondition::test( w_point point, Character &target,
-        weather_type_id &weather ) const
+bool forbidden_trait_precondition::test( w_point, Character &target,
+        weather_type_id & ) const
 {
     return !target.has_trait( trait );
 }
@@ -332,7 +332,7 @@ void required_weathers_precondition::check() const
     }
 }
 
-bool required_weathers_precondition::test( w_point point, Character &target,
+bool required_weathers_precondition::test( w_point, Character &,
         weather_type_id &weather ) const
 {
     return std::find( required_weathers.begin(), required_weathers.end(),
@@ -347,7 +347,7 @@ void forbidden_weather_precondition::check() const
     }
 }
 
-bool forbidden_weather_precondition::test( w_point point, Character &target,
+bool forbidden_weather_precondition::test( w_point, Character &,
         weather_type_id &weather ) const
 {
     return forbidden_weather != weather;
@@ -361,8 +361,8 @@ void required_bionic_precondition::check() const
     }
 }
 
-bool required_bionic_precondition::test( w_point point, Character &target,
-        weather_type_id &weather ) const
+bool required_bionic_precondition::test( w_point, Character &target,
+        weather_type_id & ) const
 {
     return target.has_bionic( bionic );
 }
@@ -375,8 +375,8 @@ void forbidden_bionic_precondition::check() const
     }
 }
 
-bool forbidden_bionic_precondition::test( w_point point, Character &target,
-        weather_type_id &weather ) const
+bool forbidden_bionic_precondition::test( w_point, Character &target,
+        weather_type_id & ) const
 {
     return !target.has_bionic( bionic );
 }
@@ -389,8 +389,8 @@ void required_effect_precondition::check() const
     }
 }
 
-bool required_effect_precondition::test( w_point point, Character &target,
-        weather_type_id &weather ) const
+bool required_effect_precondition::test( w_point, Character &target,
+        weather_type_id & ) const
 {
     return target.has_effect( effect );
 }
@@ -403,26 +403,26 @@ void forbidden_effect_precondition::check() const
     }
 }
 
-bool forbidden_effect_precondition::test( w_point point, Character &target,
-        weather_type_id &weather ) const
+bool forbidden_effect_precondition::test( w_point, Character &target,
+        weather_type_id & ) const
 {
     return !target.has_effect( effect );
 }
 
-bool time_passed_precondition::test( w_point point, Character &target,
-                                     weather_type_id &weather ) const
+bool time_passed_precondition::test( w_point point, Character &,
+                                     weather_type_id & ) const
 {
     return point.time >= ( calendar::start_of_cataclysm + time_passed_min ) &&
            ( !time_passed_max || point.time <= ( calendar::start_of_cataclysm + time_passed_max.value() ) );
 }
 
-bool must_be_outside_precondition::test( w_point point, Character &target,
-        weather_type_id &weather ) const
+bool must_be_outside_precondition::test( w_point, Character &target,
+        weather_type_id & ) const
 {
     return must_be_outside == is_creature_outside( target );
 }
 
-bool rain_proof_precondition::test( w_point point, Character &target,
+bool rain_proof_precondition::test( w_point, Character &target,
                                     weather_type_id &weather ) const
 {
     if( rain_proof ) {
@@ -453,20 +453,20 @@ bool rain_proof_precondition::test( w_point point, Character &target,
     return true;
 }
 
-bool one_in_chance_precondition::test( w_point point, Character &target,
-                                       weather_type_id &weather ) const
+bool one_in_chance_precondition::test( w_point, Character &,
+                                       weather_type_id & ) const
 {
     return one_in( one_in_chance );
 }
 
-bool forbidden_generic_variable_precondition::test( w_point point, Character &target,
-        weather_type_id &weather ) const
+bool forbidden_generic_variable_precondition::test( w_point, Character &,
+        weather_type_id & ) const
 {
     return !g->generic_variable_map.count( generic_var ) || !g->generic_variable_map[generic_var];
 }
 
-bool required_generic_variable_precondition::test( w_point point, Character &target,
-        weather_type_id &weather ) const
+bool required_generic_variable_precondition::test( w_point, Character &,
+        weather_type_id & ) const
 {
     return g->generic_variable_map[generic_var];
 }
