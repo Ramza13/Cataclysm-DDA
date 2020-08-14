@@ -209,7 +209,7 @@ class remove_morale_operation : public operation_type
 
         void check() const;
         void perform( Character &target ) override;
-        remove_morale_operation( morale_type morale ) : type( type ) {}
+        remove_morale_operation( morale_type morale ) : type( morale ) {}
 };
 
 class set_generic_variable_operation : public operation_type
