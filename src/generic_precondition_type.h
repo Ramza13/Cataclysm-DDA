@@ -34,6 +34,7 @@ class precondition_type
     public:
         virtual bool test( w_point point, Character &target, weather_type_id &weather ) const = 0;
         void check() const {}
+        virtual ~precondition_type();
 };
 
 class temperature_precondition : public precondition_type
@@ -43,7 +44,7 @@ class temperature_precondition : public precondition_type
         int temperature_min = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        temperature_precondition( int min, int max ) : temperature_min( min ), temperature_max( max ) {}
+        temperature_precondition( int max, int min ) : temperature_max( max ), temperature_min( min ) {}
 };
 
 class humidity_pressure_precondition : public precondition_type
@@ -206,6 +207,7 @@ class time_passed_precondition : public precondition_type
     public:
         time_duration time_passed_min;
         cata::optional<time_duration> time_passed_max;
+
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
         time_passed_precondition( time_duration min,
                                   cata::optional<time_duration> max ) : time_passed_min( min ), time_passed_max( max ) {}
@@ -215,6 +217,7 @@ class rain_proof_precondition : public precondition_type
 {
     public:
         bool rain_proof;
+
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
         rain_proof_precondition( bool rain_proof ) : rain_proof( rain_proof ) {}
 };
