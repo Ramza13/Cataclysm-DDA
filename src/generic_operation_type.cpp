@@ -258,7 +258,7 @@ void lightning_operation::perform( Character &target )
     }
 }
 
-void update_weather_operation::perform( Character &target )
+void update_weather_operation::perform( Character & )
 {
     if( update_weather ) {
         get_weather().next_weather = true;
