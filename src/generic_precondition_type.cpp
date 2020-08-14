@@ -56,7 +56,7 @@ void generic_precondition_type::finalize()
 
 void generic_precondition_type::check() const
 {
-    for( const auto &type : preconditions ) {
+    for( const precondition_type *type : preconditions ) {
         type->check();
     }
 }
@@ -75,182 +75,102 @@ void generic_precondition_type::load( const JsonObject &jo, const std::string & 
         optional( jo, was_loaded, "humidity_min", humidity_min, INT_MIN );
         optional( jo, was_loaded, "humidity_max", humidity_max, INT_MAX );
         optional( jo, was_loaded, "humidity_and_pressure", humidity_and_pressure, true );
-        preconditions.emplace_back( new humidity_pressure_precondition( pressure_min, pressure_max,
-                                    humidity_min, humidity_max, humidity_and_pressure ) );
+        preconditions.push_back( new humidity_pressure_precondition( pressure_min, pressure_max,
+                                 humidity_min, humidity_max, humidity_and_pressure ) );
     }
     if( jo.has_member( "temperature_max" ) || jo.has_member( "temperature_min" ) ) {
         int temperature_max;
         int temperature_min;
         optional( jo, was_loaded, "temperature_min", temperature_min, INT_MIN );
         optional( jo, was_loaded, "temperature_max", temperature_max, INT_MAX );
-        preconditions.emplace_back( new temperature_precondition( temperature_min, temperature_max ) );
+        preconditions.push_back( new temperature_precondition( temperature_min, temperature_max ) );
     }
     if( jo.has_member( "windpower_min" ) || jo.has_member( "windpower_max" ) ) {
         int windpower_max;
         int windpower_min;
         optional( jo, was_loaded, "windpower_min", windpower_min, INT_MIN );
         optional( jo, was_loaded, "windpower_max", windpower_max, INT_MAX );
-        preconditions.emplace_back( new windpower_precondition( windpower_min, windpower_max ) );
+        preconditions.push_back( new windpower_precondition( windpower_min, windpower_max ) );
     }
     if( jo.has_member( "pain_min" ) || jo.has_member( "pain_max" ) ) {
         int pain_max;
         int pain_min;
         optional( jo, was_loaded, "pain_min", pain_min, INT_MIN );
         optional( jo, was_loaded, "pain_max", pain_max, INT_MAX );
-        preconditions.emplace_back( new pain_precondition( pain_min, pain_max ) );
+        preconditions.push_back( new pain_precondition( pain_min, pain_max ) );
     }
     if( jo.has_member( "height_min" ) || jo.has_member( "height_max" ) ) {
         int height_max;
         int height_min;
         optional( jo, was_loaded, "height_min", height_min, INT_MIN );
         optional( jo, was_loaded, "height_max", height_max, INT_MAX );
-        preconditions.emplace_back( new height_precondition( height_min, height_max ) );
+        preconditions.push_back( new height_precondition( height_min, height_max ) );
     }
     if( jo.has_member( "time_of_day" ) ) {
-        time_of_day time_load = time_of_day::both;
-        optional( jo, was_loaded, "time_of_day", time_load, time_of_day::both );
-        preconditions.emplace_back( new time_of_day_precondition( time_load ) );
+        time_of_day time;
+        optional( jo, was_loaded, "time_of_day", time, time_of_day::both );
+        preconditions.push_back( new time_of_day_precondition( time ) );
     }
     if( jo.has_member( "height_min" ) || jo.has_member( "height_max" ) ) {
         int height_max;
         int height_min;
         optional( jo, was_loaded, "height_min", height_min, INT_MIN );
         optional( jo, was_loaded, "height_max", height_max, INT_MAX );
-        preconditions.emplace_back( new height_precondition( height_min, height_max ) );
+        preconditions.push_back( new height_precondition( height_min, height_max ) );
     }
-    if( jo.has_member( "time_passed_min" ) || jo.has_member( "time_passed_max" ) ) {
+    if( jo.has_member( "time_passed_min" ) || jo.has_member( "height_max" ) ) {
         time_duration time_passed_min;
         cata::optional<time_duration> time_passed_max;
         optional( jo, was_loaded, "time_passed_min", time_passed_min, 0_seconds );
         optional( jo, was_loaded, "time_passed_max", time_passed_max );
-        preconditions.emplace_back( new time_passed_precondition( time_passed_min, time_passed_max ) );
-    }
-    if( jo.has_member( "focus_min" ) || jo.has_member( "focus_max" ) ) {
-        int focus_max;
-        int focus_min;
-        optional( jo, was_loaded, "focus_min", focus_min, INT_MIN );
-        optional( jo, was_loaded, "focus_max", focus_max, INT_MAX );
-        preconditions.emplace_back( new focus_precondition( focus_min, focus_max ) );
-    }
-    if( jo.has_member( "morale_min" ) || jo.has_member( "morale_max" ) ) {
-        int morale_max;
-        int morale_min;
-        optional( jo, was_loaded, "morale_min", morale_min, INT_MIN );
-        optional( jo, was_loaded, "morale_max", morale_max, INT_MAX );
-        preconditions.emplace_back( new morale_precondition( morale_min, morale_max ) );
-    }
-    if( jo.has_member( "fatigue_min" ) || jo.has_member( "fatigue_max" ) ) {
-        int fatigue_max;
-        int fatigue_min;
-        optional( jo, was_loaded, "fatigue_min", fatigue_min, INT_MIN );
-        optional( jo, was_loaded, "fatigue_max", fatigue_max, INT_MAX );
-        preconditions.emplace_back( new fatigue_precondition( fatigue_min, fatigue_max ) );
-    }
-    if( jo.has_member( "hunger_min" ) || jo.has_member( "hunger_max" ) ) {
-        int hunger_max;
-        int hunger_min;
-        optional( jo, was_loaded, "hunger_min", hunger_min, INT_MIN );
-        optional( jo, was_loaded, "hunger_max", hunger_max, INT_MAX );
-        preconditions.emplace_back( new hunger_precondition( hunger_min, hunger_max ) );
-    }
-    if( jo.has_member( "thirst_min" ) || jo.has_member( "thirst_max" ) ) {
-        int thirst_max;
-        int thirst_min;
-        optional( jo, was_loaded, "thirst_min", thirst_min, INT_MIN );
-        optional( jo, was_loaded, "thirst_max", thirst_max, INT_MAX );
-        preconditions.emplace_back( new thirst_precondition( thirst_min, thirst_max ) );
-    }
-    if( jo.has_member( "strength_min" ) || jo.has_member( "strength_max" ) ) {
-        int strength_min;
-        int strength_max;
-        optional( jo, was_loaded, "strength_min", strength_min, INT_MIN );
-        optional( jo, was_loaded, "strength_max", strength_max, INT_MAX );
-        preconditions.emplace_back( new strength_precondition( strength_min, strength_max ) );
-    }
-    if( jo.has_member( "dexterity_min" ) || jo.has_member( "dexterity_max" ) ) {
-        int dexterity_max;
-        int dexterity_min;
-        optional( jo, was_loaded, "dexterity_min", dexterity_min, INT_MIN );
-        optional( jo, was_loaded, "dexterity_max", dexterity_max, INT_MAX );
-        preconditions.emplace_back( new dexterity_precondition( dexterity_min, dexterity_max ) );
-    }
-    if( jo.has_member( "intelligence_min" ) || jo.has_member( "intelligence_max" ) ) {
-        int intelligence_max;
-        int intelligence_min;
-        optional( jo, was_loaded, "intelligence_min", intelligence_min, INT_MIN );
-        optional( jo, was_loaded, "intelligence_max", intelligence_max, INT_MAX );
-        preconditions.emplace_back( new intelligence_precondition( intelligence_min, intelligence_max ) );
-    }
-    if( jo.has_member( "perception_min" ) || jo.has_member( "perception_max" ) ) {
-        int perception_max;
-        int perception_min;
-        optional( jo, was_loaded, "perception_min", perception_min, INT_MIN );
-        optional( jo, was_loaded, "perception_max", perception_max, INT_MAX );
-        preconditions.emplace_back( new perception_precondition( perception_min, perception_max ) );
-    }
-    if( jo.has_member( "kcal_min" ) || jo.has_member( "kcal_max" ) ) {
-        int max;
-        int min;
-        optional( jo, was_loaded, "kcal_min", min, INT_MIN );
-        optional( jo, was_loaded, "kcal_max", max, INT_MAX );
-        preconditions.emplace_back( new perception_precondition( min, max ) );
+        preconditions.push_back( new time_passed_precondition( time_passed_min, time_passed_max ) );
     }
     if( jo.has_member( "must_be_outside" ) ) {
         bool must_be_outside;
         mandatory( jo, was_loaded, "must_be_outside", must_be_outside );
-        preconditions.emplace_back( new must_be_outside_precondition( must_be_outside ) );
+        preconditions.push_back( new must_be_outside_precondition( must_be_outside ) );
     }
     if( jo.has_member( "rain_proof" ) ) {
         bool rain_proof;
         mandatory( jo, was_loaded, "rain_proof", rain_proof );
-        preconditions.emplace_back( new rain_proof_precondition( rain_proof ) );
+        preconditions.push_back( new rain_proof_precondition( rain_proof ) );
     }
     if( jo.has_member( "one_in_chance" ) ) {
         int one_in_chance;
         mandatory( jo, was_loaded, "one_in_chance", one_in_chance );
-        preconditions.emplace_back( new one_in_chance_precondition( one_in_chance ) );
+        preconditions.push_back( new one_in_chance_precondition( one_in_chance ) );
     }
     if( jo.has_member( "required_weathers" ) ) {
         std::vector<weather_type_id> required_weathers;
         for( const std::string &weather : jo.get_string_array( "required_weathers" ) ) {
-            required_weathers.emplace_back( weather_type_id( weather ) );
+            required_weathers.push_back( weather_type_id( weather ) );
         }
-        preconditions.emplace_back( new required_weathers_precondition( required_weathers ) );
-    }
-    for( const JsonObject &skill_jo : jo.get_array( "required_skills" ) ) {
-        skill_id skill;
-        int max_skill;
-        int min_skill;
-
-        mandatory( skill_jo, was_loaded, "skill", skill );
-        optional( skill_jo, was_loaded, "min_skill", min_skill, INT_MIN );
-        optional( skill_jo, was_loaded, "max_skill", max_skill, INT_MAX );
-        preconditions.emplace_back( new skill_precondition( min_skill, max_skill, skill ) );
+        preconditions.push_back( new required_weathers_precondition( required_weathers ) );
     }
 
     for( const std::string &weather : jo.get_string_array( "forbidden_weathers" ) ) {
-        preconditions.emplace_back( new forbidden_weather_precondition( weather_type_id( weather ) ) );
+        preconditions.push_back( new forbidden_weather_precondition( weather_type_id( weather ) ) );
     }
     for( const std::string &trait : jo.get_string_array( "required_traits" ) ) {
-        preconditions.emplace_back( new required_trait_precondition( trait_id( trait ) ) );
+        preconditions.push_back( new required_trait_precondition( trait_id( trait ) ) );
     }
     for( const std::string &trait : jo.get_string_array( "forbidden_traits" ) ) {
-        preconditions.emplace_back( new forbidden_trait_precondition( trait_id( trait ) ) );
+        preconditions.push_back( new forbidden_trait_precondition( trait_id( trait ) ) );
     }
     for( const std::string &effect : jo.get_string_array( "required_effects" ) ) {
-        preconditions.emplace_back( new required_effect_precondition( efftype_id( effect ) ) );
+        preconditions.push_back( new required_effect_precondition( efftype_id( effect ) ) );
     }
     for( const std::string &effect : jo.get_string_array( "forbidden_effects" ) ) {
-        preconditions.emplace_back( new forbidden_effect_precondition( efftype_id( effect ) ) );
+        preconditions.push_back( new forbidden_effect_precondition( efftype_id( effect ) ) );
     }
     for( const std::string &bionic : jo.get_string_array( "required_bionics" ) ) {
-        preconditions.emplace_back( new required_bionic_precondition( bionic_id( bionic ) ) );
+        preconditions.push_back( new required_bionic_precondition( bionic_id( bionic ) ) );
     }
     for( const std::string &generic_variable : jo.get_string_array( "true_generic_variables" ) ) {
-        preconditions.emplace_back( new required_generic_variable_precondition( generic_variable ) );
+        preconditions.push_back( new required_generic_variable_precondition( generic_variable ) );
     }
     for( const std::string &generic_variable : jo.get_string_array( "false_generic_variables" ) ) {
-        preconditions.emplace_back( new forbidden_generic_variable_precondition( generic_variable ) );
+        preconditions.push_back( new forbidden_generic_variable_precondition( generic_variable ) );
     }
 
     optional( jo, was_loaded, "once_every", once_every, 1_seconds );
@@ -284,7 +204,7 @@ bool generic_precondition_type::test( const w_point &point, Character &target,
         current_conditions = get_weather().weather_id;
     }
 
-    for( const auto &type : preconditions ) {
+    for( const precondition_type *type : preconditions ) {
         if( !type->test( point, target, current_conditions ) ) {
             return false;
         }
@@ -330,18 +250,18 @@ void generic_precondition_types::load( const JsonObject &jo, const std::string &
     generic_precondition_factory.load( jo, src );
 }
 
-bool temperature_precondition::test( w_point point, Character &,
-                                     weather_type_id & ) const
+bool temperature_precondition::test( w_point point, Character &target,
+                                     weather_type_id &weather ) const
 {
-    return max > point.temperature && min < point.temperature;
+    return temperature_max > point.temperature && temperature_min < point.temperature;
 }
-bool windpower_precondition::test( w_point point, Character &,
-                                   weather_type_id & ) const
+bool windpower_precondition::test( w_point point, Character &target,
+                                   weather_type_id &weather ) const
 {
-    return max > point.windpower && min < point.windpower;
+    return windpower_max > point.windpower && windpower_min < point.windpower;
 }
-bool humidity_pressure_precondition::test( w_point point, Character &,
-        weather_type_id & ) const
+bool humidity_pressure_precondition::test( w_point point, Character &target,
+        weather_type_id &weather ) const
 {
     bool test_pressure =
         pressure_max > point.pressure &&
@@ -349,23 +269,25 @@ bool humidity_pressure_precondition::test( w_point point, Character &,
     bool test_humidity =
         humidity_max > point.humidity &&
         humidity_min < point.humidity;
-    return ( ( humidity_and_pressure && ( test_pressure && test_humidity ) ) ||
-             ( !humidity_and_pressure && ( test_pressure || test_humidity ) ) );
-
+    if( ( humidity_and_pressure && !( test_pressure && test_humidity ) ) ||
+        ( !humidity_and_pressure && !( test_pressure || test_humidity ) ) ) {
+        return false;
+    }
+    return true;
 }
 
-bool pain_precondition::test( w_point, Character &target, weather_type_id & ) const
+bool pain_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
 {
-    return target.get_pain() >= min && target.get_pain() <= max;
+    return target.get_pain() >= pain_min && target.get_pain() <= pain_max;
 }
 
-bool height_precondition::test( w_point, Character &target, weather_type_id & ) const
+bool height_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
 {
-    return target.posz() <= max && target.posz() >= min;
+    return target.posz() <= height_max && target.posz() >= height_min;
 }
 
-bool time_of_day_precondition::test( w_point, Character &,
-                                     weather_type_id & ) const
+bool time_of_day_precondition::test( w_point point, Character &target,
+                                     weather_type_id &weather ) const
 {
     return ( time == time_of_day::both ||
              ( time == time_of_day::day && is_day( calendar::turn ) ) ||
@@ -374,35 +296,35 @@ bool time_of_day_precondition::test( w_point, Character &,
 
 void required_trait_precondition::check() const
 {
-    if( !id.is_valid() ) {
-        debugmsg( "trait %s does not exist.", id.c_str() );
+    if( !trait.is_valid() ) {
+        debugmsg( "trait %s does not exist.", trait.c_str() );
         abort();
     }
 }
 
-bool required_trait_precondition::test( w_point, Character &target,
-                                        weather_type_id & ) const
+bool required_trait_precondition::test( w_point point, Character &target,
+                                        weather_type_id &weather ) const
 {
-    return target.has_trait( id );
+    return target.has_trait( trait );
 }
 
 void forbidden_trait_precondition::check() const
 {
-    if( !id.is_valid() ) {
-        debugmsg( "trait %s does not exist.", id.c_str() );
+    if( !trait.is_valid() ) {
+        debugmsg( "trait %s does not exist.", trait.c_str() );
         abort();
     }
 }
 
-bool forbidden_trait_precondition::test( w_point, Character &target,
-        weather_type_id & ) const
+bool forbidden_trait_precondition::test( w_point point, Character &target,
+        weather_type_id &weather ) const
 {
-    return !target.has_trait( id );
+    return !target.has_trait( trait );
 }
 
 void required_weathers_precondition::check() const
 {
-    for( const weather_type_id &weather : ids ) {
+    for( const weather_type_id &weather : required_weathers ) {
         if( !weather.is_valid() ) {
             debugmsg( "weather type %s does not exist.", weather.c_str() );
             abort();
@@ -410,97 +332,97 @@ void required_weathers_precondition::check() const
     }
 }
 
-bool required_weathers_precondition::test( w_point, Character &,
+bool required_weathers_precondition::test( w_point point, Character &target,
         weather_type_id &weather ) const
 {
-    return std::find( ids.begin(), ids.end(),
-                      weather ) != ids.end();
+    return std::find( required_weathers.begin(), required_weathers.end(),
+                      weather ) != required_weathers.end();
 }
 
 void forbidden_weather_precondition::check() const
 {
-    if( !id.is_valid() ) {
-        debugmsg( "weather %s does not exist.", id.c_str() );
+    if( !forbidden_weather.is_valid() ) {
+        debugmsg( "weather %s does not exist.", forbidden_weather.c_str() );
         abort();
     }
 }
 
-bool forbidden_weather_precondition::test( w_point, Character &,
+bool forbidden_weather_precondition::test( w_point point, Character &target,
         weather_type_id &weather ) const
 {
-    return id != weather;
+    return forbidden_weather != weather;
 }
 
 void required_bionic_precondition::check() const
 {
-    if( !id.is_valid() ) {
-        debugmsg( "bionic %s does not exist.", id.c_str() );
+    if( !bionic.is_valid() ) {
+        debugmsg( "bionic %s does not exist.", bionic.c_str() );
         abort();
     }
 }
 
-bool required_bionic_precondition::test( w_point, Character &target,
-        weather_type_id & ) const
+bool required_bionic_precondition::test( w_point point, Character &target,
+        weather_type_id &weather ) const
 {
-    return target.has_bionic( id );
+    return target.has_bionic( bionic );
 }
 
 void forbidden_bionic_precondition::check() const
 {
-    if( !id.is_valid() ) {
-        debugmsg( "bionic %s does not exist.", id.c_str() );
+    if( !bionic.is_valid() ) {
+        debugmsg( "bionic %s does not exist.", bionic.c_str() );
         abort();
     }
 }
 
-bool forbidden_bionic_precondition::test( w_point, Character &target,
-        weather_type_id & ) const
+bool forbidden_bionic_precondition::test( w_point point, Character &target,
+        weather_type_id &weather ) const
 {
-    return !target.has_bionic( id );
+    return !target.has_bionic( bionic );
 }
 
 void required_effect_precondition::check() const
 {
-    if( !id.is_valid() ) {
-        debugmsg( "effect %s does not exist.", id.c_str() );
+    if( !effect.is_valid() ) {
+        debugmsg( "effect %s does not exist.", effect.c_str() );
         abort();
     }
 }
 
-bool required_effect_precondition::test( w_point, Character &target,
-        weather_type_id & ) const
+bool required_effect_precondition::test( w_point point, Character &target,
+        weather_type_id &weather ) const
 {
-    return target.has_effect( id );
+    return target.has_effect( effect );
 }
 
 void forbidden_effect_precondition::check() const
 {
-    if( !id.is_valid() ) {
-        debugmsg( "effect %s does not exist.", id.c_str() );
+    if( !effect.is_valid() ) {
+        debugmsg( "effect %s does not exist.", effect.c_str() );
         abort();
     }
 }
 
-bool forbidden_effect_precondition::test( w_point, Character &target,
-        weather_type_id & ) const
+bool forbidden_effect_precondition::test( w_point point, Character &target,
+        weather_type_id &weather ) const
 {
-    return !target.has_effect( id );
+    return !target.has_effect( effect );
 }
 
-bool time_passed_precondition::test( w_point point, Character &,
-                                     weather_type_id & ) const
+bool time_passed_precondition::test( w_point point, Character &target,
+                                     weather_type_id &weather ) const
 {
     return point.time >= ( calendar::start_of_cataclysm + time_passed_min ) &&
            ( !time_passed_max || point.time <= ( calendar::start_of_cataclysm + time_passed_max.value() ) );
 }
 
-bool must_be_outside_precondition::test( w_point, Character &target,
-        weather_type_id & ) const
+bool must_be_outside_precondition::test( w_point point, Character &target,
+        weather_type_id &weather ) const
 {
     return must_be_outside == is_creature_outside( target );
 }
 
-bool rain_proof_precondition::test( w_point, Character &target,
+bool rain_proof_precondition::test( w_point point, Character &target,
                                     weather_type_id &weather ) const
 {
     if( rain_proof ) {
@@ -531,91 +453,24 @@ bool rain_proof_precondition::test( w_point, Character &target,
     return true;
 }
 
-bool one_in_chance_precondition::test( w_point, Character &,
-                                       weather_type_id & ) const
+bool one_in_chance_precondition::test( w_point point, Character &target,
+                                       weather_type_id &weather ) const
 {
     return one_in( one_in_chance );
 }
 
-bool forbidden_generic_variable_precondition::test( w_point, Character &,
-        weather_type_id & ) const
+bool forbidden_generic_variable_precondition::test( w_point point, Character &target,
+        weather_type_id &weather ) const
 {
     return !g->generic_variable_map.count( generic_var ) || !g->generic_variable_map[generic_var];
 }
 
-bool required_generic_variable_precondition::test( w_point, Character &,
-        weather_type_id & ) const
+bool required_generic_variable_precondition::test( w_point point, Character &target,
+        weather_type_id &weather ) const
 {
     return g->generic_variable_map[generic_var];
 }
 
-bool focus_precondition::test( w_point, Character &target, weather_type_id & ) const
+precondition_type::~precondition_type()
 {
-    return target.focus_pool >= min && target.focus_pool <= max;
-}
-
-bool morale_precondition::test( w_point, Character &target, weather_type_id & ) const
-{
-    return target.get_morale_level() >= min && target.get_morale_level() <= max;
-}
-
-bool fatigue_precondition::test( w_point, Character &target, weather_type_id & ) const
-{
-    return target.get_fatigue() >= min && target.get_fatigue() <= max;
-}
-
-bool sleep_deprivation_precondition::test( w_point, Character &target, weather_type_id & ) const
-{
-    return target.get_sleep_deprivation() >= min && target.get_sleep_deprivation() <= max;
-}
-
-bool hunger_precondition::test( w_point, Character &target, weather_type_id & ) const
-{
-    return target.get_hunger() >= min && target.get_hunger() <= max;
-}
-
-bool thirst_precondition::test( w_point, Character &target, weather_type_id & ) const
-{
-    return target.get_thirst() >= min && target.get_thirst() <= max;
-}
-
-bool strength_precondition::test( w_point, Character &target, weather_type_id & ) const
-{
-    return target.get_str() >= min && target.get_str() <= max;
-}
-
-bool dexterity_precondition::test( w_point, Character &target,
-                                   weather_type_id & ) const
-{
-    return target.get_dex() >= min && target.get_dex() <= max;
-}
-
-bool intelligence_precondition::test( w_point, Character &target,
-                                      weather_type_id & ) const
-{
-    return target.get_int() >= min && target.get_int() <= max;
-}
-
-bool perception_precondition::test( w_point, Character &target,
-                                    weather_type_id & ) const
-{
-    return target.get_per() >= min && target.get_per() <= max;
-}
-
-void skill_precondition::check() const
-{
-    if( !id.is_valid() ) {
-        debugmsg( "skill %s does not exist.", id.c_str() );
-        abort();
-    }
-}
-
-bool skill_precondition::test( w_point, Character &target, weather_type_id & ) const
-{
-    return target.get_skill_level( id ) >= min && target.get_skill_level( id ) <= max;
-}
-
-bool kcal_precondition::test( w_point, Character &target, weather_type_id & ) const
-{
-    return target.get_stored_kcal() >= min && target.get_stored_kcal() <= max;
 }
