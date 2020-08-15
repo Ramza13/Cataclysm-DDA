@@ -108,7 +108,7 @@ void generic_precondition_type::load( const JsonObject &jo, const std::string & 
     }
     if( jo.has_member( "time_of_day" ) ) {
         time_of_day time_load = time_of_day::both;
-        mandatory( jo, was_loaded, "time_of_day", time_load );
+        optional( jo, was_loaded, "time_of_day", time_load, time_of_day::both );
         preconditions.push_back( new time_of_day_precondition( time_load ) );
     }
     if( jo.has_member( "height_min" ) || jo.has_member( "height_max" ) ) {
