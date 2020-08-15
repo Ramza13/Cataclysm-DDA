@@ -269,11 +269,9 @@ bool humidity_pressure_precondition::test( w_point point, Character &,
     bool test_humidity =
         humidity_max > point.humidity &&
         humidity_min < point.humidity;
-    if( ( humidity_and_pressure && !( test_pressure && test_humidity ) ) ||
-        ( !humidity_and_pressure && !( test_pressure || test_humidity ) ) ) {
-        return false;
-    }
-    return true;
+    return ( ( humidity_and_pressure && ( test_pressure && test_humidity ) ) ||
+             ( !humidity_and_pressure && ( test_pressure || test_humidity ) ) );
+
 }
 
 bool pain_precondition::test( w_point, Character &target, weather_type_id & ) const
@@ -469,8 +467,4 @@ bool required_generic_variable_precondition::test( w_point, Character &,
         weather_type_id & ) const
 {
     return g->generic_variable_map[generic_var];
-}
-
-precondition_type::~precondition_type()
-{
 }
