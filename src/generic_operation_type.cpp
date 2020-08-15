@@ -506,6 +506,3 @@ void queue_operation_operation::perform( Character & )
     generic_trigger_op_on_precon::queue_generic_operation( time_in_future, operation );
 }
 
-operation_type::~operation_type()
-{
-}

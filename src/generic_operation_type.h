@@ -22,7 +22,7 @@ class operation_type
     public:
         virtual void perform( Character &target ) = 0;
         void check() const {}
-        virtual ~operation_type();
+        virtual ~operation_type() = default;
 };
 
 class pain_operation : public operation_type
