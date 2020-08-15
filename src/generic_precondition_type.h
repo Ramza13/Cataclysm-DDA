@@ -100,7 +100,7 @@ class time_of_day_precondition : public precondition_type
         time_of_day time = time_of_day::both;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        time_of_day_precondition( time_of_day time ) : time( time ) {}
+        time_of_day_precondition( time_of_day time_in ) : time( time_in ) {}
 };
 
 class required_trait_precondition : public precondition_type
