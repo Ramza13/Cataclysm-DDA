@@ -34,7 +34,7 @@ class precondition_type
     public:
         virtual bool test( w_point point, Character &target, weather_type_id &weather ) const = 0;
         void check() const {}
-        virtual ~precondition_type();
+        virtual ~precondition_type() = default;
 };
 
 class temperature_precondition : public precondition_type
