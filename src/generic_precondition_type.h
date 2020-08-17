@@ -358,7 +358,7 @@ class kcal_precondition : public precondition_type
         int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        kcal_precondition( int min, int max ) : max( max ), min( min ) {}
+        kcal_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 struct generic_precondition_type {
