@@ -36,7 +36,7 @@ void generic_operation_type::finalize()
 
 void generic_operation_type::check() const
 {
-    for( auto type : operations ) {
+    for( const auto &type : operations ) {
         type->check();
     }
 
@@ -198,7 +198,7 @@ void generic_operation_type::perform( ) const
     //Possible TODO, make npc/monsters affected
     Character &target = get_player_character();
 
-    for( auto type : operations ) {
+    for( const auto &type : operations ) {
         type->perform( target );
     }
 }
