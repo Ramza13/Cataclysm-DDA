@@ -543,57 +543,56 @@ bool required_generic_variable_precondition::test( w_point, Character &,
     return g->generic_variable_map[generic_var];
 }
 
-bool focus_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+bool focus_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.focus_pool >= focus_min && target.focus_pool <= focus_max;
 }
 
-bool morale_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+bool morale_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.get_morale_level() >= morale_min && target.get_morale_level() <= morale_max;
 }
 
-bool fatigue_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+bool fatigue_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.get_fatigue() >= fatigue_min && target.get_fatigue() <= fatigue_max;
 }
 
-bool sleep_deprivation_precondition::test( w_point point, Character &target,
-        weather_type_id &weather ) const
+bool sleep_deprivation_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.get_sleep_deprivation() >= sleep_deprivation_min &&
            target.get_sleep_deprivation() <= sleep_deprivation_max;
 }
 
-bool hunger_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+bool hunger_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.get_hunger() >= hunger_min && target.get_hunger() <= hunger_max;
 }
 
-bool thirst_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+bool thirst_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.get_thirst() >= thirst_min && target.get_thirst() <= thirst_max;
 }
 
-bool strength_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+bool strength_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.get_str() >= strength_min && target.get_str() <= strength_max;
 }
 
-bool dexterity_precondition::test( w_point point, Character &target,
-                                   weather_type_id &weather ) const
+bool dexterity_precondition::test( w_point, Character &target,
+                                   weather_type_id & ) const
 {
     return target.get_dex() >= dexterity_min && target.get_dex() <= dexterity_max;
 }
 
-bool intelligence_precondition::test( w_point point, Character &target,
-                                      weather_type_id &weather ) const
+bool intelligence_precondition::test( w_point, Character &target,
+                                      weather_type_id & ) const
 {
     return target.get_int() >= intelligence_min && target.get_int() <= intelligence_max;
 }
 
-bool perception_precondition::test( w_point point, Character &target,
-                                    weather_type_id &weather ) const
+bool perception_precondition::test( w_point, Character &target,
+                                    weather_type_id & ) const
 {
     return target.get_per() >= perception_min && target.get_per() <= perception_max;
 }
@@ -606,7 +605,7 @@ void skill_precondition::check() const
     }
 }
 
-bool skill_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+bool skill_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.get_skill_level( skill ) >= skill_min && target.get_skill_level( skill ) <= skill_max;
 }
