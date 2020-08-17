@@ -40,11 +40,11 @@ class precondition_type
 class temperature_precondition : public precondition_type
 {
     public:
-        int temperature_max = 0;
-        int temperature_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        temperature_precondition( int min, int max ) : temperature_max( max ), temperature_min( min ) {}
+        temperature_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class humidity_pressure_precondition : public precondition_type
@@ -67,31 +67,30 @@ class humidity_pressure_precondition : public precondition_type
 class windpower_precondition : public precondition_type
 {
     public:
-        int windpower_max = 0;
-        int windpower_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        windpower_precondition( int min, int max ) : windpower_max( max ), windpower_min( min ) {}
+        windpower_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class pain_precondition : public precondition_type
 {
     public:
-        int pain_max = 0;
-        int pain_min = 0;
-
+        int min = 0;
+        int max = 0;
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        pain_precondition( int min, int max ) : pain_max( max ), pain_min( min ) {}
+        pain_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class height_precondition : public precondition_type
 {
     public:
-        int height_max = 0;
-        int height_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        height_precondition( int min, int max ) : height_max( max ), height_min( min ) {}
+        height_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class time_of_day_precondition : public precondition_type
@@ -106,82 +105,82 @@ class time_of_day_precondition : public precondition_type
 class required_trait_precondition : public precondition_type
 {
     public:
-        trait_id trait;
+        trait_id id;
 
         void check() const;
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        required_trait_precondition( trait_id trait ) : trait( trait ) {}
+        required_trait_precondition( trait_id trait ) : id( trait ) {}
 };
 
 class forbidden_trait_precondition : public precondition_type
 {
     public:
-        trait_id trait;
+        trait_id id;
 
         void check() const;
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        forbidden_trait_precondition( trait_id trait ) : trait( trait ) {}
+        forbidden_trait_precondition( trait_id trait ) : id( trait ) {}
 };
 
 class required_weathers_precondition : public precondition_type
 {
     public:
-        std::vector<weather_type_id> required_weathers;
+        std::vector<weather_type_id> ids;
 
         void check() const;
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        required_weathers_precondition( std::vector<weather_type_id> weathers ) : required_weathers(
+        required_weathers_precondition( std::vector<weather_type_id> weathers ) : ids(
                 weathers ) {}
 };
 
 class forbidden_weather_precondition : public precondition_type
 {
     public:
-        weather_type_id forbidden_weather;
+        weather_type_id id;
 
         void check() const;
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        forbidden_weather_precondition( weather_type_id weather ) : forbidden_weather( weather ) {}
+        forbidden_weather_precondition( weather_type_id weather ) : id( weather ) {}
 };
 
 class required_bionic_precondition : public precondition_type
 {
     public:
-        bionic_id bionic;
+        bionic_id id;
 
         void check() const;
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        required_bionic_precondition( bionic_id bionic ) : bionic( bionic ) {}
+        required_bionic_precondition( bionic_id bionic ) : id( bionic ) {}
 };
 
 class forbidden_bionic_precondition : public precondition_type
 {
     public:
-        bionic_id bionic;
+        bionic_id id;
 
         void check() const;
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        forbidden_bionic_precondition( bionic_id bionic ) : bionic( bionic ) {}
+        forbidden_bionic_precondition( bionic_id bionic ) : id( bionic ) {}
 };
 
 class required_effect_precondition : public precondition_type
 {
     public:
-        efftype_id effect;
+        efftype_id id;
 
         void check() const;
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        required_effect_precondition( efftype_id effect ) : effect( effect ) {}
+        required_effect_precondition( efftype_id effect ) : id( effect ) {}
 };
 
 class forbidden_effect_precondition : public precondition_type
 {
     public:
-        efftype_id effect;
+        efftype_id id;
 
         void check() const;
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        forbidden_effect_precondition( efftype_id effect ) : effect( effect ) {}
+        forbidden_effect_precondition( efftype_id effect ) : id( effect ) {}
 };
 
 class required_generic_variable_precondition : public precondition_type
@@ -243,122 +242,120 @@ class one_in_chance_precondition : public precondition_type
 class focus_precondition : public precondition_type
 {
     public:
-        int focus_max = 0;
-        int focus_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        focus_precondition( int min, int max ) : focus_max( max ), focus_min( min ) {}
+        focus_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class morale_precondition : public precondition_type
 {
     public:
-        int morale_max = 0;
-        int morale_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        morale_precondition( int min, int max ) : morale_max( max ), morale_min( min ) {}
+        morale_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class fatigue_precondition : public precondition_type
 {
     public:
-        int fatigue_max = 0;
-        int fatigue_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        fatigue_precondition( int min, int max ) : fatigue_max( max ), fatigue_min( min ) {}
+        fatigue_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class sleep_deprivation_precondition : public precondition_type
 {
     public:
-        int sleep_deprivation_max = 0;
-        int sleep_deprivation_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        sleep_deprivation_precondition( int min, int max ) : sleep_deprivation_max( max ),
-            sleep_deprivation_min( min ) {}
+        sleep_deprivation_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class hunger_precondition : public precondition_type
 {
     public:
-        int hunger_max = 0;
-        int hunger_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        hunger_precondition( int min, int max ) : hunger_max( max ), hunger_min( min ) {}
+        hunger_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class thirst_precondition : public precondition_type
 {
     public:
-        int thirst_max = 0;
-        int thirst_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        thirst_precondition( int min, int max ) : thirst_max( max ), thirst_min( min ) {}
+        thirst_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class strength_precondition : public precondition_type
 {
     public:
-        int strength_max = 0;
-        int strength_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        strength_precondition( int min, int max ) : strength_max( max ), strength_min( min ) {}
+        strength_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class dexterity_precondition : public precondition_type
 {
     public:
-        int dexterity_max = 0;
-        int dexterity_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        dexterity_precondition( int min, int max ) : dexterity_max( max ), dexterity_min( min ) {}
+        dexterity_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class intelligence_precondition : public precondition_type
 {
     public:
-        int intelligence_max = 0;
-        int intelligence_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        intelligence_precondition( int min, int max ) : intelligence_max( max ), intelligence_min( min ) {}
+        intelligence_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class perception_precondition : public precondition_type
 {
     public:
-        int perception_max = 0;
-        int perception_min = 0;
+        int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        perception_precondition( int min, int max ) : perception_max( max ), perception_min( min ) {}
+        perception_precondition( int min, int max ) : min( min ), max( max ) {}
 };
 
 class skill_precondition : public precondition_type
 {
     public:
-        skill_id skill;
-        int skill_max = 0;
-        int skill_min = 0;
+        skill_id id;
+        int min = 0;
+        int max = 0;
 
         void check() const;
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
-        skill_precondition( int min, int max, skill_id skill ) : skill( skill ), skill_max( max ),
-            skill_min( min ) {}
+        skill_precondition( int min, int max, skill_id skill ) : id( skill ), min( min ), max( max ) {}
 };
 
 class kcal_precondition : public precondition_type
 {
     public:
-        int max = 0;
         int min = 0;
+        int max = 0;
 
         bool test( w_point point, Character &target, weather_type_id &weather ) const override;
         kcal_precondition( int min, int max ) : max( max ), min( min ) {}

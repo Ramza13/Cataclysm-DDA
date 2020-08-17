@@ -28,37 +28,37 @@ class operation_type
 class pain_operation : public operation_type
 {
     public:
-        int pain = 0;
+        int amount = 0;
 
         void perform( Character &target ) override;
-        pain_operation( int pain ) : pain( pain ) {}
+        pain_operation( int pain ) : amount( pain ) {}
 };
 
 class wet_operation : public operation_type
 {
     public:
-        int wet = 0;
+        int amount = 0;
 
         void perform( Character &target ) override;
-        wet_operation( int wet ) : wet( wet ) {}
+        wet_operation( int wet ) : amount( wet ) {}
 };
 
 class radiation_operation : public operation_type
 {
     public:
-        int radiation = 0;
+        int amount = 0;
 
         void perform( Character &target ) override;
-        radiation_operation( int radiation ) : radiation( radiation ) {}
+        radiation_operation( int radiation ) : amount( radiation ) {}
 };
 
 class healthy_operation : public operation_type
 {
     public:
-        int healthy = 0;
+        int amount = 0;
 
         void perform( Character &target ) override;
-        healthy_operation( int healthy ) : healthy( healthy ) {}
+        healthy_operation( int healthy ) : amount( healthy ) {}
 };
 
 class lightning_operation : public operation_type
@@ -113,47 +113,47 @@ class damage_operation : public operation_type
 class add_trait_operation : public operation_type
 {
     public:
-        trait_id trait;
+        trait_id id;
 
         void check() const;
         void perform( Character &target ) override;
-        add_trait_operation( trait_id trait ) : trait( trait ) {}
+        add_trait_operation( trait_id trait ) : id( trait ) {}
 };
 
 class remove_trait_operation : public operation_type
 {
     public:
-        trait_id trait;
+        trait_id id;
 
         void check() const;
         void perform( Character &target ) override;
-        remove_trait_operation( trait_id trait ) : trait( trait ) {}
+        remove_trait_operation( trait_id trait ) : id( trait ) {}
 };
 
 class add_bionic_operation : public operation_type
 {
     public:
-        bionic_id bionic;
+        bionic_id id;
 
         void check() const;
         void perform( Character &target ) override;
-        add_bionic_operation( bionic_id bionic ) : bionic( bionic ) {}
+        add_bionic_operation( bionic_id bionic ) : id( bionic ) {}
 };
 
 class remove_bionic_operation : public operation_type
 {
     public:
-        bionic_id bionic;
+        bionic_id id;
 
         void check() const;
         void perform( Character &target ) override;
-        remove_bionic_operation( bionic_id bionic ) : bionic( bionic ) {}
+        remove_bionic_operation( bionic_id bionic ) : id( bionic ) {}
 };
 
 class add_effect_operation : public operation_type
 {
     public:
-        efftype_id effect;
+        efftype_id id;
         time_duration length = 0_seconds;
         int intensity = 0;
         bodypart_str_id target_part;
@@ -161,34 +161,34 @@ class add_effect_operation : public operation_type
         void check() const;
         void perform( Character &target ) override;
         add_effect_operation( efftype_id effect, time_duration length, int intensity,
-                              bodypart_str_id target_part ) : effect( effect ), length( length ), intensity( intensity ),
+                              bodypart_str_id target_part ) : id( effect ), length( length ), intensity( intensity ),
             target_part( target_part ) {}
 };
 
 class remove_effect_operation : public operation_type
 {
     public:
-        efftype_id effect;
+        efftype_id id;
 
         void check() const;
         void perform( Character &target ) override;
-        remove_effect_operation( efftype_id effect ) : effect( effect ) {}
+        remove_effect_operation( efftype_id effect ) : id( effect ) {}
 };
 
 class weather_change_operation : public operation_type
 {
     public:
-        weather_type_id weather;
+        weather_type_id id;
 
         void check() const;
         void perform( Character &target ) override;
-        weather_change_operation( weather_type_id weather ) : weather( weather ) {}
+        weather_change_operation( weather_type_id weather ) : id( weather ) {}
 };
 
 class add_morale_operation : public operation_type
 {
     public:
-        morale_type type;
+        morale_type id;
         int bonus = 0;
         int max_bonus = 0;
         time_duration duration = 1_hours;
@@ -198,18 +198,18 @@ class add_morale_operation : public operation_type
         void check() const;
         void perform( Character &target ) override;
         add_morale_operation( morale_type type, int bonus, int max_bonus, time_duration duration,
-                              time_duration decay_start, bool capped ) : type( type ), bonus( bonus ), max_bonus( max_bonus ),
+                              time_duration decay_start, bool capped ) : id( type ), bonus( bonus ), max_bonus( max_bonus ),
             duration( duration ), decay_start( decay_start ), capped( capped ) {}
 };
 
 class remove_morale_operation : public operation_type
 {
     public:
-        morale_type type;
+        morale_type id;
 
         void check() const;
         void perform( Character &target ) override;
-        remove_morale_operation( morale_type morale ) : type( morale ) {}
+        remove_morale_operation( morale_type morale ) : id( morale ) {}
 };
 
 class set_generic_variable_operation : public operation_type
@@ -226,7 +226,7 @@ class set_generic_variable_operation : public operation_type
 class spawn_monster_operation : public operation_type
 {
     public:
-        mtype_id mtarget;
+        mtype_id id;
         int target_range = 0;
         int hallucination_count = 0;
         int real_count = 0;
@@ -236,7 +236,7 @@ class spawn_monster_operation : public operation_type
         void check() const;
         void perform( Character &target ) override;
         spawn_monster_operation( mtype_id mtarget, int target_range, int hallucination_count,
-                                 int real_count, int min_radius, int max_radius ) : mtarget( mtarget ), target_range( target_range ),
+                                 int real_count, int min_radius, int max_radius ) : id( mtarget ), target_range( target_range ),
             hallucination_count( hallucination_count ), real_count( real_count ), min_radius( min_radius ),
             max_radius( max_radius )  {}
 };
@@ -244,7 +244,7 @@ class spawn_monster_operation : public operation_type
 class create_field_operation : public operation_type
 {
     public:
-        field_type_str_id type;
+        field_type_str_id id;
         int intensity = 0;
         time_duration age = 0_seconds;
         int radius = 0;
@@ -253,7 +253,7 @@ class create_field_operation : public operation_type
         void check() const;
         void perform( Character &target ) override;
         create_field_operation( field_type_str_id type, int intensity, time_duration age, int radius,
-                                bool outdoor_only ) : type( type ), intensity( intensity ), age( age ), radius( radius ),
+                                bool outdoor_only ) : id( type ), intensity( intensity ), age( age ), radius( radius ),
             outdoor_only( outdoor_only )  {}
 };
 
@@ -261,58 +261,58 @@ class create_field_operation : public operation_type
 class queue_operation_operation : public operation_type
 {
     public:
-        generic_operation_type_id operation;
+        generic_operation_type_id id;
         time_duration time_in_future;
 
         void check() const;
         void perform( Character &target ) override;
         queue_operation_operation( generic_operation_type_id operation,
-                                   time_duration time_in_future ) : operation( operation ), time_in_future( time_in_future ) {}
+                                   time_duration time_in_future ) : id( operation ), time_in_future( time_in_future ) {}
 };
 
 class focus_operation : public operation_type
 {
     public:
-        int focus = 0;
+        int amount = 0;
 
         void perform( Character &target ) override;
-        focus_operation( int focus ) : focus( focus ) {}
+        focus_operation( int focus ) : amount( focus ) {}
 };
 
 class fatigue_operation : public operation_type
 {
     public:
-        int fatigue = 0;
+        int amount = 0;
 
         void perform( Character &target ) override;
-        fatigue_operation( int fatigue ) : fatigue( fatigue ) {}
+        fatigue_operation( int fatigue ) : amount( fatigue ) {}
 };
 
 class sleep_deprivation_operation : public operation_type
 {
     public:
-        int sleep_deprivation = 0;
+        int amount = 0;
 
         void perform( Character &target ) override;
-        sleep_deprivation_operation( int sleep_deprivation ) : sleep_deprivation( sleep_deprivation ) {}
+        sleep_deprivation_operation( int sleep_deprivation ) : amount( sleep_deprivation ) {}
 };
 
 class moves_operation : public operation_type
 {
     public:
-        int moves = 0;
+        int amount = 0;
 
         void perform( Character &target ) override;
-        moves_operation( int moves ) : moves( moves ) {}
+        moves_operation( int moves ) : amount( moves ) {}
 };
 
 class kcal_operation : public operation_type
 {
     public:
-        int kcal = 0;
+        int amount = 0;
 
         void perform( Character &target ) override;
-        kcal_operation( int kcal ) : kcal( kcal ) {}
+        kcal_operation( int kcal ) : amount( kcal ) {}
 };
 
 struct generic_operation_type {
