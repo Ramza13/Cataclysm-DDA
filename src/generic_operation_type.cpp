@@ -102,6 +102,11 @@ void generic_operation_type::load( const JsonObject &jo, const std::string & )
         mandatory( jo, was_loaded, "healthy", healthy );
         operations.emplace_back( new healthy_operation( healthy ) );
     }
+    if (jo.has_member("kcal")) {
+        int kcal;
+        mandatory(jo, was_loaded, "kcal", kcal);
+        operations.emplace_back(new kcal_operation(kcal));
+    }
     if( jo.has_member( "weather_change" ) ) {
         weather_type_id weather;
         mandatory( jo, was_loaded, "weather_change", weather );
@@ -544,4 +549,9 @@ void sleep_deprivation_operation::perform( Character &target )
 void moves_operation::perform( Character &target )
 {
     target.mod_moves( moves );
+}
+
+void kcal_operation::perform(Character& target)
+{
+    target.mod_stored_kcal(kcal);
 }

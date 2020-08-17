@@ -306,6 +306,15 @@ class moves_operation : public operation_type
         moves_operation( int moves ) : moves( moves ) {}
 };
 
+class kcal_operation : public operation_type
+{
+    public:
+        int kcal = 0;
+
+        void perform( Character &target ) override;
+        kcal_operation( int kcal ) : kcal( kcal ) {}
+};
+
 struct generic_operation_type {
     public:
         friend class generic_factory<generic_operation_type>;

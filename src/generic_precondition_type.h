@@ -354,6 +354,16 @@ class skill_precondition : public precondition_type
             skill_min( min ) {}
 };
 
+class kcal_precondition : public precondition_type
+{
+    public:
+        int max = 0;
+        int min = 0;
+
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        kcal_precondition( int min, int max ) : max( max ), min( min ) {}
+};
+
 struct generic_precondition_type {
     public:
         friend class generic_factory<generic_precondition_type>;

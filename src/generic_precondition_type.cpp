@@ -188,7 +188,13 @@ void generic_precondition_type::load( const JsonObject &jo, const std::string & 
         optional( jo, was_loaded, "perception_max", perception_max, INT_MAX );
         preconditions.emplace_back( new perception_precondition( perception_min, perception_max ) );
     }
-
+    if( jo.has_member( "kcal_min" ) || jo.has_member( "kcal_max" ) ) {
+        int max;
+        int min;
+        optional( jo, was_loaded, "kcal_min", min, INT_MIN );
+        optional( jo, was_loaded, "kcal_max", max, INT_MAX );
+        preconditions.emplace_back( new perception_precondition( min, max ) );
+    }
     if( jo.has_member( "must_be_outside" ) ) {
         bool must_be_outside;
         mandatory( jo, was_loaded, "must_be_outside", must_be_outside );
@@ -608,4 +614,9 @@ void skill_precondition::check() const
 bool skill_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.get_skill_level( skill ) >= skill_min && target.get_skill_level( skill ) <= skill_max;
+}
+
+bool kcal_precondition::test(w_point point, Character& target, weather_type_id& weather) const
+{
+    return target.get_stored_kcal() >= min && target.get_stored_kcal() <= max;
 }
