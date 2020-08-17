@@ -102,10 +102,10 @@ void generic_operation_type::load( const JsonObject &jo, const std::string & )
         mandatory( jo, was_loaded, "healthy", healthy );
         operations.emplace_back( new healthy_operation( healthy ) );
     }
-    if (jo.has_member("kcal")) {
+    if( jo.has_member( "kcal" ) ) {
         int kcal;
-        mandatory(jo, was_loaded, "kcal", kcal);
-        operations.emplace_back(new kcal_operation(kcal));
+        mandatory( jo, was_loaded, "kcal", kcal );
+        operations.emplace_back( new kcal_operation( kcal ) );
     }
     if( jo.has_member( "weather_change" ) ) {
         weather_type_id weather;
@@ -258,22 +258,22 @@ void generic_operation_types::load( const JsonObject &jo, const std::string &src
 
 void pain_operation::perform( Character &target )
 {
-    target.mod_pain( pain );
+    target.mod_pain( amount );
 }
 
 void wet_operation::perform( Character &target )
 {
-    wet_character( target, wet );
+    wet_character( target, amount );
 }
 
 void radiation_operation::perform( Character &target )
 {
-    target.mod_rad( radiation );
+    target.mod_rad( amount );
 }
 
 void healthy_operation::perform( Character &target )
 {
-    target.mod_healthy( healthy );
+    target.mod_healthy( amount );
 }
 
 void lightning_operation::perform( Character &target )
@@ -328,129 +328,129 @@ void damage_operation::perform( Character &target )
 
 void add_trait_operation::check() const
 {
-    if( !trait.is_valid() ) {
-        debugmsg( "trait %s does not exist.", trait.c_str() );
+    if( !id.is_valid() ) {
+        debugmsg( "trait %s does not exist.", id.c_str() );
         abort();
     }
 }
 
 void add_trait_operation::perform( Character &target )
 {
-    if( !target.has_trait( trait ) ) {
-        target.toggle_trait( trait );
+    if( !target.has_trait( id ) ) {
+        target.toggle_trait( id );
     }
 }
 
 void remove_trait_operation::check() const
 {
-    if( !trait.is_valid() ) {
-        debugmsg( "trait %s does not exist.", trait.c_str() );
+    if( !id.is_valid() ) {
+        debugmsg( "trait %s does not exist.", id.c_str() );
         abort();
     }
 }
 
 void remove_trait_operation::perform( Character &target )
 {
-    if( target.has_trait( trait ) ) {
-        target.toggle_trait( trait );
+    if( target.has_trait( id ) ) {
+        target.toggle_trait( id );
     }
 }
 
 void add_bionic_operation::check() const
 {
-    if( !bionic.is_valid() ) {
-        debugmsg( "bionic %s does not exist.", bionic.c_str() );
+    if( !id.is_valid() ) {
+        debugmsg( "bionic %s does not exist.", id.c_str() );
         abort();
     }
 }
 
 void add_bionic_operation::perform( Character &target )
 {
-    if( !target.has_bionic( bionic ) ) {
-        target.add_bionic( bionic );
+    if( !target.has_bionic( id ) ) {
+        target.add_bionic( id );
     }
 }
 
 void remove_bionic_operation::check() const
 {
-    if( !bionic.is_valid() ) {
-        debugmsg( "bionic %s does not exist.", bionic.c_str() );
+    if( !id.is_valid() ) {
+        debugmsg( "bionic %s does not exist.", id.c_str() );
         abort();
     }
 }
 
 void remove_bionic_operation::perform( Character &target )
 {
-    if( target.has_bionic( bionic ) ) {
-        target.remove_bionic( bionic );
+    if( target.has_bionic( id ) ) {
+        target.remove_bionic( id );
     }
 }
 
 void add_effect_operation::check() const
 {
-    if( !effect.is_valid() ) {
-        debugmsg( "effect %s does not exist.", effect.c_str() );
+    if( !id.is_valid() ) {
+        debugmsg( "effect %s does not exist.", id.c_str() );
         abort();
     }
 }
 
 void add_effect_operation::perform( Character &target )
 {
-    target.add_effect( effect, length, target_part->token, intensity );
+    target.add_effect( id, length, target_part->token, intensity );
 }
 
 void remove_effect_operation::check() const
 {
-    if( !effect.is_valid() ) {
-        debugmsg( "effect %s does not exist.", effect.c_str() );
+    if( !id.is_valid() ) {
+        debugmsg( "effect %s does not exist.", id.c_str() );
         abort();
     }
 }
 
 void remove_effect_operation::perform( Character &target )
 {
-    if( target.has_effect( effect ) ) {
-        target.remove_effect( effect );
+    if( target.has_effect( id ) ) {
+        target.remove_effect( id );
     }
 }
 
 void weather_change_operation::check() const
 {
-    if( !weather.is_valid() ) {
-        debugmsg( "weather type %s does not exist.", weather.c_str() );
+    if( !id.is_valid() ) {
+        debugmsg( "weather type %s does not exist.", id.c_str() );
         abort();
     }
 }
 
 void weather_change_operation::perform( Character & )
 {
-    get_weather().weather_override = weather;
+    get_weather().weather_override = id;
 }
 
 void add_morale_operation::check() const
 {
-    if( !type.is_valid() ) {
-        debugmsg( "morale type %s does not exist.", type.c_str() );
+    if( !id.is_valid() ) {
+        debugmsg( "morale type %s does not exist.", id.c_str() );
         abort();
     }
 }
 
 void add_morale_operation::perform( Character &target )
 {
-    target.add_morale( type, bonus, max_bonus, duration, decay_start, capped );
+    target.add_morale( id, bonus, max_bonus, duration, decay_start, capped );
 }
 
 void remove_morale_operation::check() const
 {
-    if( !type.is_valid() ) {
-        debugmsg( "morale type %s does not exist.", type.c_str() );
+    if( !id.is_valid() ) {
+        debugmsg( "morale type %s does not exist.", id.c_str() );
         abort();
     }
 }
 
 void remove_morale_operation::perform( Character &target )
 {
-    target.rem_morale( type );
+    target.rem_morale( id );
 }
 
 void set_generic_variable_operation::perform( Character & )
@@ -460,8 +460,8 @@ void set_generic_variable_operation::perform( Character & )
 
 void spawn_monster_operation::check() const
 {
-    if( !mtarget.is_empty() && !mtarget.is_valid() ) {
-        debugmsg( "Spawn target %s does not exist.", mtarget.c_str() );
+    if( !id.is_empty() && !id.is_valid() ) {
+        debugmsg( "Spawn target %s does not exist.", id.c_str() );
         abort();
     }
 }
@@ -469,7 +469,7 @@ void spawn_monster_operation::check() const
 void spawn_monster_operation::perform( Character &target )
 {
     monster target_monster;
-    if( mtarget.is_empty() ) {
+    if( id.is_empty() ) {
         //grab a random nearby hostile creature to create a hallucination or copy of
         Creature *copy = g->get_creature_if( [this]( const Creature & critter ) -> bool {
             bool not_self = get_player_character().pos() != critter.pos();
@@ -482,7 +482,7 @@ void spawn_monster_operation::perform( Character &target )
         }
         target_monster = *copy->as_monster();
     } else {
-        target_monster = mtarget;
+        target_monster = id;
     }
 
     for( int i = 0; i < hallucination_count; i++ ) {
@@ -503,8 +503,8 @@ void spawn_monster_operation::perform( Character &target )
 
 void create_field_operation::check() const
 {
-    if( !type.is_valid() ) {
-        debugmsg( "field type %s does not exist.", type.c_str() );
+    if( !id.is_valid() ) {
+        debugmsg( "field type %s does not exist.", id.c_str() );
         abort();
     }
 }
@@ -513,45 +513,45 @@ void create_field_operation::perform( Character &target )
 {
     for( const tripoint &dest : get_map().points_in_radius( target.pos(), radius ) ) {
         if( !outdoor_only || get_map().is_outside( dest ) ) {
-            get_map().add_field( dest, type, intensity, age );
+            get_map().add_field( dest, id, intensity, age );
         }
     }
 }
 
 void queue_operation_operation::check() const
 {
-    if( !operation.is_valid() ) {
-        debugmsg( "generic_operation type %s does not exist.", operation.c_str() );
+    if( !id.is_valid() ) {
+        debugmsg( "generic_operation type %s does not exist.", id.c_str() );
         abort();
     }
 }
 
 void queue_operation_operation::perform( Character & )
 {
-    generic_trigger_op_on_precon::queue_generic_operation( time_in_future, operation );
+    generic_trigger_op_on_precon::queue_generic_operation( time_in_future, id );
 }
 
 void focus_operation::perform( Character &target )
 {
-    target.focus_pool += focus;
+    target.focus_pool += amount;
 }
 
 void fatigue_operation::perform( Character &target )
 {
-    target.mod_fatigue( fatigue );
+    target.mod_fatigue( amount );
 }
 
 void sleep_deprivation_operation::perform( Character &target )
 {
-    target.mod_sleep_deprivation( sleep_deprivation );
+    target.mod_sleep_deprivation( amount );
 }
 
 void moves_operation::perform( Character &target )
 {
-    target.mod_moves( moves );
+    target.mod_moves( amount );
 }
 
-void kcal_operation::perform(Character& target)
+void kcal_operation::perform( Character &target )
 {
-    target.mod_stored_kcal(kcal);
+    target.mod_stored_kcal( amount );
 }
