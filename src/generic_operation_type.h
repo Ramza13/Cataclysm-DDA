@@ -270,6 +270,42 @@ class queue_operation_operation : public operation_type
                                    time_duration time_in_future ) : operation( operation ), time_in_future( time_in_future ) {}
 };
 
+class focus_operation : public operation_type
+{
+    public:
+        int focus = 0;
+
+        void perform( Character &target ) override;
+        focus_operation( int focus ) : focus( focus ) {}
+};
+
+class fatigue_operation : public operation_type
+{
+    public:
+        int fatigue = 0;
+
+        void perform( Character &target ) override;
+        fatigue_operation( int fatigue ) : fatigue( fatigue ) {}
+};
+
+class sleep_deprivation_operation : public operation_type
+{
+    public:
+        int sleep_deprivation = 0;
+
+        void perform( Character &target ) override;
+        sleep_deprivation_operation( int sleep_deprivation ) : sleep_deprivation( sleep_deprivation ) {}
+};
+
+class moves_operation : public operation_type
+{
+    public:
+        int moves = 0;
+
+        void perform( Character &target ) override;
+        moves_operation( int moves ) : moves( moves ) {}
+};
+
 struct generic_operation_type {
     public:
         friend class generic_factory<generic_operation_type>;

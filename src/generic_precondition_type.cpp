@@ -118,13 +118,77 @@ void generic_precondition_type::load( const JsonObject &jo, const std::string & 
         optional( jo, was_loaded, "height_max", height_max, INT_MAX );
         preconditions.emplace_back( new height_precondition( height_min, height_max ) );
     }
-    if( jo.has_member( "time_passed_min" ) || jo.has_member( "height_max" ) ) {
+    if( jo.has_member( "time_passed_min" ) || jo.has_member( "time_passed_max" ) ) {
         time_duration time_passed_min;
         cata::optional<time_duration> time_passed_max;
         optional( jo, was_loaded, "time_passed_min", time_passed_min, 0_seconds );
         optional( jo, was_loaded, "time_passed_max", time_passed_max );
         preconditions.emplace_back( new time_passed_precondition( time_passed_min, time_passed_max ) );
     }
+    if( jo.has_member( "focus_min" ) || jo.has_member( "focus_max" ) ) {
+        int focus_max;
+        int focus_min;
+        optional( jo, was_loaded, "focus_min", focus_min, INT_MIN );
+        optional( jo, was_loaded, "focus_max", focus_max, INT_MAX );
+        preconditions.emplace_back( new focus_precondition( focus_min, focus_max ) );
+    }
+    if( jo.has_member( "morale_min" ) || jo.has_member( "morale_max" ) ) {
+        int morale_max;
+        int morale_min;
+        optional( jo, was_loaded, "morale_min", morale_min, INT_MIN );
+        optional( jo, was_loaded, "morale_max", morale_max, INT_MAX );
+        preconditions.emplace_back( new morale_precondition( morale_min, morale_max ) );
+    }
+    if( jo.has_member( "fatigue_min" ) || jo.has_member( "fatigue_max" ) ) {
+        int fatigue_max;
+        int fatigue_min;
+        optional( jo, was_loaded, "fatigue_min", fatigue_min, INT_MIN );
+        optional( jo, was_loaded, "fatigue_max", fatigue_max, INT_MAX );
+        preconditions.emplace_back( new fatigue_precondition( fatigue_min, fatigue_max ) );
+    }
+    if( jo.has_member( "hunger_min" ) || jo.has_member( "hunger_max" ) ) {
+        int hunger_max;
+        int hunger_min;
+        optional( jo, was_loaded, "hunger_min", hunger_min, INT_MIN );
+        optional( jo, was_loaded, "hunger_max", hunger_max, INT_MAX );
+        preconditions.emplace_back( new hunger_precondition( hunger_min, hunger_max ) );
+    }
+    if( jo.has_member( "thirst_min" ) || jo.has_member( "thirst_max" ) ) {
+        int thirst_max;
+        int thirst_min;
+        optional( jo, was_loaded, "thirst_min", thirst_min, INT_MIN );
+        optional( jo, was_loaded, "thirst_max", thirst_max, INT_MAX );
+        preconditions.emplace_back( new thirst_precondition( thirst_min, thirst_max ) );
+    }
+    if( jo.has_member( "strength_min" ) || jo.has_member( "strength_max" ) ) {
+        int strength_min;
+        int strength_max;
+        optional( jo, was_loaded, "strength_min", strength_min, INT_MIN );
+        optional( jo, was_loaded, "strength_max", strength_max, INT_MAX );
+        preconditions.emplace_back( new strength_precondition( strength_min, strength_max ) );
+    }
+    if( jo.has_member( "dexterity_min" ) || jo.has_member( "dexterity_max" ) ) {
+        int dexterity_max;
+        int dexterity_min;
+        optional( jo, was_loaded, "dexterity_min", dexterity_min, INT_MIN );
+        optional( jo, was_loaded, "dexterity_max", dexterity_max, INT_MAX );
+        preconditions.emplace_back( new dexterity_precondition( dexterity_min, dexterity_max ) );
+    }
+    if( jo.has_member( "intelligence_min" ) || jo.has_member( "intelligence_max" ) ) {
+        int intelligence_max;
+        int intelligence_min;
+        optional( jo, was_loaded, "intelligence_min", intelligence_min, INT_MIN );
+        optional( jo, was_loaded, "intelligence_max", intelligence_max, INT_MAX );
+        preconditions.emplace_back( new intelligence_precondition( intelligence_min, intelligence_max ) );
+    }
+    if( jo.has_member( "perception_min" ) || jo.has_member( "perception_max" ) ) {
+        int perception_max;
+        int perception_min;
+        optional( jo, was_loaded, "perception_min", perception_min, INT_MIN );
+        optional( jo, was_loaded, "perception_max", perception_max, INT_MAX );
+        preconditions.emplace_back( new perception_precondition( perception_min, perception_max ) );
+    }
+
     if( jo.has_member( "must_be_outside" ) ) {
         bool must_be_outside;
         mandatory( jo, was_loaded, "must_be_outside", must_be_outside );
@@ -146,6 +210,16 @@ void generic_precondition_type::load( const JsonObject &jo, const std::string & 
             required_weathers.emplace_back( weather_type_id( weather ) );
         }
         preconditions.emplace_back( new required_weathers_precondition( required_weathers ) );
+    }
+    for( const JsonObject &skill_jo : jo.get_array( "required_skills" ) ) {
+        skill_id skill;
+        int max_skill;
+        int min_skill;
+
+        mandatory( skill_jo, was_loaded, "skill", skill );
+        optional( skill_jo, was_loaded, "min_skill", min_skill, INT_MIN );
+        optional( skill_jo, was_loaded, "max_skill", max_skill, INT_MAX );
+        preconditions.emplace_back( new skill_precondition( min_skill, max_skill, skill ) );
     }
 
     for( const std::string &weather : jo.get_string_array( "forbidden_weathers" ) ) {
@@ -467,4 +541,72 @@ bool required_generic_variable_precondition::test( w_point, Character &,
         weather_type_id & ) const
 {
     return g->generic_variable_map[generic_var];
+}
+
+bool focus_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+{
+    return target.focus_pool >= focus_min && target.focus_pool <= focus_max;
+}
+
+bool morale_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+{
+    return target.get_morale_level() >= morale_min && target.get_morale_level() <= morale_max;
+}
+
+bool fatigue_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+{
+    return target.get_fatigue() >= fatigue_min && target.get_fatigue() <= fatigue_max;
+}
+
+bool sleep_deprivation_precondition::test( w_point point, Character &target,
+        weather_type_id &weather ) const
+{
+    return target.get_sleep_deprivation() >= sleep_deprivation_min &&
+           target.get_sleep_deprivation() <= sleep_deprivation_max;
+}
+
+bool hunger_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+{
+    return target.get_hunger() >= hunger_min && target.get_hunger() <= hunger_max;
+}
+
+bool thirst_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+{
+    return target.get_thirst() >= thirst_min && target.get_thirst() <= thirst_max;
+}
+
+bool strength_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+{
+    return target.get_str() >= strength_min && target.get_str() <= strength_max;
+}
+
+bool dexterity_precondition::test( w_point point, Character &target,
+                                   weather_type_id &weather ) const
+{
+    return target.get_dex() >= dexterity_min && target.get_dex() <= dexterity_max;
+}
+
+bool intelligence_precondition::test( w_point point, Character &target,
+                                      weather_type_id &weather ) const
+{
+    return target.get_int() >= intelligence_min && target.get_int() <= intelligence_max;
+}
+
+bool perception_precondition::test( w_point point, Character &target,
+                                    weather_type_id &weather ) const
+{
+    return target.get_per() >= perception_min && target.get_per() <= perception_max;
+}
+
+void skill_precondition::check() const
+{
+    if( !skill.is_valid() ) {
+        debugmsg( "skill %s does not exist.", skill.c_str() );
+        abort();
+    }
+}
+
+bool skill_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+{
+    return target.get_skill_level( skill ) >= skill_min && target.get_skill_level( skill ) <= skill_max;
 }
