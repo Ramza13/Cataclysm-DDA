@@ -245,7 +245,7 @@ struct generic_precondition_type {
         friend class generic_factory<generic_precondition_type>;
         bool was_loaded = false;
         generic_precondition_type_id id;
-        std::vector<precondition_type *> preconditions;
+        std::vector<std::shared_ptr<precondition_type>> preconditions;
         time_duration once_every = 1_seconds;
         time_duration time_between = 0_seconds;
         bool test( const w_point &point, weather_type_id current_conditions ) const;
