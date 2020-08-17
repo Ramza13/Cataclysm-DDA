@@ -615,7 +615,7 @@ bool skill_precondition::test( w_point, Character &target, weather_type_id & ) c
     return target.get_skill_level( id ) >= min && target.get_skill_level( id ) <= max;
 }
 
-bool kcal_precondition::test( w_point point, Character &target, weather_type_id &weather ) const
+bool kcal_precondition::test( w_point, Character &target, weather_type_id & ) const
 {
     return target.get_stored_kcal() >= min && target.get_stored_kcal() <= max;
 }
