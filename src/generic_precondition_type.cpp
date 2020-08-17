@@ -56,7 +56,7 @@ void generic_precondition_type::finalize()
 
 void generic_precondition_type::check() const
 {
-    for( auto type : preconditions ) {
+    for( const auto &type : preconditions ) {
         type->check();
     }
 }
@@ -204,7 +204,7 @@ bool generic_precondition_type::test( const w_point &point, Character &target,
         current_conditions = get_weather().weather_id;
     }
 
-    for( auto type : preconditions ) {
+    for( const auto &type : preconditions ) {
         if( !type->test( point, target, current_conditions ) ) {
             return false;
         }
