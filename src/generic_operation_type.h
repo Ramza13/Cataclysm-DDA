@@ -275,7 +275,7 @@ struct generic_operation_type {
         friend class generic_factory<generic_operation_type>;
         bool was_loaded = false;
         generic_operation_type_id id;
-        std::vector<operation_type *> operations;
+        std::vector<std::shared_ptr<operation_type>> operations;
         void perform( ) const;
         void load( const JsonObject &jo, const std::string &src );
         void finalize();
