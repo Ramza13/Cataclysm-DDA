@@ -240,6 +240,120 @@ class one_in_chance_precondition : public precondition_type
         one_in_chance_precondition( int chance ) : one_in_chance( chance ) {}
 };
 
+class focus_precondition : public precondition_type
+{
+    public:
+        int focus_max = 0;
+        int focus_min = 0;
+
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        focus_precondition( int min, int max ) : focus_max( max ), focus_min( min ) {}
+};
+
+class morale_precondition : public precondition_type
+{
+    public:
+        int morale_max = 0;
+        int morale_min = 0;
+
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        morale_precondition( int min, int max ) : morale_max( max ), morale_min( min ) {}
+};
+
+class fatigue_precondition : public precondition_type
+{
+    public:
+        int fatigue_max = 0;
+        int fatigue_min = 0;
+
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        fatigue_precondition( int min, int max ) : fatigue_max( max ), fatigue_min( min ) {}
+};
+
+class sleep_deprivation_precondition : public precondition_type
+{
+    public:
+        int sleep_deprivation_max = 0;
+        int sleep_deprivation_min = 0;
+
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        sleep_deprivation_precondition( int min, int max ) : sleep_deprivation_max( max ),
+            sleep_deprivation_min( min ) {}
+};
+
+class hunger_precondition : public precondition_type
+{
+    public:
+        int hunger_max = 0;
+        int hunger_min = 0;
+
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        hunger_precondition( int min, int max ) : hunger_max( max ), hunger_min( min ) {}
+};
+
+class thirst_precondition : public precondition_type
+{
+    public:
+        int thirst_max = 0;
+        int thirst_min = 0;
+
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        thirst_precondition( int min, int max ) : thirst_max( max ), thirst_min( min ) {}
+};
+
+class strength_precondition : public precondition_type
+{
+    public:
+        int strength_max = 0;
+        int strength_min = 0;
+
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        strength_precondition( int min, int max ) : strength_max( max ), strength_min( min ) {}
+};
+
+class dexterity_precondition : public precondition_type
+{
+    public:
+        int dexterity_max = 0;
+        int dexterity_min = 0;
+
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        dexterity_precondition( int min, int max ) : dexterity_max( max ), dexterity_min( min ) {}
+};
+
+class intelligence_precondition : public precondition_type
+{
+    public:
+        int intelligence_max = 0;
+        int intelligence_min = 0;
+
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        intelligence_precondition( int min, int max ) : intelligence_max( max ), intelligence_min( min ) {}
+};
+
+class perception_precondition : public precondition_type
+{
+    public:
+        int perception_max = 0;
+        int perception_min = 0;
+
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        perception_precondition( int min, int max ) : perception_max( max ), perception_min( min ) {}
+};
+
+class skill_precondition : public precondition_type
+{
+    public:
+        skill_id skill;
+        int skill_max = 0;
+        int skill_min = 0;
+
+        void check() const;
+        bool test( w_point point, Character &target, weather_type_id &weather ) const override;
+        skill_precondition( int min, int max, skill_id skill ) : skill( skill ), skill_max( max ),
+            skill_min( min ) {}
+};
+
 struct generic_precondition_type {
     public:
         friend class generic_factory<generic_precondition_type>;
