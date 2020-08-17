@@ -36,7 +36,7 @@ void generic_operation_type::finalize()
 
 void generic_operation_type::check() const
 {
-    for( const operation_type *type : operations ) {
+    for( auto type : operations ) {
         type->check();
     }
 
@@ -47,62 +47,62 @@ void generic_operation_type::load( const JsonObject &jo, const std::string & )
     if( jo.has_member( "message" ) ) {
         translation message;
         mandatory( jo, was_loaded, "message", message );
-        operations.push_back( new message_operation( message ) );
+        operations.emplace_back( new message_operation( message ) );
     }
     if( jo.has_member( "sound_message" ) || jo.has_member( "sound_effect" ) ) {
         translation message;
         std::string sound_effect;
         optional( jo, was_loaded, "sound_message", message );
         optional( jo, was_loaded, "sound_effect", sound_effect, "" );
-        operations.push_back( new sound_message_operation( message, sound_effect ) );
+        operations.emplace_back( new sound_message_operation( message, sound_effect ) );
     }
 
     if( jo.has_member( "lightning" ) ) {
         bool lightning;
         mandatory( jo, was_loaded, "lightning", lightning );
-        operations.push_back( new lightning_operation( lightning ) );
+        operations.emplace_back( new lightning_operation( lightning ) );
     }
     if( jo.has_member( "pain" ) ) {
         int pain;
         mandatory( jo, was_loaded, "pain", pain );
-        operations.push_back( new pain_operation( pain ) );
+        operations.emplace_back( new pain_operation( pain ) );
     }
     if( jo.has_member( "wet" ) ) {
         int wet;
         mandatory( jo, was_loaded, "wet", wet );
-        operations.push_back( new wet_operation( wet ) );
+        operations.emplace_back( new wet_operation( wet ) );
     }
     if( jo.has_member( "radiation" ) ) {
         int radiation;
         mandatory( jo, was_loaded, "radiation", radiation );
-        operations.push_back( new radiation_operation( radiation ) );
+        operations.emplace_back( new radiation_operation( radiation ) );
     }
     if( jo.has_member( "healthy" ) ) {
         int healthy;
         mandatory( jo, was_loaded, "healthy", healthy );
-        operations.push_back( new healthy_operation( healthy ) );
+        operations.emplace_back( new healthy_operation( healthy ) );
     }
     if( jo.has_member( "weather_change" ) ) {
         weather_type_id weather;
         mandatory( jo, was_loaded, "weather_change", weather );
-        operations.push_back( new weather_change_operation( weather ) );
+        operations.emplace_back( new weather_change_operation( weather ) );
     }
     if( jo.has_member( "update_weather" ) ) {
         bool update_weather;
         mandatory( jo, was_loaded, "update_weather", update_weather );
-        operations.push_back( new update_weather_operation( update_weather ) );
+        operations.emplace_back( new update_weather_operation( update_weather ) );
     }
     for( const std::string &trait : jo.get_string_array( "traits_to_add" ) ) {
-        operations.push_back( new add_trait_operation( trait_id( trait ) ) );
+        operations.emplace_back( new add_trait_operation( trait_id( trait ) ) );
     }
     for( const std::string &trait : jo.get_string_array( "traits_to_remove" ) ) {
-        operations.push_back( new remove_trait_operation( trait_id( trait ) ) );
+        operations.emplace_back( new remove_trait_operation( trait_id( trait ) ) );
     }
     for( const std::string &bionic : jo.get_string_array( "bionics_to_add" ) ) {
-        operations.push_back( new add_bionic_operation( bionic_id( bionic ) ) );
+        operations.emplace_back( new add_bionic_operation( bionic_id( bionic ) ) );
     }
     for( const std::string &bionic : jo.get_string_array( "bionics_to_remove" ) ) {
-        operations.push_back( new remove_bionic_operation( bionic_id( bionic ) ) );
+        operations.emplace_back( new remove_bionic_operation( bionic_id( bionic ) ) );
     }
     for( const JsonObject &effect_jo : jo.get_array( "effects_to_add" ) ) {
         efftype_id effect;
@@ -113,10 +113,10 @@ void generic_operation_type::load( const JsonObject &jo, const std::string & )
         mandatory( effect_jo, was_loaded, "id", effect );
         optional( effect_jo, was_loaded, "intensity", intensity, 1 );
         optional( effect_jo, was_loaded, "length", length, 1_seconds );
-        operations.push_back( new add_effect_operation( effect, length, intensity, target_part ) );
+        operations.emplace_back( new add_effect_operation( effect, length, intensity, target_part ) );
     }
     for( const std::string &effect : jo.get_string_array( "effects_to_remove" ) ) {
-        operations.push_back( new remove_effect_operation( efftype_id( effect ) ) );
+        operations.emplace_back( new remove_effect_operation( efftype_id( effect ) ) );
     }
     for( const JsonObject &morale_jo : jo.get_array( "morales_to_add" ) ) {
         morale_type type;
@@ -131,25 +131,25 @@ void generic_operation_type::load( const JsonObject &jo, const std::string & )
         optional( morale_jo, was_loaded, "duration", duration, 1_hours );
         optional( morale_jo, was_loaded, "decay_start", decay_start, 30_minutes );
         optional( morale_jo, was_loaded, "capped", capped, false );
-        operations.push_back( new add_morale_operation( type, bonus, max_bonus, duration, decay_start,
-                              capped ) );
+        operations.emplace_back( new add_morale_operation( type, bonus, max_bonus, duration, decay_start,
+                                 capped ) );
     }
     for( const std::string &morale : jo.get_string_array( "morales_to_remove" ) ) {
-        operations.push_back( new remove_morale_operation( morale_type( morale ) ) );
+        operations.emplace_back( new remove_morale_operation( morale_type( morale ) ) );
     }
     for( const JsonObject &var_jo : jo.get_array( "generic_variables_to_set" ) ) {
         std::string variable_name;
         bool value;
         mandatory( var_jo, was_loaded, "variable_name", variable_name );
         mandatory( var_jo, was_loaded, "value", value );
-        operations.push_back( new set_generic_variable_operation( variable_name, value ) );
+        operations.emplace_back( new set_generic_variable_operation( variable_name, value ) );
     }
     for( const JsonObject &damage_jo : jo.get_array( "damages" ) ) {
         damage_instance damage;
         bodypart_str_id target_part;
         assign( damage_jo, "damage", damage );
         optional( damage_jo, was_loaded, "target_part", target_part, bodypart_str_id( "bp_null" ) );
-        operations.push_back( new damage_operation( damage, target_part ) );
+        operations.emplace_back( new damage_operation( damage, target_part ) );
     }
     for( const JsonObject field_jo : jo.get_array( "fields" ) ) {
         field_type_str_id type;
@@ -163,7 +163,7 @@ void generic_operation_type::load( const JsonObject &jo, const std::string & )
         mandatory( field_jo, was_loaded, "age", age );
         optional( field_jo, was_loaded, "outdoor_only", outdoor_only, true );
         optional( field_jo, was_loaded, "radius", radius, 10000000 );
-        operations.push_back( new create_field_operation( type, intensity, age, radius, outdoor_only ) );
+        operations.emplace_back( new create_field_operation( type, intensity, age, radius, outdoor_only ) );
     }
     for( const JsonObject spawn_jo : jo.get_array( "spawns" ) ) {
         mtype_id mtarget;
@@ -181,15 +181,15 @@ void generic_operation_type::load( const JsonObject &jo, const std::string & )
         optional( spawn_jo, was_loaded, "real_count", real_count, 0 );
         optional( spawn_jo, was_loaded, "mtarget", mtarget );
         optional( spawn_jo, was_loaded, "target_range", target_range, 30 );
-        operations.push_back( new spawn_monster_operation( mtarget, target_range, hallucination_count,
-                              real_count, min_radius, max_radius ) );
+        operations.emplace_back( new spawn_monster_operation( mtarget, target_range, hallucination_count,
+                                 real_count, min_radius, max_radius ) );
     }
     for( const JsonObject queue_jo : jo.get_array( "events_to_queue" ) ) {
         generic_operation_type_id operation;
         time_duration time_in_future;
         mandatory( queue_jo, was_loaded, "time_in_future", time_in_future );
         mandatory( queue_jo, was_loaded, "id", operation );
-        operations.push_back( new queue_operation_operation( operation, time_in_future ) );
+        operations.emplace_back( new queue_operation_operation( operation, time_in_future ) );
     }
 }
 
@@ -198,7 +198,7 @@ void generic_operation_type::perform( ) const
     //Possible TODO, make npc/monsters affected
     Character &target = get_player_character();
 
-    for( operation_type *type : operations ) {
+    for( auto type : operations ) {
         type->perform( target );
     }
 }
