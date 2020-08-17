@@ -67,6 +67,26 @@ void generic_operation_type::load( const JsonObject &jo, const std::string & )
         mandatory( jo, was_loaded, "pain", pain );
         operations.emplace_back( new pain_operation( pain ) );
     }
+    if( jo.has_member( "focus" ) ) {
+        int focus;
+        mandatory( jo, was_loaded, "focus", focus );
+        operations.emplace_back( new focus_operation( focus ) );
+    }
+    if( jo.has_member( "fatigue" ) ) {
+        int fatigue;
+        mandatory( jo, was_loaded, "fatigue", fatigue );
+        operations.emplace_back( new fatigue_operation( fatigue ) );
+    }
+    if( jo.has_member( "sleep_deprivation" ) ) {
+        int sleep_deprivation;
+        mandatory( jo, was_loaded, "sleep_deprivation", sleep_deprivation );
+        operations.emplace_back( new sleep_deprivation_operation( sleep_deprivation ) );
+    }
+    if( jo.has_member( "moves" ) ) {
+        int moves;
+        mandatory( jo, was_loaded, "moves", moves );
+        operations.emplace_back( new moves_operation( moves ) );
+    }
     if( jo.has_member( "wet" ) ) {
         int wet;
         mandatory( jo, was_loaded, "wet", wet );
@@ -506,3 +526,22 @@ void queue_operation_operation::perform( Character & )
     generic_trigger_op_on_precon::queue_generic_operation( time_in_future, operation );
 }
 
+void focus_operation::perform( Character &target )
+{
+    target.focus_pool += focus;
+}
+
+void fatigue_operation::perform( Character &target )
+{
+    target.mod_fatigue( fatigue );
+}
+
+void sleep_deprivation_operation::perform( Character &target )
+{
+    target.mod_sleep_deprivation( sleep_deprivation );
+}
+
+void moves_operation::perform( Character &target )
+{
+    target.mod_moves( moves );
+}
