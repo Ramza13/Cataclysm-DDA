@@ -103,8 +103,6 @@ struct weather_type {
         bool rains = false;
         // Whether said precipitation is acidic.
         bool acidic = false;
-        // vector for weather effects.
-        std::vector<weather_effect> effects{};
         // string for tiles animation
         std::string tiles_animation;
         // Information for weather animations

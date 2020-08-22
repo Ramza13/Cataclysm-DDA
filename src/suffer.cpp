@@ -1277,27 +1277,6 @@ void Character::suffer_from_bad_bionics()
     }
 }
 
-void Character::suffer_from_artifacts()
-{
-    // Artifact effects
-    if( has_artifact_with( AEP_ATTENTION ) ) {
-        add_effect( effect_attention, 3_turns );
-    }
-
-    if( has_artifact_with( AEP_BAD_WEATHER ) && calendar::once_every( 1_minutes ) &&
-        get_weather().weather_id->precip < precip_class::heavy ) {
-        get_weather().weather_override = get_bad_weather();
-        get_weather().next_weather = true;
-    }
-
-    if( has_artifact_with( AEP_MUTAGENIC ) && one_turn_in( 48_hours ) ) {
-        mutate();
-    }
-    if( has_artifact_with( AEP_FORCE_TELEPORT ) && one_turn_in( 1_hours ) ) {
-        teleport::teleport( *this );
-    }
-}
-
 void Character::suffer_from_stimulants( const int current_stim )
 {
     // Stim +250 kills
