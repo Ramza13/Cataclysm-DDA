@@ -442,7 +442,7 @@ void wet_character( Character &target, int amount )
     target.drench( amount, drenched_parts, false );
 }
 
-void handle_weather_effects( weather_type_id const w )
+void handle_weather_effects( const weather_type_id &w )
 {
     //Possible TODO, make npc/monsters affected
     map &here = get_map();
