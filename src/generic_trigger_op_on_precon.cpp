@@ -16,22 +16,16 @@ void generic_trigger_op_on_precon::load_generic_trigger_op_on_precon( const Json
 void generic_trigger_op_on_precon::queue_generic_operation( time_duration duration,
         generic_operation_type_id id )
 {
-    g->queued_generic_operations.emplace_back( calendar::turn + duration, id );
+    g->queued_generic_operations.push( std::make_pair( calendar::turn + duration, id ) );
 }
 
 void generic_trigger_op_on_precon::process_operations()
 {
-    std::vector<std::pair<time_point, generic_operation_type_id>>::iterator queued_operation =
-                g->queued_generic_operations.begin();
-
-    while( queued_operation != g->queued_generic_operations.end() ) {
-        if( queued_operation->first <= calendar::turn ) {
-            queued_operation->second->perform( );
-            queued_operation = g->queued_generic_operations.erase( queued_operation );
-        } else {
-            ++queued_operation;
-        }
+    while( g->queued_generic_operations.top().first <= calendar::turn ) {
+        g->queued_generic_operations.top().second->perform();
+        g->queued_generic_operations.pop();
     }
+
     for( const std::pair<generic_precondition_type_id, generic_operation_type_id> &require_event :
          g->generic_operations_vector ) {
         if( require_event.first->test( get_player_character().pos(), get_player_character(),

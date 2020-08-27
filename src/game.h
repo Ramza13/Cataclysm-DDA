@@ -10,6 +10,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <queue>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -1028,7 +1029,8 @@ class game
         weather_manager weather;
         std::vector<std::pair<generic_precondition_type_id, generic_operation_type_id>>
                 generic_operations_vector;
-        std::vector<std::pair<time_point, generic_operation_type_id>> queued_generic_operations;
+        std::priority_queue<std::pair<time_point, generic_operation_type_id>, std::vector<std::pair<time_point, generic_operation_type_id>>, pair_greater_cmp_first>
+                queued_generic_operations;
         std::map<std::string, bool> generic_variable_map;
         std::map<generic_precondition_type_id, time_point> next_instance_allowed;
 
