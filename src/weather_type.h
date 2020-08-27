@@ -49,7 +49,8 @@ struct enum_traits<sun_intensity_type > {
     static constexpr sun_intensity_type last = sun_intensity_type::last;
 };
 
-enum weather_sound_category : int {
+
+enum class weather_sound_category : int {
     silent,
     drizzle,
     rainy,
@@ -108,7 +109,7 @@ struct weather_type {
         // Information for weather animations
         weather_animation_t weather_animation;
         // if playing sound effects what to use
-        weather_sound_category sound_category = silent;
+        weather_sound_category sound_category = weather_sound_category::silent;
         // strength of the sun
         sun_intensity_type sun_intensity = sun_intensity_type::none;
         // when this weather should happen

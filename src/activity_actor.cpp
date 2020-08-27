@@ -57,6 +57,7 @@ static const efftype_id effect_sleep( "sleep" );
 
 static const itype_id itype_bone_human( "bone_human" );
 static const itype_id itype_electrohack( "electrohack" );
+static const itype_id itype_pseudo_bio_picklock( "pseudo_bio_picklock" );
 
 static const skill_id skill_computer( "computer" );
 static const skill_id skill_lockpick( "lockpick" );
@@ -890,6 +891,32 @@ std::unique_ptr<activity_actor> pickup_activity_actor::deserialize( JsonIn &jsin
     return actor.clone();
 }
 
+lockpick_activity_actor lockpick_activity_actor::use_item(
+    int moves_total,
+    const item_location &lockpick,
+    const tripoint &target
+)
+{
+    return lockpick_activity_actor {
+        moves_total,
+        lockpick,
+        cata::nullopt,
+        target
+    };
+}
+
+lockpick_activity_actor lockpick_activity_actor::use_bionic(
+    const tripoint &target
+)
+{
+    return lockpick_activity_actor {
+        to_moves<int>( 4_seconds ),
+        cata::nullopt,
+        item( itype_pseudo_bio_picklock ),
+        target
+    };
+}
+
 void lockpick_activity_actor::start( player_activity &act, Character & )
 {
     act.moves_left = moves_total;
@@ -1173,7 +1200,11 @@ void consume_activity_actor::finish( player_activity &act, Character & )
     avatar &player_character = get_avatar();
     if( !canceled ) {
         if( consume_location ) {
-            player_character.consume( consume_location, /*force=*/true );
+            trinary result = player_character.consume( consume_location, /*force=*/true );
+            // Parent pockets need to be notified so they can be unsealed as well.
+            if( result != trinary::NONE ) {
+                game::handle_contents_changed( consume_location );
+            }
         } else if( !consume_item.is_null() ) {
             player_character.consume( consume_item, /*force=*/true );
         } else {
