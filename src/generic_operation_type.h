@@ -7,6 +7,7 @@
 
 #include "bodypart.h"
 #include "damage.h"
+#include "dialogue.h"
 #include "field.h"
 #include "translations.h"
 #include "type_id.h"
@@ -110,26 +111,6 @@ class damage_operation : public operation_type
             target_part( target_part ) {}
 };
 
-class add_trait_operation : public operation_type
-{
-    public:
-        trait_id id;
-
-        void check() const;
-        void perform( Character &target ) override;
-        add_trait_operation( trait_id trait ) : id( trait ) {}
-};
-
-class remove_trait_operation : public operation_type
-{
-    public:
-        trait_id id;
-
-        void check() const;
-        void perform( Character &target ) override;
-        remove_trait_operation( trait_id trait ) : id( trait ) {}
-};
-
 class add_bionic_operation : public operation_type
 {
     public:
@@ -148,31 +129,6 @@ class remove_bionic_operation : public operation_type
         void check() const;
         void perform( Character &target ) override;
         remove_bionic_operation( bionic_id bionic ) : id( bionic ) {}
-};
-
-class add_effect_operation : public operation_type
-{
-    public:
-        efftype_id id;
-        time_duration length = 0_seconds;
-        int intensity = 0;
-        bodypart_str_id target_part;
-
-        void check() const;
-        void perform( Character &target ) override;
-        add_effect_operation( efftype_id effect, time_duration length, int intensity,
-                              bodypart_str_id target_part ) : id( effect ), length( length ), intensity( intensity ),
-            target_part( target_part ) {}
-};
-
-class remove_effect_operation : public operation_type
-{
-    public:
-        efftype_id id;
-
-        void check() const;
-        void perform( Character &target ) override;
-        remove_effect_operation( efftype_id effect ) : id( effect ) {}
 };
 
 class weather_change_operation : public operation_type
@@ -320,6 +276,7 @@ struct generic_operation_type {
         friend class generic_factory<generic_operation_type>;
         bool was_loaded = false;
         generic_operation_type_id id;
+        talk_effect_t talk_effects;
         std::vector<std::shared_ptr<operation_type>> operations;
         void perform( ) const;
         void load( const JsonObject &jo, const std::string &src );

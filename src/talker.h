@@ -152,7 +152,7 @@ class talker
         virtual bool is_deaf() const {
             return false;
         }
-        virtual void add_effect( const efftype_id &, const time_duration &, bool ) {}
+        virtual void add_effect( const efftype_id &, const time_duration &, const body_part, bool, int ) {}
         virtual void remove_effect( const efftype_id & ) {}
         virtual std::string get_value( const std::string & ) const {
             return "";

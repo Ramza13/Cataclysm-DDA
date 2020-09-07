@@ -1626,6 +1626,7 @@ void talk_effect_fun_t::set_add_effect( const JsonObject &jo, const std::string 
     std::string new_effect = jo.get_string( member );
     bool permanent = false;
     time_duration duration = 1000_turns;
+    int intensity = 1;
     if( jo.has_string( "duration" ) ) {
         const std::string dur_string = jo.get_string( "duration" );
         if( dur_string == "PERMANENT" ) {
@@ -1636,8 +1637,14 @@ void talk_effect_fun_t::set_add_effect( const JsonObject &jo, const std::string 
     } else {
         duration = time_duration::from_turns( jo.get_int( "duration" ) );
     }
-    function = [is_npc, new_effect, duration, permanent]( const dialogue & d ) {
-        d.actor( is_npc )->add_effect( efftype_id( new_effect ), duration, permanent );
+    if( jo.has_string( "intensity" ) ) {
+        intensity = jo.get_int( "intensity" );
+    }
+    bodypart_str_id target_part = bodypart_str_id( jo.get_string( "target_part", "bp_null" ) );
+
+    function = [is_npc, new_effect, duration, target_part, permanent, intensity]( const dialogue & d ) {
+        d.actor( is_npc )->add_effect( efftype_id( new_effect ), duration, target_part->token, permanent,
+                                       intensity );
     };
 }
 

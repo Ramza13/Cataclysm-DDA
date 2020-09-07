@@ -1,5 +1,6 @@
 #include "generic_operation_type.h"
 
+#include "avatar.h"
 #include "character.h"
 #include "game.h"
 #include "game_constants.h"
@@ -7,6 +8,7 @@
 #include "generic_trigger_op_on_precon.h"
 #include "map.h"
 #include "map_iterator.h"
+#include "talker.h"
 #include "weather.h"
 
 static const efftype_id effect_sleep( "sleep" );
@@ -117,31 +119,11 @@ void generic_operation_type::load( const JsonObject &jo, const std::string & )
         mandatory( jo, was_loaded, "update_weather", update_weather );
         operations.emplace_back( new update_weather_operation( update_weather ) );
     }
-    for( const std::string &trait : jo.get_string_array( "traits_to_add" ) ) {
-        operations.emplace_back( new add_trait_operation( trait_id( trait ) ) );
-    }
-    for( const std::string &trait : jo.get_string_array( "traits_to_remove" ) ) {
-        operations.emplace_back( new remove_trait_operation( trait_id( trait ) ) );
-    }
     for( const std::string &bionic : jo.get_string_array( "bionics_to_add" ) ) {
         operations.emplace_back( new add_bionic_operation( bionic_id( bionic ) ) );
     }
     for( const std::string &bionic : jo.get_string_array( "bionics_to_remove" ) ) {
         operations.emplace_back( new remove_bionic_operation( bionic_id( bionic ) ) );
-    }
-    for( const JsonObject &effect_jo : jo.get_array( "effects_to_add" ) ) {
-        efftype_id effect;
-        time_duration length = 0_seconds;
-        int intensity = 0;
-        bodypart_str_id target_part;
-
-        mandatory( effect_jo, was_loaded, "id", effect );
-        optional( effect_jo, was_loaded, "intensity", intensity, 1 );
-        optional( effect_jo, was_loaded, "length", length, 1_seconds );
-        operations.emplace_back( new add_effect_operation( effect, length, intensity, target_part ) );
-    }
-    for( const std::string &effect : jo.get_string_array( "effects_to_remove" ) ) {
-        operations.emplace_back( new remove_effect_operation( efftype_id( effect ) ) );
     }
     for( const JsonObject &morale_jo : jo.get_array( "morales_to_add" ) ) {
         morale_type type;
@@ -209,12 +191,15 @@ void generic_operation_type::load( const JsonObject &jo, const std::string & )
         operations.emplace_back( new spawn_monster_operation( mtarget, target_range, hallucination_count,
                                  real_count, min_radius, max_radius ) );
     }
-    for( const JsonObject queue_jo : jo.get_array( "events_to_queue" ) ) {
+    for( const JsonObject queue_jo : jo.get_array( "operations_to_queue" ) ) {
         generic_operation_type_id operation;
         time_duration time_in_future;
         mandatory( queue_jo, was_loaded, "time_in_future", time_in_future );
         mandatory( queue_jo, was_loaded, "id", operation );
         operations.emplace_back( new queue_operation_operation( operation, time_in_future ) );
+    }
+    if( jo.has_member( "effect" ) ) {
+        talk_effects.load_effect( jo );
     }
 }
 
@@ -225,6 +210,13 @@ void generic_operation_type::perform( ) const
 
     for( const auto &type : operations ) {
         type->perform( target );
+    }
+    dialogue d;
+    standard_npc default_npc( "Default" );
+    d.alpha = get_talker_for( get_avatar() );
+    d.beta = get_talker_for( default_npc );
+    for( const talk_effect_fun_t &effect : talk_effects.effects ) {
+        effect( d );
     }
 }
 
@@ -326,36 +318,6 @@ void damage_operation::perform( Character &target )
     }
 }
 
-void add_trait_operation::check() const
-{
-    if( !id.is_valid() ) {
-        debugmsg( "trait %s does not exist.", id.c_str() );
-        abort();
-    }
-}
-
-void add_trait_operation::perform( Character &target )
-{
-    if( !target.has_trait( id ) ) {
-        target.toggle_trait( id );
-    }
-}
-
-void remove_trait_operation::check() const
-{
-    if( !id.is_valid() ) {
-        debugmsg( "trait %s does not exist.", id.c_str() );
-        abort();
-    }
-}
-
-void remove_trait_operation::perform( Character &target )
-{
-    if( target.has_trait( id ) ) {
-        target.toggle_trait( id );
-    }
-}
-
 void add_bionic_operation::check() const
 {
     if( !id.is_valid() ) {
@@ -383,34 +345,6 @@ void remove_bionic_operation::perform( Character &target )
 {
     if( target.has_bionic( id ) ) {
         target.remove_bionic( id );
-    }
-}
-
-void add_effect_operation::check() const
-{
-    if( !id.is_valid() ) {
-        debugmsg( "effect %s does not exist.", id.c_str() );
-        abort();
-    }
-}
-
-void add_effect_operation::perform( Character &target )
-{
-    target.add_effect( id, length, target_part->token, intensity );
-}
-
-void remove_effect_operation::check() const
-{
-    if( !id.is_valid() ) {
-        debugmsg( "effect %s does not exist.", id.c_str() );
-        abort();
-    }
-}
-
-void remove_effect_operation::perform( Character &target )
-{
-    if( target.has_effect( id ) ) {
-        target.remove_effect( id );
     }
 }
 
