@@ -143,7 +143,7 @@ bool talker_character::has_effect( const efftype_id &effect_id ) const
 }
 
 void talker_character::add_effect( const efftype_id &new_effect, const time_duration &dur,
-                                   const body_part target_part,
+                                   const body_part &target_part,
                                    bool permanent, int intensity )
 {
     me_chr->add_effect( new_effect, dur, target_part, permanent, intensity );
@@ -152,6 +152,73 @@ void talker_character::add_effect( const efftype_id &new_effect, const time_dura
 void talker_character::remove_effect( const efftype_id &old_effect )
 {
     me_chr->remove_effect( old_effect );
+}
+
+void talker_character::add_bionic( const bionic_id &new_bionic )
+{
+    me_chr->add_bionic( new_bionic );
+}
+
+void talker_character::remove_bionic( const bionic_id &old_bionic )
+{
+    me_chr->remove_bionic( old_bionic );
+}
+
+void talker_character::mod_pain( int amount )
+{
+    me_chr->mod_pain( amount );
+}
+
+void talker_character::mod_fatigue( int amount )
+{
+    me_chr->mod_fatigue( amount );
+}
+
+void talker_character::mod_focus( int amount )
+{
+    me_chr->focus_pool += amount;
+}
+
+void talker_character::mod_rad( int amount )
+{
+    me_chr->mod_rad( amount );
+}
+
+void talker_character::mod_sleep_deprivation( int amount )
+{
+    me_chr->mod_sleep_deprivation( amount );
+}
+
+void talker_character::mod_healthy( int amount )
+{
+    me_chr->mod_healthy( amount );
+}
+
+void talker_character::mod_stored_kcal( int amount )
+{
+    me_chr->mod_stored_kcal( amount );
+}
+
+void talker_character::deal_damage( damage_instance damage, bodypart_str_id target_part )
+{
+    if( target_part.is_valid() ) {
+        me_chr->deal_damage( nullptr, target_part, damage );
+    } else {
+        for( const bodypart_id &bp : me_chr->get_all_body_parts() ) {
+            me_chr->deal_damage( nullptr, bp, damage );
+        }
+    }
+}
+
+void talker_character::mod_add_morale( morale_type new_morale, int bonus, int max_bonus,
+                                       time_duration duration, time_duration decay_start, bool capped )
+{
+    me_chr->add_morale( new_morale, bonus, max_bonus, duration, decay_start, capped );
+}
+
+void talker_character::mod_remove_morale( morale_type old_morale )
+{
+    me_chr->rem_morale( old_morale );
 }
 
 std::string talker_character:: get_value( const std::string &var_name ) const

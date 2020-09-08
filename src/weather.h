@@ -174,8 +174,10 @@ class weather_manager
         cata::optional<int> wind_direction_override;
         cata::optional<int> windspeed_override;
         weather_type_id weather_override;
-        // Whether to change weather
-        bool next_weather = true;
+        // not only sets nextweather, but updates weather as well
+        void set_nextweather( time_point t );
+        // The time at which weather will shift next.
+        time_point nextweather;
         /** temperature cache, cleared every turn, sparse map of map tripoints to temperatures */
         std::unordered_map< tripoint, int > temperature_cache;
         // Returns outdoor or indoor temperature of given location (in absolute (@ref map::getabs))

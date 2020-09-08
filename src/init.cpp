@@ -37,7 +37,6 @@
 #include "filesystem.h"
 #include "flag.h"
 #include "gates.h"
-#include "generic_operation_type.h"
 #include "generic_precondition_type.h"
 #include "generic_trigger_op_on_precon.h"
 #include "harvest.h"
@@ -207,7 +206,6 @@ void DynamicDataLoader::initialize()
     add( "fault", &fault::load_fault );
     add( "relic_procgen_data", &relic_procgen_data::load_relic_procgen_data );
     add( "field_type", &field_types::load );
-    add( "generic_operation_type", &generic_operation_types::load );
     add( "generic_precondition_type", &generic_precondition_types::load );
     add( "generic_trigger_op_on_precon",
          &generic_trigger_op_on_precon::load_generic_trigger_op_on_precon );
@@ -505,7 +503,6 @@ void DynamicDataLoader::unload_data()
     fault::reset();
     field_types::reset();
     gates::reset();
-    generic_operation_types::reset();
     generic_precondition_types::reset();
     harvest_list::reset();
     item_controller->reset();
@@ -580,7 +577,6 @@ void DynamicDataLoader::finalize_loaded_data( loading_ui &ui )
     using named_entry = std::pair<std::string, std::function<void()>>;
     const std::vector<named_entry> entries = {{
             { _( "Body parts" ), &body_part_type::finalize_all },
-            { _( "Generic operation types" ), &generic_operation_types::finalize_all },
             { _( "Generic precondtion types" ), &generic_precondition_types::finalize_all },
             { _( "Weather types" ), &weather_types::finalize_all },
             { _( "Field types" ), &field_types::finalize_all },

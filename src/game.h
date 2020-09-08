@@ -23,9 +23,9 @@
 #include "coordinates.h"
 #include "creature.h"
 #include "cursesdef.h"
+#include "dialogue.h"
 #include "enums.h"
 #include "game_constants.h"
-#include "generic_operation_type.h"
 #include "generic_precondition_type.h"
 #include "generic_trigger_op_on_precon.h"
 #include "item_location.h"
@@ -365,7 +365,7 @@ class game
         /** Spawns a hallucination at a determined position of a given monster. */
         bool spawn_hallucination( const tripoint &p, const mtype_id &mt );
         /** Finds somewhere to spawn a monster. */
-        bool find_nearby_spawn_point( const Character &target, const mtype_id &mt, int min_radius,
+        bool find_nearby_spawn_point( const tripoint &target, const mtype_id &mt, int min_radius,
                                       int max_radius, tripoint &point );
         /** Swaps positions of two creatures */
         bool swap_critters( Creature &, Creature & );
@@ -1027,9 +1027,9 @@ class game
         int turnssincelastmon = 0; // needed for auto run mode
 
         weather_manager weather;
-        std::vector<std::pair<generic_precondition_type_id, generic_operation_type_id>>
+        std::vector<std::pair<generic_precondition_type_id, talk_effect_t>>
                 generic_operations_vector;
-        std::priority_queue<std::pair<time_point, generic_operation_type_id>, std::vector<std::pair<time_point, generic_operation_type_id>>, pair_greater_cmp_first>
+        std::priority_queue<std::pair<time_point, talk_effect_t>, std::vector<std::pair<time_point, talk_effect_t>>, pair_greater_cmp_first>
                 queued_generic_operations;
         std::map<std::string, bool> generic_variable_map;
         std::map<generic_precondition_type_id, time_point> next_instance_allowed;

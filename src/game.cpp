@@ -619,8 +619,8 @@ void game::setup()
 
     weather.weather_id = WEATHER_CLEAR;
     // Weather shift in 30
-    generic_trigger_op_on_precon::queue_generic_operation( time_duration::from_hours(
-                get_option<int>( "INITIAL_TIME" ) ) + 30_minutes, NEXT_WEATHER_GENERIC_OPERATION );
+    weather.nextweather = calendar::start_of_cataclysm + time_duration::from_hours(
+                              get_option<int>( "INITIAL_TIME" ) ) + 30_minutes;
     turnssincelastmon = 0; //Auto safe mode init
 
     sounds::reset_sounds();
@@ -672,7 +672,7 @@ bool game::start_game()
     seed = rng_bits();
     new_game = true;
     start_calendar();
-    weather.next_weather = true;
+    weather.nextweather = calendar::turn;
     safe_mode = ( get_option<bool>( "SAFEMODE" ) ? SAFE_MODE_ON : SAFE_MODE_OFF );
     mostseen = 0; // ...and mostseen is 0, we haven't seen any monsters yet.
     get_safemode().load_global();
@@ -5166,15 +5166,15 @@ void game::clear_zombies()
     critter_tracker->clear();
 }
 
-bool game::find_nearby_spawn_point( const Character &target, const mtype_id &mt, int min_radius,
+bool game::find_nearby_spawn_point( const tripoint &target, const mtype_id &mt, int min_radius,
                                     int max_radius, tripoint &point )
 {
     tripoint target_point;
     //find a legal outdoor place to spawn based on the specified radius,
     //we just try a bunch of random points and use the first one that works, it none do then no spawn
     for( int attempts = 0; attempts < 15; attempts++ ) {
-        target_point = target.pos() + tripoint( rng( -max_radius, max_radius ),
-                                                rng( -max_radius, max_radius ), 0 );
+        target_point = target + tripoint( rng( -max_radius, max_radius ),
+                                          rng( -max_radius, max_radius ), 0 );
         if( can_place_monster( mt->id, target_point ) &&
             get_map().is_outside( target_point ) &&
             rl_dist( target_point, get_player_character().pos() ) > min_radius ) {
@@ -10045,7 +10045,7 @@ void game::place_player_overmap( const tripoint_abs_omt &om_dest )
     m.spawn_monsters( true ); // Static monsters
     update_overmap_seen();
     // update weather now as it could be different on the new location
-    weather.next_weather = true;
+    weather.nextweather = calendar::turn;
     place_player( player_pos );
 }
 

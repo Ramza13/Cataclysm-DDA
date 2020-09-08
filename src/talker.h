@@ -96,6 +96,18 @@ class talker
         }
         virtual void set_mutation( const trait_id & ) {}
         virtual void unset_mutation( const trait_id & ) {}
+        virtual void add_bionic( const bionic_id & ) {}
+        virtual void remove_bionic( const bionic_id & ) {}
+        virtual void mod_pain( int ) {}
+        virtual void mod_fatigue( int ) {}
+        virtual void mod_focus( int ) {}
+        virtual void mod_rad( int ) {}
+        virtual void mod_sleep_deprivation( int ) {}
+        virtual void mod_stored_kcal( int ) {}
+        virtual void mod_healthy( int ) {}
+        virtual void add_morale( const morale_type &, int, int, time_duration, time_duration, bool ) {}
+        virtual void remove_morale( const morale_type & ) {}
+        virtual void deal_damage( const damage_instance &, const bodypart_str_id & ) {}
         virtual bool has_trait_flag( const std::string & ) const {
             return false;
         }
@@ -152,7 +164,8 @@ class talker
         virtual bool is_deaf() const {
             return false;
         }
-        virtual void add_effect( const efftype_id &, const time_duration &, const body_part, bool, int ) {}
+        virtual void add_effect( const efftype_id &, const time_duration &, const body_part &, bool,
+                                 int ) {}
         virtual void remove_effect( const efftype_id & ) {}
         virtual std::string get_value( const std::string & ) const {
             return "";

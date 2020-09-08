@@ -107,15 +107,15 @@ void game::serialize( std::ostream &fout )
     json.member( "achievements_tracker", *achievements_tracker_ptr );
 
     //save queued operations and generic_variables
-    std::vector<std::pair<time_point, generic_operation_type_id>> temp_queue;
-    while( !queued_generic_operations.empty() ) {
-        temp_queue.push_back( queued_generic_operations.top() );
-        queued_generic_operations.pop();
-    }
-    json.member( "queued_generic_operations", temp_queue );
-    for( const auto &queued : temp_queue ) {
-        queued_generic_operations.push( queued );
-    }
+    //std::vector<std::pair<time_point, talk_effect_t>> temp_queue;
+    //while( !queued_generic_operations.empty() ) {
+    //    temp_queue.push_back( queued_generic_operations.top() );
+    //    queued_generic_operations.pop();
+    //}
+    //json.member( "queued_generic_operations", temp_queue );
+    //for( const auto &queued : temp_queue ) {
+    //    queued_generic_operations.push( queued );
+    //}
 
     json.member( "generic_variable_map", generic_variable_map );
 
@@ -249,11 +249,11 @@ void game::unserialize( std::istream &fin )
         data.read( "player", u );
         data.read( "stats_tracker", *stats_tracker_ptr );
         data.read( "achievements_tracker", *achievements_tracker_ptr );
-        std::vector<std::pair<time_point, generic_operation_type_id>> temp_queue;
-        data.read( "queued_generic_operations", temp_queue );
-        for( const auto &queued : temp_queue ) {
-            queued_generic_operations.push( queued );
-        }
+        /*      std::vector<std::pair<time_point, talk_effect_t>> temp_queue;
+              data.read( "queued_generic_operations", temp_queue );
+              for( const auto &queued : temp_queue ) {
+                  queued_generic_operations.push( queued );
+              }*/
         data.read( "generic_variable_map", generic_variable_map );
         Messages::deserialize( data );
 

@@ -2286,10 +2286,6 @@ void monster::die( Creature *nkiller )
         deathfunction( *this );
     }
 
-    for( const generic_operation_type_id &event : type->death_events ) {
-        event->perform( );
-    }
-
     // If our species fears seeing one of our own die, process that
     int anger_adjust = 0;
     int morale_adjust = 0;

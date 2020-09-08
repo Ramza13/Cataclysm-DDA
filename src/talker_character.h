@@ -72,9 +72,27 @@ class talker_character: public talker
         bool has_effect( const efftype_id &effect_id ) const override;
         bool is_deaf() const override;
         void add_effect( const efftype_id &new_effect, const time_duration &dur,
-                         const body_part target_part,
+                         const body_part &target_part,
                          bool permanent, int intensity ) override;
         void remove_effect( const efftype_id &old_effect ) override;
+
+        void add_bionic( const bionic_id &new_bionic );
+        void remove_bionic( const bionic_id &old_bionic );
+        void mod_pain( int amount );
+        void mod_fatigue( int amount );
+        void mod_focus( int amount );
+        void mod_rad( int amount );
+        void mod_sleep_deprivation( int amount );
+        void mod_healthy( int amount );
+        void mod_stored_kcal( int amount );
+
+        void deal_damage( damage_instance damage, bodypart_str_id target_part );
+
+        void mod_add_morale( morale_type new_morale, int bonus, int max_bonus, time_duration duration,
+                             time_duration decay_start, bool capped );
+
+        void mod_remove_morale( morale_type old_morale );
+
         std::string get_value( const std::string &var_name ) const override;
         void set_value( const std::string &var_name, const std::string &value ) override;
         void remove_value( const std::string &var_name ) override;
