@@ -1821,9 +1821,9 @@ void talk_effect_fun_t::set_mod_stored_kcal( const JsonObject &jo, const std::st
     };
 }
 
-void talk_effect_fun_t::set_lightning( const JsonObject &jo, const std::string &member )
+void talk_effect_fun_t::set_lightning( const JsonObject &, const std::string & )
 {
-    function = []( const dialogue & d ) {
+    function = []( const dialogue & ) {
         get_weather().lightning_active = true;
     };
 }
@@ -1831,7 +1831,7 @@ void talk_effect_fun_t::set_lightning( const JsonObject &jo, const std::string &
 void talk_effect_fun_t::set_weather( const JsonObject &jo, const std::string &member )
 {
     weather_type_id new_weather = weather_type_id( jo.get_string( member ) );
-    function = [new_weather]( const dialogue & d ) {
+    function = [new_weather]( const dialogue & ) {
         get_weather().weather_override = new_weather;
         get_weather().set_nextweather( calendar::turn );
     };
@@ -1908,13 +1908,13 @@ void talk_effect_fun_t::set_queue_effect( const JsonObject &jo, const std::strin
     talk_effect_t effect;
     effect.load_effect( jo.get_object( "effect" ) );
     time_duration time_in_future = time_duration::from_seconds( jo.get_int( member ) );
-    function = [time_in_future, effect]( const dialogue & d ) {
+    function = [time_in_future, effect]( const dialogue & ) {
         generic_trigger_op_on_precon::queue_generic_operation( time_in_future, effect );
 
     };
 }
 
-void talk_effect_fun_t::set_deal_damage( const JsonObject &jo, const std::string &member,
+void talk_effect_fun_t::set_deal_damage( const JsonObject &jo, const std::string &,
         bool is_npc )
 {
     damage_instance damage = load_damage_instance( jo );
