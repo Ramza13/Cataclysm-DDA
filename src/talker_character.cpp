@@ -199,7 +199,8 @@ void talker_character::mod_stored_kcal( int amount )
     me_chr->mod_stored_kcal( amount );
 }
 
-void talker_character::deal_damage( damage_instance damage, bodypart_str_id target_part )
+void talker_character::deal_damage( const damage_instance &damage,
+                                    const bodypart_str_id &target_part )
 {
     if( target_part.is_valid() ) {
         me_chr->deal_damage( nullptr, target_part, damage );

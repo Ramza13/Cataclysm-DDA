@@ -76,17 +76,17 @@ class talker_character: public talker
                          bool permanent, int intensity ) override;
         void remove_effect( const efftype_id &old_effect ) override;
 
-        void add_bionic( const bionic_id &new_bionic );
-        void remove_bionic( const bionic_id &old_bionic );
-        void mod_pain( int amount );
-        void mod_fatigue( int amount );
-        void mod_focus( int amount );
-        void mod_rad( int amount );
-        void mod_sleep_deprivation( int amount );
-        void mod_healthy( int amount );
-        void mod_stored_kcal( int amount );
+        void add_bionic( const bionic_id &new_bionic ) override;
+        void remove_bionic( const bionic_id &old_bionic ) override;
+        void mod_pain( int amount ) override;
+        void mod_fatigue( int amount ) override;
+        void mod_focus( int amount ) override;
+        void mod_rad( int amount ) override;
+        void mod_sleep_deprivation( int amount ) override;
+        void mod_healthy( int amount ) override;
+        void mod_stored_kcal( int amount ) override;
 
-        void deal_damage( damage_instance damage, bodypart_str_id target_part );
+        void deal_damage( const damage_instance &damage, const bodypart_str_id &target_part ) override;
 
         void mod_add_morale( morale_type new_morale, int bonus, int max_bonus, time_duration duration,
                              time_duration decay_start, bool capped );
