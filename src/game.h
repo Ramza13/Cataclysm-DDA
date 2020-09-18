@@ -26,8 +26,7 @@
 #include "dialogue.h"
 #include "enums.h"
 #include "game_constants.h"
-#include "generic_precondition_type.h"
-#include "generic_trigger_op_on_precon.h"
+#include "trigger_effect_on_condition.h"
 #include "item_location.h"
 #include "memory_fast.h"
 #include "monster.h"
@@ -1027,12 +1026,10 @@ class game
         int turnssincelastmon = 0; // needed for auto run mode
 
         weather_manager weather;
-        std::vector<std::pair<generic_precondition_type_id, talk_effect_t>>
-                generic_operations_vector;
-        std::priority_queue<std::pair<time_point, talk_effect_t>, std::vector<std::pair<time_point, talk_effect_t>>, pair_greater_cmp_first>
-                queued_generic_operations;
-        std::map<std::string, bool> generic_variable_map;
-        std::map<generic_precondition_type_id, time_point> next_instance_allowed;
+        std::vector<effect_on_condition>
+        effect_on_condition_vector;
+        std::priority_queue<std::pair<time_point, json_dynamic_line_effect>, std::vector<std::pair<time_point, json_dynamic_line_effect>>, pair_greater_cmp_first>
+                queued_effect_on_conditions;
 
         int mostseen = 0; // # of mons seen last turn; if this increases, set safe_mode to SAFE_MODE_STOP
     private:

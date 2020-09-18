@@ -106,18 +106,16 @@ void game::serialize( std::ostream &fout )
     json.member( "stats_tracker", *stats_tracker_ptr );
     json.member( "achievements_tracker", *achievements_tracker_ptr );
 
-    //save queued operations and generic_variables
-    //std::vector<std::pair<time_point, talk_effect_t>> temp_queue;
-    //while( !queued_generic_operations.empty() ) {
-    //    temp_queue.push_back( queued_generic_operations.top() );
-    //    queued_generic_operations.pop();
+    //save queued effect_on_conditions
+    //std::vector<std::pair<time_point,json_dynamic_line_effect>> temp_queue;
+    //while( !queued_effect_on_conditions.empty() ) {
+    //    temp_queue.push_back( queued_effect_on_conditions.top() );
+    //    queued_effect_on_conditions.pop();
     //}
-    //json.member( "queued_generic_operations", temp_queue );
+    //json.member( "queued_effect_on_conditions", temp_queue );
     //for( const auto &queued : temp_queue ) {
-    //    queued_generic_operations.push( queued );
+    //    queued_effect_on_conditions.push( queued );
     //}
-
-    json.member( "generic_variable_map", generic_variable_map );
 
     json.member( "player", u );
     Messages::serialize( json );
@@ -249,12 +247,12 @@ void game::unserialize( std::istream &fin )
         data.read( "player", u );
         data.read( "stats_tracker", *stats_tracker_ptr );
         data.read( "achievements_tracker", *achievements_tracker_ptr );
-        /*      std::vector<std::pair<time_point, talk_effect_t>> temp_queue;
-              data.read( "queued_generic_operations", temp_queue );
-              for( const auto &queued : temp_queue ) {
-                  queued_generic_operations.push( queued );
-              }*/
-        data.read( "generic_variable_map", generic_variable_map );
+        /*       std::vector<std::pair<time_point, effect_on_condition>> temp_queue;
+               data.read( "queued_effect_on_conditions", temp_queue );
+               for( const auto &queued : temp_queue ) {
+                   queued_effect_on_conditions.push( queued );
+               }*/
+
         Messages::deserialize( data );
 
     } catch( const JsonError &jsonerr ) {

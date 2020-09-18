@@ -11,10 +11,10 @@
 #include "calendar.h"
 #include "color.h"
 #include "damage.h"
+#include "dialogue.h"
 #include "field.h"
 #include "string_id.h"
 #include "translations.h"
-#include "generic_precondition_type.h"
 #include "type_id.h"
 
 class JsonObject;
@@ -113,7 +113,8 @@ struct weather_type {
         // strength of the sun
         sun_intensity_type sun_intensity = sun_intensity_type::none;
         // when this weather should happen
-        generic_precondition_type_id requirement_id;
+        std::function<bool( const dialogue & )> condition;
+        std::vector<weather_type_id> required_weathers;
         time_duration duration_min = 0_turns;
         time_duration duration_max = 0_turns;
         time_duration time_between_min = 0_turns;

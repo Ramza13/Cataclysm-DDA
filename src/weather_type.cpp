@@ -6,8 +6,7 @@
 #include "assign.h"
 #include "debug.h"
 #include "generic_factory.h"
-#include "generic_precondition_type.h"
-
+#include "condition.h"
 namespace
 {
 generic_factory<weather_type> weather_type_factory( "weather_type" );
@@ -100,9 +99,11 @@ void weather_type::finalize()
 
 void weather_type::check() const
 {
-    if( !requirement_id.is_valid() ) {
-        debugmsg( "Generic requirement type %s does not exist.", requirement_id.c_str() );
-        abort();
+    for( auto type : required_weathers ) {
+        if( !type.is_valid() ) {
+            debugmsg( "Weather type %s does not exist.", type.c_str() );
+            abort();
+        }
     }
 }
 
@@ -159,8 +160,8 @@ void weather_type::load( const JsonObject &jo, const std::string & )
         }
         weather_animation = animation;
     }
-    optional( jo, was_loaded, "requirement_id", requirement_id,
-              generic_precondition_type_id( "true" ) );
+    optional( jo, was_loaded, "required_weathers", required_weathers );
+    read_condition<dialogue>( jo, "condition", condition, true );
 }
 
 void weather_types::reset()

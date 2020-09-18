@@ -297,7 +297,8 @@ struct mtype {
         std::map<std::string, mtype_special_attack> special_attacks;
         std::vector<std::string> special_attacks_names; // names of attacks, in json load order
 
-        std::vector<mon_action_death> dies;       // What happens when this monster dies
+        std::vector<mon_action_death>  dies;       // What happens when this monster dies
+
         // This monster's special "defensive" move that may trigger when the monster is attacked.
         // Note that this can be anything, and is not necessarily beneficial to the monster
         mon_action_defend sp_defense;

@@ -621,6 +621,7 @@ void game::setup()
     // Weather shift in 30
     weather.nextweather = calendar::start_of_cataclysm + time_duration::from_hours(
                               get_option<int>( "INITIAL_TIME" ) ) + 30_minutes;
+
     turnssincelastmon = 0; //Auto safe mode init
 
     sounds::reset_sounds();
@@ -1599,7 +1600,7 @@ bool game::do_turn()
     if( levz >= 0 && !u.is_underwater() ) {
         handle_weather_effects( weather.weather_id );
     }
-    generic_trigger_op_on_precon::process_operations();
+    trigger_effect_on_condition::process_effect_on_conditions();
     const bool player_is_sleeping = u.has_effect( effect_sleep );
     bool wait_redraw = false;
     std::string wait_message;

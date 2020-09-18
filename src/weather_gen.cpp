@@ -7,9 +7,12 @@
 #include <string>
 #include <utility>
 
+#include "avatar.h"
 #include "cata_utility.h"
+#include "condition.h"
+#include "dialogue.h"
+#include "game.h"
 #include "game_constants.h"
-#include "generic_precondition_type.h"
 #include "json.h"
 #include "math_defines.h"
 #include "point.h"
@@ -178,11 +181,23 @@ weather_type_id weather_generator::get_weather_conditions( const tripoint &locat
 weather_type_id weather_generator::get_weather_conditions( const w_point &w ) const
 {
     weather_type_id current_conditions = WEATHER_CLEAR;
+    dialogue d;
+    standard_npc default_npc( "Default" );
+    d.alpha = get_talker_for( get_avatar() );
+    d.beta = get_talker_for( default_npc );
     for( const std::string &weather_type : weather_types ) {
         weather_type_id type = weather_type_id( weather_type );
+        bool required_weather = type->required_weathers.empty();
+        if( !required_weather ) {
+            for( weather_type_id weather : type->required_weathers ) {
+                if( weather == current_conditions ) {
+                    required_weather = true;
+                    break;
+                }
+            }
+        }
 
-        const generic_precondition_type_id &requires = type->requirement_id;
-        if( requires->test( w, current_conditions ) ) {
+        if( required_weather && type->condition( d ) ) {
             current_conditions = type;
         }
     }
@@ -252,6 +267,8 @@ void weather_generator::test_weather( unsigned seed ) const
     // Usage:
     // weather_generator WEATHERGEN; // Instantiate the class.
     // WEATHERGEN.test_weather(); // Runs this test.
+    w_point weatherPoint = *g->weather.weather_precise;
+
     write_to_file( "weather.output", [&]( std::ostream & testfile ) {
         testfile <<
                  "|;year;season;day;hour;minute;temperature(F);humidity(%);pressure(mB);weatherdesc;windspeed(mph);winddirection"
@@ -262,7 +279,7 @@ void weather_generator::test_weather( unsigned seed ) const
         for( time_point i = begin; i < end; i += 20_minutes ) {
             w_point w = get_weather( tripoint_zero, to_turn<int>( i ), seed );
             weather_type_id conditions = get_weather_conditions( w );
-
+            *g->weather.weather_precise = w;
             int year = to_turns<int>( i - calendar::turn_zero ) / to_turns<int>
                        ( calendar::year_length() ) + 1;
             const int hour = hour_of_day<int>( i );
@@ -280,6 +297,7 @@ void weather_generator::test_weather( unsigned seed ) const
         }
 
     }, "weather test file" );
+    *g->weather.weather_precise = weatherPoint;
 }
 
 weather_generator weather_generator::load( const JsonObject &jo )

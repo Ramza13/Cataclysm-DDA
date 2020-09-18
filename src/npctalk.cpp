@@ -1723,12 +1723,12 @@ void talk_effect_fun_t::set_remove_morale( const JsonObject &jo, const std::stri
 void talk_effect_fun_t::set_sound_message( const JsonObject &jo, const std::string &member )
 {
     std::string message = jo.get_string( member );
-    const bool outdoors = jo.has_member( "outdoor_event" );
-    function = [message, outdoors]( const dialogue & d ) {
+    const bool outdoor_only = jo.get_bool( "outdoor_only", false );
+    function = [message, outdoor_only]( const dialogue & d ) {
         map &here = get_map();
         Character &target = *d.alpha->get_character();
         if( !target.has_effect( effect_sleep ) && !target.is_deaf() ) {
-            if( !outdoors || here.get_abs_sub().z >= 0 ) {
+            if( !outdoor_only || here.get_abs_sub().z >= 0 ) {
                 target.add_msg_if_player( message );
             } else if( one_in( std::max( roll_remainder( 2.0f * here.get_abs_sub().z /
                                          target.mutation_value( "hearing_modifier" ) ), 1 ) ) ) {
@@ -1843,7 +1843,7 @@ void talk_effect_fun_t::set_field( const JsonObject &jo, const std::string &memb
     int intensity = jo.get_int( "intensity", 0 );
     time_duration age = time_duration::from_turns( jo.get_int( "age", 1 ) );
     int radius = jo.get_int( "radius", 10000000 );
-    const bool outdoor_only = jo.has_member( "outdoor_only" );;
+    const bool outdoor_only = jo.has_member( "outdoor_only" );
 
     function = [is_npc, new_field, intensity, age, radius, outdoor_only]( const dialogue & d ) {
         for( const tripoint &dest : get_map().points_in_radius( d.actor( is_npc )->pos(), radius ) ) {
@@ -1905,11 +1905,10 @@ void talk_effect_fun_t::set_spawn_monster( const JsonObject &jo, const std::stri
 
 void talk_effect_fun_t::set_queue_effect( const JsonObject &jo, const std::string &member )
 {
-    talk_effect_t effect;
-    effect.load_effect( jo.get_object( "effect" ) );
+    json_dynamic_line_effect jdle( jo, member );
     time_duration time_in_future = time_duration::from_seconds( jo.get_int( member ) );
-    function = [time_in_future, effect]( const dialogue & ) {
-        generic_trigger_op_on_precon::queue_generic_operation( time_in_future, effect );
+    function = [time_in_future, jdle]( const dialogue & ) {
+        trigger_effect_on_condition::queue_effect_on_condition( time_in_future, jdle );
 
     };
 }

@@ -77,6 +77,21 @@ int talker_character::per_cur() const
     return me_chr->per_cur;
 }
 
+int talker_character::pain_cur() const
+{
+    return me_chr->get_pain();
+}
+
+int talker_character::focus_cur() const
+{
+    return me_chr->focus_pool;
+}
+
+int talker_character::morale_cur() const
+{
+    return me_chr->get_morale_level();
+}
+
 bool talker_character::has_trait( const trait_id &trait_to_check ) const
 {
     return me_chr->has_trait( trait_to_check );
@@ -242,6 +257,16 @@ bool talker_character::is_wearing( const itype_id &item_id ) const
     return me_chr->is_wearing( item_id );
 }
 
+bool talker_character::worn_with_flag( const std::string &flag ) const
+{
+    return me_chr->worn_with_flag( flag );
+}
+
+bool talker_character::wielded_with_flag( const std::string &flag ) const
+{
+    return me_chr->weapon.has_flag( flag );
+}
+
 int talker_character::charges_of( const itype_id &item_id ) const
 {
     return me_chr->charges_of( item_id );
@@ -346,6 +371,15 @@ int talker_character::get_thirst() const
     return me_chr->get_thirst();
 }
 
+int talker_character::get_stored_kcal() const
+{
+    return me_chr->get_stored_kcal();
+}
+
+int talker_character::get_sleep_deprivation() const
+{
+    return me_chr->get_sleep_deprivation();
+}
 bool talker_character::is_in_control_of( const vehicle &veh ) const
 {
     return veh.player_in_control( *me_chr );

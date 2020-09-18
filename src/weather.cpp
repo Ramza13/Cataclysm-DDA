@@ -556,11 +556,13 @@ std::string weather_forecast( const point_abs_sm &abs_sm_pos )
     // TODO: wind direction and speed
     const time_point last_hour = calendar::turn - ( calendar::turn - calendar::turn_zero ) %
                                  1_hours;
+    w_point weatherPoint = *g->weather.weather_precise;
     for( int d = 0; d < 6; d++ ) {
         weather_type_id forecast = WEATHER_NULL;
         const auto wgen = get_weather().get_cur_weather_gen();
         for( time_point i = last_hour + d * 12_hours; i < last_hour + ( d + 1 ) * 12_hours; i += 1_hours ) {
             w_point w = wgen.get_weather( abs_ms_pos, i, g->get_seed() );
+            *g->weather.weather_precise = w;
             forecast = std::max( forecast, wgen.get_weather_conditions( w ) );
             high = std::max( high, w.temperature );
             low = std::min( low, w.temperature );
@@ -586,6 +588,7 @@ std::string weather_forecast( const point_abs_sm &abs_sm_pos )
                               print_temperature( high ), print_temperature( low )
                           );
     }
+    *g->weather.weather_precise = weatherPoint;
     return weather_report;
 }
 

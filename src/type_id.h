@@ -63,12 +63,6 @@ struct furn_t;
 using furn_id = int_id<furn_t>;
 using furn_str_id = string_id<furn_t>;
 
-struct generic_operation_type;
-using generic_operation_type_id = string_id<generic_operation_type>;
-
-struct generic_precondition_type;
-using generic_precondition_type_id = string_id<generic_precondition_type>;
-
 class gun_mode;
 using gun_mode_id = string_id<gun_mode>;
 

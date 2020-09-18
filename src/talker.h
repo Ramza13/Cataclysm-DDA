@@ -88,6 +88,15 @@ class talker
         virtual int per_cur() const {
             return 0;
         }
+        virtual int pain_cur() const {
+            return 0;
+        }
+        virtual int focus_cur() const {
+            return 0;
+        }
+        virtual int morale_cur() const {
+            return 0;
+        }
         virtual int get_skill_level( const skill_id & ) const {
             return false;
         }
@@ -175,6 +184,12 @@ class talker
 
         // inventory, buying, and selling
         virtual bool is_wearing( const itype_id & ) const {
+            return false;
+        }
+        virtual bool worn_with_flag( const std::string &flag ) const {
+            return false;
+        }
+        virtual bool wielded_with_flag( const std::string &flag ) const {
             return false;
         }
         virtual int charges_of( const itype_id & ) const {
@@ -301,6 +316,12 @@ class talker
             return 0;
         }
         virtual int get_thirst() const {
+            return 0;
+        }
+        virtual int get_sleep_deprivation() const {
+            return 0;
+        }
+        virtual int get_stored_kcal() const {
             return 0;
         }
         virtual bool is_in_control_of( const vehicle & ) const {

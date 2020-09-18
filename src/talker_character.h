@@ -56,6 +56,9 @@ class talker_character: public talker
         int dex_cur() const override;
         int int_cur() const override;
         int per_cur() const override;
+        int pain_cur() const override;
+        int focus_cur() const;
+        int morale_cur() const;
         bool has_trait( const trait_id &trait_to_check ) const override;
         void set_mutation( const trait_id &new_trait ) override;
         void unset_mutation( const trait_id &old_trait ) override;
@@ -99,6 +102,8 @@ class talker_character: public talker
 
         // inventory, buying, and selling
         bool is_wearing( const itype_id &item_id ) const override;
+        bool worn_with_flag( const std::string &flag ) const override;
+        bool wielded_with_flag( const std::string &flag ) const override;
         int charges_of( const itype_id &item_id ) const override;
         bool has_charges( const itype_id &item_id, int count ) const override;
         std::list<item> use_charges( const itype_id &item_name, int count ) override;
@@ -122,6 +127,8 @@ class talker_character: public talker
         int get_fatigue() const override;
         int get_hunger() const override;
         int get_thirst() const override;
+        int get_stored_kcal() const;
+        int get_sleep_deprivation() const;
         bool is_in_control_of( const vehicle &veh ) const override;
 
         // speaking
