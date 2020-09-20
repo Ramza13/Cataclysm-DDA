@@ -189,7 +189,7 @@ weather_type_id weather_generator::get_weather_conditions( const w_point & ) con
         weather_type_id type = weather_type_id( weather_type );
         bool required_weather = type->required_weathers.empty();
         if( !required_weather ) {
-            for( weather_type_id weather : type->required_weathers ) {
+            for( const weather_type_id &weather : type->required_weathers ) {
                 if( weather == current_conditions ) {
                     required_weather = true;
                     break;
