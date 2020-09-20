@@ -239,7 +239,7 @@ template<class T>
 void conditional_t<T>::set_one_in_chance( const JsonObject &jo, const std::string &member )
 {
     const int one_in_chance = jo.get_int( member );
-    condition = [one_in_chance]( const T & d ) {
+    condition = [one_in_chance]( const T & ) {
         return one_in( one_in_chance );
     };
 }
@@ -266,7 +266,7 @@ template<class T>
 void conditional_t<T>::set_is_windpower( const JsonObject &jo, const std::string &member )
 {
     const int windpower_min = jo.get_int( member );
-    condition = [windpower_min]( const T & d ) {
+    condition = [windpower_min]( const T & ) {
         return get_weather().weather_precise->windpower >= windpower_min;
     };
 }
@@ -275,7 +275,7 @@ template<class T>
 void conditional_t<T>::set_is_humidity( const JsonObject &jo, const std::string &member )
 {
     const int humidity_min = jo.get_int( member );
-    condition = [humidity_min]( const T & d ) {
+    condition = [humidity_min]( const T & ) {
         return get_weather().weather_precise->humidity >= humidity_min;
     };
 }
@@ -284,7 +284,7 @@ template<class T>
 void conditional_t<T>::set_is_pressure( const JsonObject &jo, const std::string &member )
 {
     const int pressure_min = jo.get_int( member );
-    condition = [pressure_min]( const T & d ) {
+    condition = [pressure_min]( const T & ) {
         return get_weather().weather_precise->pressure >= pressure_min;
     };
 }
