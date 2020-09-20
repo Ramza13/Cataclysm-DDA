@@ -178,7 +178,7 @@ weather_type_id weather_generator::get_weather_conditions( const tripoint &locat
     return wt;
 }
 
-weather_type_id weather_generator::get_weather_conditions( const w_point &w ) const
+weather_type_id weather_generator::get_weather_conditions( const w_point & ) const
 {
     weather_type_id current_conditions = WEATHER_CLEAR;
     dialogue d;
