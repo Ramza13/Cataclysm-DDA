@@ -107,15 +107,15 @@ void game::serialize( std::ostream &fout )
     json.member( "achievements_tracker", *achievements_tracker_ptr );
 
     //save queued effect_on_conditions
-    //std::vector<std::pair<time_point,json_dynamic_line_effect>> temp_queue;
-    //while( !queued_effect_on_conditions.empty() ) {
-    //    temp_queue.push_back( queued_effect_on_conditions.top() );
-    //    queued_effect_on_conditions.pop();
-    //}
-    //json.member( "queued_effect_on_conditions", temp_queue );
-    //for( const auto &queued : temp_queue ) {
-    //    queued_effect_on_conditions.push( queued );
-    //}
+    std::vector<std::pair<time_point, effect_on_condition_id>> temp_queue;
+    while( !queued_effect_on_conditions.empty() ) {
+        temp_queue.push_back( queued_effect_on_conditions.top() );
+        queued_effect_on_conditions.pop();
+    }
+    json.member( "queued_effect_on_conditions", temp_queue );
+    for( const auto &queued : temp_queue ) {
+        queued_effect_on_conditions.push( queued );
+    }
 
     json.member( "player", u );
     Messages::serialize( json );
@@ -247,11 +247,12 @@ void game::unserialize( std::istream &fin )
         data.read( "player", u );
         data.read( "stats_tracker", *stats_tracker_ptr );
         data.read( "achievements_tracker", *achievements_tracker_ptr );
-        /*       std::vector<std::pair<time_point, effect_on_condition>> temp_queue;
-               data.read( "queued_effect_on_conditions", temp_queue );
-               for( const auto &queued : temp_queue ) {
-                   queued_effect_on_conditions.push( queued );
-               }*/
+
+        std::vector<std::pair<time_point, effect_on_condition_id>> temp_queue;
+        data.read( "queued_effect_on_conditions", temp_queue );
+        for( const auto &queued : temp_queue ) {
+            queued_effect_on_conditions.push( queued );
+        }
 
         Messages::deserialize( data );
 

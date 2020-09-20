@@ -46,6 +46,9 @@ using efftype_id = string_id<effect_type>;
 class disease_type;
 using diseasetype_id = string_id<disease_type>;
 
+struct effect_on_condition;
+using effect_on_condition_id = string_id<effect_on_condition>;
+
 class emit;
 using emit_id = string_id<emit>;
 

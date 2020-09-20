@@ -430,6 +430,7 @@ class json_dynamic_line_effect
         json_dynamic_line_effect( const JsonObject &jo, const std::string &id );
         bool test_condition( const dialogue &d ) const;
         void apply( dialogue &d ) const;
+        json_dynamic_line_effect() = default;
 };
 
 /**

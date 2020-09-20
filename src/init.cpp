@@ -37,7 +37,7 @@
 #include "filesystem.h"
 #include "flag.h"
 #include "gates.h"
-#include "trigger_effect_on_condition.h"
+#include "effect_on_condition.h"
 #include "harvest.h"
 #include "item_action.h"
 #include "item_category.h"
@@ -205,8 +205,7 @@ void DynamicDataLoader::initialize()
     add( "fault", &fault::load_fault );
     add( "relic_procgen_data", &relic_procgen_data::load_relic_procgen_data );
     add( "field_type", &field_types::load );
-    add( "trigger_effect_on_condition",
-         &trigger_effect_on_condition::load_trigger_effect_on_condition );
+    add( "effect_on_condition", &effect_on_conditions::load );
     add( "weather_type", &weather_types::load );
     add( "ammo_effect", &ammo_effects::load );
     add( "emit", &emit::load_emit );
@@ -494,6 +493,7 @@ void DynamicDataLoader::unload_data()
     clothing_mods::reset();
     construction_categories::reset();
     dreams.clear();
+    effect_on_conditions::reset();
     emit::reset();
     event_statistic::reset();
     event_transformation::reset();
@@ -575,6 +575,7 @@ void DynamicDataLoader::finalize_loaded_data( loading_ui &ui )
     const std::vector<named_entry> entries = {{
             { _( "Body parts" ), &body_part_type::finalize_all },
             { _( "Weather types" ), &weather_types::finalize_all },
+            { _( "Effect on conditions" ), &effect_on_conditions::finalize_all },
             { _( "Field types" ), &field_types::finalize_all },
             { _( "Ammo effects" ), &ammo_effects::finalize_all },
             { _( "Emissions" ), &emit::finalize },
@@ -658,6 +659,7 @@ void DynamicDataLoader::check_consistency( loading_ui &ui )
             },
             { _( "Vitamins" ), &vitamin::check_consistency },
             { _( "Weather types" ), &weather_types::check_consistency },
+            { _( "Effect on conditions" ), &effect_on_conditions::check_consistency },
             { _( "Field types" ), &field_types::check_consistency },
             { _( "Ammo effects" ), &ammo_effects::check_consistency },
             { _( "Emissions" ), &emit::check_consistency },

@@ -26,7 +26,7 @@
 #include "dialogue.h"
 #include "enums.h"
 #include "game_constants.h"
-#include "trigger_effect_on_condition.h"
+#include "effect_on_condition.h"
 #include "item_location.h"
 #include "memory_fast.h"
 #include "monster.h"
@@ -1026,9 +1026,9 @@ class game
         int turnssincelastmon = 0; // needed for auto run mode
 
         weather_manager weather;
-        std::vector<effect_on_condition>
-        effect_on_condition_vector;
-        std::priority_queue<std::pair<time_point, json_dynamic_line_effect>, std::vector<std::pair<time_point, json_dynamic_line_effect>>, pair_greater_cmp_first>
+        std::vector<effect_on_condition_id> active_effect_on_condition_vector;
+        std::vector<effect_on_condition_id> inactive_effect_on_condition_vector;
+        std::priority_queue<std::pair<time_point, effect_on_condition_id>, std::vector<std::pair<time_point, effect_on_condition_id>>, pair_greater_cmp_first>
                 queued_effect_on_conditions;
 
         int mostseen = 0; // # of mons seen last turn; if this increases, set safe_mode to SAFE_MODE_STOP

@@ -1905,10 +1905,10 @@ void talk_effect_fun_t::set_spawn_monster( const JsonObject &jo, const std::stri
 
 void talk_effect_fun_t::set_queue_effect( const JsonObject &jo, const std::string &member )
 {
-    json_dynamic_line_effect jdle( jo, member );
+    effect_on_condition_id eoc = effect_on_condition_id( jo.get_string( member ) );
     time_duration time_in_future = time_duration::from_seconds( jo.get_int( member ) );
-    function = [time_in_future, jdle]( const dialogue & ) {
-        trigger_effect_on_condition::queue_effect_on_condition( time_in_future, jdle );
+    function = [time_in_future, eoc]( const dialogue & ) {
+        effect_on_conditions::queue_effect_on_condition( time_in_future, eoc );
 
     };
 }
