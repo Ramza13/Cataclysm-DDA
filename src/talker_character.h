@@ -57,8 +57,8 @@ class talker_character: public talker
         int int_cur() const override;
         int per_cur() const override;
         int pain_cur() const override;
-        int focus_cur() const;
-        int morale_cur() const;
+        int focus_cur() const override;
+        int morale_cur() const override;
         bool has_trait( const trait_id &trait_to_check ) const override;
         void set_mutation( const trait_id &new_trait ) override;
         void unset_mutation( const trait_id &old_trait ) override;
@@ -127,8 +127,8 @@ class talker_character: public talker
         int get_fatigue() const override;
         int get_hunger() const override;
         int get_thirst() const override;
-        int get_stored_kcal() const;
-        int get_sleep_deprivation() const;
+        int get_stored_kcal() const override;
+        int get_sleep_deprivation() const override;
         bool is_in_control_of( const vehicle &veh ) const override;
 
         // speaking
