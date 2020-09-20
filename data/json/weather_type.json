@@ -15,8 +15,8 @@
     "rains": false,
     "acidic": false,
     "sun_intensity": "high",
-    "condition": { "and": ["is_day",{"is_pressure": 1020 },{"not": {"is_humidity": 70} }]
-  }},
+    "condition": { "and": [ "is_day", { "is_pressure": 1020 }, { "not": { "is_humidity": 70 } } ] }
+  },
   {
     "id": "cloudy",
     "type": "weather_type",
@@ -33,7 +33,7 @@
     "rains": false,
     "acidic": false,
     "sun_intensity": "light",
-    "condition": { "and": [{"is_humidity": 40 },{"not": {"is_pressure": 1010} }]}
+    "condition": { "and": [ { "is_humidity": 40 }, { "not": { "is_pressure": 1010 } } ] }
   },
   {
     "id": "light_drizzle",
@@ -55,7 +55,7 @@
     "sound_category": "drizzle",
     "sun_intensity": "light",
     "required_weathers": [ "cloudy" ],
-    "condition": { "or": [{"is_humidity": 96 },{"not": {"is_pressure": 1003} }]}
+    "condition": { "or": [ { "is_humidity": 96 }, { "not": { "is_pressure": 1003 } } ] }
   },
   {
     "id": "drizzle",
@@ -77,7 +77,7 @@
     "sound_category": "drizzle",
     "sun_intensity": "light",
     "required_weathers": [ "light_drizzle" ],
-    "condition": { "or": [{"is_humidity": 97 },{"not": {"is_pressure": 1000} }]}
+    "condition": { "or": [ { "is_humidity": 97 }, { "not": { "is_pressure": 1000 } } ] }
   },
   {
     "id": "rain",
@@ -98,8 +98,8 @@
     "weather_animation": { "factor": 0.02, "color": "c_light_blue", "glyph": "," },
     "sound_category": "rainy",
     "sun_intensity": "light",
-    "required_weathers": [ "light_drizzle","drizzle" ],
-    "condition": { "or": [{"is_humidity": 98 },{"not": {"is_pressure": 993} }]}
+    "required_weathers": [ "light_drizzle", "drizzle" ],
+    "condition": { "or": [ { "is_humidity": 98 }, { "not": { "is_pressure": 993 } } ] }
   },
   {
     "id": "thunder",
@@ -121,7 +121,7 @@
     "sound_category": "thunder",
     "sun_intensity": "none",
     "required_weathers": [ "rain" ],
-    "condition": { "not": {"is_pressure": 996} }
+    "condition": { "not": { "is_pressure": 996 } }
   },
   {
     "id": "lightning",
@@ -143,7 +143,7 @@
     "sound_category": "thunder",
     "sun_intensity": "none",
     "required_weathers": [ "thunder" ],
-    "condition": { "not": {"is_pressure": 990} }
+    "condition": { "not": { "is_pressure": 990 } }
   },
   {
     "id": "acid_drizzle",
@@ -207,7 +207,7 @@
     "sound_category": "flurries",
     "sun_intensity": "light",
     "required_weathers": [ "flurries" ],
-    "condition": { "not": {"is_temperature": 33} }
+    "condition": { "not": { "is_temperature": 33 } }
   },
   {
     "id": "snowing",
@@ -229,7 +229,7 @@
     "sound_category": "snow",
     "sun_intensity": "light",
     "required_weathers": [ "rain", "thunder", "lightning" ],
-    "condition": { "not": {"is_temperature": 33} }
+    "condition": { "not": { "is_temperature": 33 } }
   },
   {
     "id": "snowstorm",
@@ -251,6 +251,6 @@
     "sound_category": "snowstorm",
     "sun_intensity": "none",
     "required_weathers": [ "thunder", "lightning" ],
-    "condition": { "and":[ {"is_windpower": 15}, {"not": {"is_temperature": 33}} ]}
+    "condition": { "and": [ { "is_windpower": 15 }, { "not": { "is_temperature": 33 } } ] }
   }
 ]
