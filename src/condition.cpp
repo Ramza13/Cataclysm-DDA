@@ -248,7 +248,7 @@ template<class T>
 void conditional_t<T>::set_is_temperature( const JsonObject &jo, const std::string &member )
 {
     const int temp_min = jo.get_int( member );
-    condition = [temp_min]( const T & d ) {
+    condition = [temp_min]( const T & ) {
         return get_weather().weather_precise->temperature >= temp_min;
     };
 }
