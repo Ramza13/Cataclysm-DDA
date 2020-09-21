@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "field_type.h"
 #include "explosion.h"
 #include "field_type.h"
 #include "string_id.h"
