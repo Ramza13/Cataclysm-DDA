@@ -1373,7 +1373,7 @@
     "id": "EOC_PORTAL_STORM_DUNGEON_EAST",
     "effect": [
       { "u_location_variable": { "global_val": "portal_dungeon_endless_empty" }, "x_adjust": 4 },
-      { "run_eocs":"EOC_PORTAL_STORM_ENDLESS_EMPTY_TELEPORTED" },
+      { "run_eocs": "EOC_PORTAL_STORM_ENDLESS_EMPTY_TELEPORTED" },
       { "u_teleport": { "global_val": "portal_dungeon_endless_empty" }, "fail_message": "Something is very wrong!" }
     ]
   },
@@ -1382,7 +1382,7 @@
     "id": "EOC_PORTAL_STORM_DUNGEON_WEST",
     "effect": [
       { "u_location_variable": { "global_val": "portal_dungeon_endless_empty" }, "x_adjust": -4 },
-      { "run_eocs":"EOC_PORTAL_STORM_ENDLESS_EMPTY_TELEPORTED" },
+      { "run_eocs": "EOC_PORTAL_STORM_ENDLESS_EMPTY_TELEPORTED" },
       { "u_teleport": { "global_val": "portal_dungeon_endless_empty" }, "fail_message": "Something is very wrong!" }
     ]
   },
@@ -1391,7 +1391,7 @@
     "id": "EOC_PORTAL_STORM_DUNGEON_NORTH",
     "effect": [
       { "u_location_variable": { "global_val": "portal_dungeon_endless_empty" }, "y_adjust": -4 },
-      { "run_eocs":"EOC_PORTAL_STORM_ENDLESS_EMPTY_TELEPORTED" },
+      { "run_eocs": "EOC_PORTAL_STORM_ENDLESS_EMPTY_TELEPORTED" },
       { "u_teleport": { "global_val": "portal_dungeon_endless_empty" }, "fail_message": "Something is very wrong!" }
     ]
   },
@@ -1400,7 +1400,7 @@
     "id": "EOC_PORTAL_STORM_DUNGEON_SOUTH",
     "effect": [
       { "u_location_variable": { "global_val": "portal_dungeon_endless_empty" }, "y_adjust": 4 },
-      { "run_eocs":"EOC_PORTAL_STORM_ENDLESS_EMPTY_TELEPORTED" },
+      { "run_eocs": "EOC_PORTAL_STORM_ENDLESS_EMPTY_TELEPORTED" },
       { "u_teleport": { "global_val": "portal_dungeon_endless_empty" }, "fail_message": "Something is very wrong!" }
     ]
   },
@@ -1408,7 +1408,7 @@
     "type": "effect_on_condition",
     "id": "EOC_PORTAL_STORM_ENDLESS_EMPTY_TELEPORT",
     "effect": [
-      { "arithmetic":[{"global_val":"var","var_name":"endless_empty_teleports"}, "++"] },
+      { "arithmetic": [ { "global_val": "var", "var_name": "endless_empty_teleports" }, "++" ] },
       { "u_teleport": { "global_val": "dungeon_start" }, "fail_message": "Something is very wrong!" }
     ]
   }
