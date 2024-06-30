@@ -801,6 +801,8 @@ class vpart_display
 class vehicle
 {
     private:
+        // Miscellaneous key/value pairs.
+        std::unordered_map<std::string, std::string> values;
         bool has_structural_part( const point &dp ) const;
         bool is_structural_part_removed() const;
         void open_or_close( int part_index, bool opening );
@@ -860,7 +862,15 @@ class vehicle
         /// Templated to support const and non-const vehicle*
         template<typename Vehicle>
         static std::map<Vehicle *, float> search_connected_vehicles( Vehicle *start );
+
     public:
+        std::vector<std::string> chat_topics; // What it has to say.
+        void set_value( const std::string &key, const std::string &value );
+        void remove_value( const std::string &key );
+        std::string get_value( const std::string &key ) const;
+        std::optional<std::string> maybe_get_value( const std::string &key ) const;
+        void clear_values();
+        void add_chat_topic( const std::string &topic );
         /**
          * Find a possibly off-map vehicle. If necessary, loads up its submap through
          * the global MAPBUFFER and pulls it from there. For this reason, you should only
@@ -2477,5 +2487,6 @@ class MapgenRemovePartHandler : public RemovePartHandler
             return m;
         }
 };
-
+std::unique_ptr<talker> get_talker_for( vehicle &me );
+std::unique_ptr<talker> get_talker_for( vehicle *me );
 #endif // CATA_SRC_VEHICLE_H

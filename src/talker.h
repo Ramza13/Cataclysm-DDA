@@ -76,6 +76,12 @@ class talker
         virtual const computer *get_computer() const {
             return nullptr;
         }
+        virtual vehicle *get_vehicle() {
+            return nullptr;
+        }
+        virtual const vehicle *get_vehicle() const {
+            return nullptr;
+        }
         // identity and location
         virtual std::string disp_name() const {
             return "";

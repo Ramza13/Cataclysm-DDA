@@ -70,6 +70,7 @@
 #include "sounds.h"
 #include "string_formatter.h"
 #include "submap.h"
+#include "talker_vehicle.h"
 #include "translations.h"
 #include "units_utility.h"
 #include "value_ptr.h"
@@ -1148,6 +1149,38 @@ int vehicle::power_to_energy_bat( const units::power power, const time_duration 
     units::energy produced = power * d;
     int produced_kj = roll_remainder( units::to_millijoule( produced ) / 1000000.0 );
     return produced_kj;
+}
+
+// Methods for setting/getting misc key/value pairs.
+void vehicle::set_value( const std::string &key, const std::string &value )
+{
+    values[ key ] = value;
+}
+
+void vehicle::remove_value( const std::string &key )
+{
+    values.erase( key );
+}
+
+std::string vehicle::get_value( const std::string &key ) const
+{
+    return maybe_get_value( key ).value_or( std::string{} );
+}
+
+std::optional<std::string> vehicle::maybe_get_value( const std::string &key ) const
+{
+    auto it = values.find( key );
+    return it == values.end() ? std::nullopt : std::optional<std::string> { it->second };
+}
+
+void vehicle::clear_values()
+{
+    values.clear();
+}
+
+void vehicle::add_chat_topic( const std::string &topic )
+{
+    chat_topics.emplace_back( topic );
 }
 
 bool vehicle::has_structural_part( const point &dp ) const
@@ -5760,12 +5793,12 @@ void vehicle::on_move()
     }
 
     Character &pc = get_player_character();
-    get_event_bus().send<event_type::vehicle_moves>(
-        is_passenger( pc ), player_in_control( pc ), remote_controlled( pc ),
-        is_flying_in_air(), is_watercraft() && can_float(), can_use_rails(),
-        is_falling, is_in_water( true ) && !can_float(),
-        skidding, velocity, sm_pos.z
-    );
+    cata::event e = cata::event::make<event_type::vehicle_moves>(
+                        is_passenger( pc ), player_in_control( pc ), remote_controlled( pc ),
+                        is_flying_in_air(), is_watercraft() && can_float(), can_use_rails(),
+                        is_falling, is_in_water( true ) && !can_float(),
+                        skidding, velocity, sm_pos.z );
+    get_event_bus().send_with_talker( this, e );
 }
 
 void vehicle::slow_leak()
@@ -8397,4 +8430,13 @@ void MapgenRemovePartHandler::add_item_or_charges(
         return;
     }
     m.add_item_or_charges( loc, std::move( it ) );
+}
+
+std::unique_ptr<talker> get_talker_for( vehicle &me )
+{
+    return std::make_unique<talker_vehicle>( &me );
+}
+std::unique_ptr<talker> get_talker_for( vehicle *me )
+{
+    return std::make_unique<talker_vehicle>( me );
 }
