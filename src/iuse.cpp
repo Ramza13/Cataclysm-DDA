@@ -3334,7 +3334,7 @@ std::optional<int> iuse::teleport( Character *p, item *it, const tripoint_bub_ms
         return std::nullopt;
     }
     p->mod_moves( -to_moves<int>( 1_seconds ) );
-    teleport::teleport_creature( *p );
+    teleport::teleport( *p );
     return 1;
 }
 
